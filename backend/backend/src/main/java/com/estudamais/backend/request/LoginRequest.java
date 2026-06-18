@@ -1,8 +1,13 @@
 package com.estudamais.backend.request;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data public class LoginRequest {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LoginRequest {
     @NotBlank @Email private String email;
     @NotBlank private String password;
 }

@@ -28,8 +28,8 @@ public class StudyServiceImpl implements StudyService {
     public StudySessionResponse registerSession(Long userId, StudySessionRequest request) {
         StudySession session = StudySession.builder()
                 .userId(userId)
-                .subject(request.getSubject())
-                .durationMinutes(request.getDurationMinutes())
+                .subject(request.subject())
+                .durationMinutes(request.durationMinutes())
                 .studyDate(LocalDate.now())
                 .build();
 
@@ -51,26 +51,13 @@ public class StudyServiceImpl implements StudyService {
             }
         }
 
-        return StudySessionResponse.builder()
-                .id(session.getId())
-                .subject(session.getSubject())
-                .durationMinutes(session.getDurationMinutes())
-                .studyDate(session.getStudyDate())
-                .feedbackMessage(feedback)
-                .build();
+        return new StudySessionResponse(session,feedback);
     }
 
     @Override
     public List<StudySessionResponse> getUserHistory(Long userId) {
         return sessionRepository.findAllByUserId(userId).stream()
-                .map(s -> StudySessionResponse.builder()
-                        .id(s.getId())
-                        .subject(s.getSubject())
-                        .durationMinutes(s.getDurationMinutes())
-                        .studyDate(s.getStudyDate())
-                        .feedbackMessage("Histórico carregado.")
-                        .build())
-                .collect(Collectors.toList());
+                .map(StudySessionResponse::new).toList();
     }
 
     @Override
@@ -78,25 +65,17 @@ public class StudyServiceImpl implements StudyService {
         StudyGoal goal = goalRepository.findByUserId(userId)
                 .orElse(StudyGoal.builder().userId(userId).build());
 
-        goal.setCategory(request.getCategory());
-        goal.setTargetMinutesPerDay(request.getTargetMinutesPerDay());
+        goal.setCategory(request.category());
+        goal.setTargetMinutesPerDay(request.targetMinutesPerDay());
         goalRepository.save(goal);
 
-        return GoalResponse.builder()
-                .id(goal.getId())
-                .category(goal.getCategory())
-                .targetMinutesPerDay(goal.getTargetMinutesPerDay())
-                .build();
+        return new GoalResponse(goal);
     }
 
     @Override
     public GoalResponse getGoal(Long userId) {
         StudyGoal goal = goalRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Nenhuma meta configurada para este aluno."));
-        return GoalResponse.builder()
-                .id(goal.getId())
-                .category(goal.getCategory())
-                .targetMinutesPerDay(goal.getTargetMinutesPerDay())
-                .build();
+        return new GoalResponse(goal);
     }
 }

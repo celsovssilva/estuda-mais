@@ -1,13 +1,11 @@
 package com.estudamais.backend.response;
 
+import com.estudamais.backend.entity.StudyGoal;
 import lombok.*;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class GoalResponse {
-    private Long id;
-    private String category;
-    private Integer targetMinutesPerDay;
+public record GoalResponse(Long id, String category, Integer targetMinutesPerDay) {
+
+    public GoalResponse(StudyGoal goal) {
+        this(goal.getId(), goal.getCategory(), goal.getTargetMinutesPerDay());
+    }
 }

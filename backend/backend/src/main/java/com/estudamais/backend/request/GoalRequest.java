@@ -3,8 +3,7 @@ package com.estudamais.backend.request;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-@Data
-public class GoalRequest {
-    @NotBlank private String category;
-    @NotNull @Min(1) private Integer targetMinutesPerDay;
-}
+public record GoalRequest(
+        @NotBlank String category,
+        @NotNull @Min(1) Integer targetMinutesPerDay
+) {}

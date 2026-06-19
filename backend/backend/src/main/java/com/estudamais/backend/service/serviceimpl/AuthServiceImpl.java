@@ -28,14 +28,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("E-mail já está em uso!");
         }
 
         User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.name())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .build();
 
         userRepository.save(user);
@@ -43,14 +43,14 @@ public class AuthServiceImpl implements AuthService {
         String mensagemBoasVindas = user.getName() + ";" + user.getEmail();
         amqpTemplate.convertAndSend("internal.exchange", "welcome.routing.key", mensagemBoasVindas);
 
-        return this.login(new LoginRequest(request.getEmail(), request.getPassword()));
+        return this.login(new LoginRequest(request.email(), request.password()));
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
 

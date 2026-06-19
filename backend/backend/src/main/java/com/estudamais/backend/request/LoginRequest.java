@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoginRequest {
-    @NotBlank @Email private String email;
-    @NotBlank private String password;
-}
+public record LoginRequest(
+        @NotBlank @Email String email,
+        @NotBlank String password
+) {}

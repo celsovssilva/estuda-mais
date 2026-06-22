@@ -1,6 +1,7 @@
 package com.estudamais.backend.service.serviceimpl;
 
 import com.estudamais.backend.entity.Note;
+import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.NoteRepository;
 import com.estudamais.backend.request.NoteRequest;
 import com.estudamais.backend.response.NoteResponse;
@@ -15,9 +16,9 @@ public class NoteServiceImpl implements NoteService {
     private NoteRepository noteRepository;
 
     @Override
-    public NoteResponse createNote(Long userId, NoteRequest request) {
+    public NoteResponse createNote(User userId, NoteRequest request) {
         Note note = Note.builder()
-                .userId(userId)
+                .userId(userId.getId())
                 .title(request.title())
                 .content(request.content())
                 .referenceDate(request.referenceDate())
@@ -34,7 +35,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public List<NoteResponse> getNotesByDate(Long userId, LocalDate date) {
-        return noteRepository.findByUserAndReferenceDate(userId, date).stream()
+        return noteRepository.findByUserIdAndReferenceDate(userId, date).stream()
                 .map(NoteResponse::new)
                 .toList();
     }

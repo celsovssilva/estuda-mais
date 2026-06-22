@@ -1,6 +1,5 @@
 package com.estudamais.backend.service.serviceimpl;
 
-import com.estudamais.backend.config.JwtTokenProvider;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.UserRepository;
 import com.estudamais.backend.request.LoginRequest;

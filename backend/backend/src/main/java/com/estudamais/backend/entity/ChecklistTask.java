@@ -17,7 +17,8 @@ public class ChecklistTask {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @JoinColumn(name = "user_id", nullable = false)
+    private Long user;
 
     private String description;
 

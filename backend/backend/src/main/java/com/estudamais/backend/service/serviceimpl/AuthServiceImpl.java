@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
         User user = (User) auth.getPrincipal();
         var token = jwtService.gerarToken(user);
 
-        return new AuthResponse(token, user.getName(), user.getPassword())  ;
+        return new AuthResponse(token)  ;
     }
 
     @Override

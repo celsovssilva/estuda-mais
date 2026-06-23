@@ -22,7 +22,7 @@ public class StudyServiceImpl implements StudyService {
     private final StudySessionRepository sessionRepository;
     private final StudyGoalRepository goalRepository;
 
-    private static final int MAX_HEALTHY_MINUTES_PER_DAY = 480; // Alerta do sistema fixo em 8 horas
+    private static final int MAX_HEALTHY_MINUTES_PER_DAY = 480;
 
     @Override
     public StudySessionResponse registerSession(Long userId, StudySessionRequest request) {

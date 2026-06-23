@@ -33,13 +33,15 @@ public class JwtTokenServiceImpl implements JwtService {
 
     @Override
     public String gerarToken(User user) {
+
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            Instant dataExpiracao = Instant.now().plusMillis(expirate);
             return JWT.create()
                     .withIssuer("estuda-mais-monorepo")
                     .withSubject(user.getEmail())
                     .withClaim("id",user.getId())
-                    .withExpiresAt(Instant.ofEpochSecond(expirate))
+                    .withExpiresAt(dataExpiracao)
                     .sign(algorithm);
         } catch (JwtException e) {
             throw new RuntimeException("erro ao criar token" + e);

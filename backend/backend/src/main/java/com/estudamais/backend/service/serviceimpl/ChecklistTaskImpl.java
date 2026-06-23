@@ -19,32 +19,32 @@ public class ChecklistTaskImpl implements ChecklistTaskService {
     private ChecklistTaskRepository checklistTaskRepository;
     @Autowired
     private UserRepository userRepository;
-    @Override
-    public ChecklistTaskResponse createTask(Long userId, ChecklistTaskRequest request) {
-        ChecklistTask t = new ChecklistTask();
-        t.setExecutionDate(request.executionDate());
-        t.setDescription(request.description());
+        @Override
+        public ChecklistTaskResponse createTask(Long userId, ChecklistTaskRequest request) {
+            ChecklistTask t = new ChecklistTask();
+            t.setExecutionDate(request.executionDate());
+            t.setDescription(request.description());
 
-        User user = new User();
-        user.setId(userId);
-      t.setUser(userId);
+            User user = new User();
+            user.setId(userId);
+          t.setUser(user);
 
 
-        ChecklistTask savedTask = checklistTaskRepository.save(t);
-        return new ChecklistTaskResponse(
-                savedTask.getId(),
-                savedTask.getDescription(),
-                savedTask.isCompleted(),
-                savedTask.getExecutionDate()
-        );
-    }
+            ChecklistTask savedTask = checklistTaskRepository.save(t);
+            return new ChecklistTaskResponse(
+                    savedTask.getId(),
+                    savedTask.getDescription(),
+                    savedTask.isCompleted(),
+                    savedTask.getExecutionDate()
+            );
+        }
 
     @Override
     public List<ChecklistTaskResponse> getTasksByUser(Long userId) {
-        List<ChecklistTask> c = checklistTaskRepository.findByUserId(userId);
+        List<ChecklistTask> c = checklistTaskRepository.findTasksByUserId(userId);
 
         return c.stream().map(t -> new ChecklistTaskResponse(
-                t.getUser(),
+                t.getUser().getId(),
                 t.getDescription(),
                 t.isCompleted(),
                 t.getExecutionDate()
@@ -53,9 +53,9 @@ public class ChecklistTaskImpl implements ChecklistTaskService {
 
     @Override
     public List<ChecklistTaskResponse> getTasksByDate(Long userId, LocalDate date) {
-        List<ChecklistTask> c = checklistTaskRepository.findByUserIdAndExecutionDate(userId, date);
+        List<ChecklistTask> c = checklistTaskRepository.findTasksByUserIdAndDate(userId, date);
         return c.stream().map(t -> new ChecklistTaskResponse(
-                t.getUser(),
+                t.getUser().getId(),
                 t.getDescription(),
                 t.isCompleted(),
                 t.getExecutionDate()

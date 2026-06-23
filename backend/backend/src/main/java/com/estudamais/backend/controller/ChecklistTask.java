@@ -31,7 +31,7 @@ public class ChecklistTask {
         List<ChecklistTaskResponse> response = checklistTaskService.getTasksByUser(user.getId());
         return ResponseEntity.ok(response);
     }
-    @PatchMapping("/taskId/toggle")
+    @PatchMapping("/{taskId}/toggle")
     public ResponseEntity<ChecklistTaskResponse> toggle(@PathVariable Long taskId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
         ChecklistTaskResponse response = checklistTaskService.toggleTaskCompletion(user.getId(),taskId);

@@ -1,17 +1,19 @@
 package com.estudamais.backend.repository;
 
 import com.estudamais.backend.entity.ChecklistTask;
-import com.estudamais.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ChecklistTaskRepository extends JpaRepository<ChecklistTask,Long> {
-    List<ChecklistTask> findByUserId(Long userId);
-    List<ChecklistTask> findByUserIdAndExecutionDate(Long userId, LocalDate executionDate);
+public interface ChecklistTaskRepository extends JpaRepository<ChecklistTask, Long> {
 
-    void delete(User u, ChecklistTask c);
+    @Query("SELECT t FROM ChecklistTask t WHERE t.user.id = :userId")
+    List<ChecklistTask> findTasksByUserId(@Param("userId") Long userId);
+    @Query("SELECT t FROM ChecklistTask t WHERE t.user.id = :userId AND t.executionDate = :date")
+    List<ChecklistTask> findTasksByUserIdAndDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 }

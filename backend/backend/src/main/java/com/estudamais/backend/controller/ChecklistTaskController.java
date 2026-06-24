@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/checklist")
-public class ChecklistTask {
+public class ChecklistTaskController {
     @Autowired
     private ChecklistTaskService checklistTaskService;
 

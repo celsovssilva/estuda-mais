@@ -7,10 +7,12 @@ import com.estudamais.backend.request.NoteRequest;
 import com.estudamais.backend.response.NoteResponse;
 import com.estudamais.backend.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class NoteServiceImpl implements NoteService {
     @Autowired
     private NoteRepository noteRepository;

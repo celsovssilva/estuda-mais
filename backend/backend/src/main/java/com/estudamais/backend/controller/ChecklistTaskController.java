@@ -37,7 +37,7 @@ public class ChecklistTaskController {
         ChecklistTaskResponse response = checklistTaskService.toggleTaskCompletion(user.getId(),taskId);
         return  ResponseEntity.ok(response);
     }
-    @DeleteMapping("/{taskId}")
+    @DeleteMapping("/delete/{taskId}")
     public ResponseEntity<Void> delete(@PathVariable Long taskId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         checklistTaskService.deleteTask(user.getId(), taskId);

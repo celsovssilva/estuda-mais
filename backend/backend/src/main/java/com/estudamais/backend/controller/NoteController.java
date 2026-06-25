@@ -46,7 +46,7 @@ public class NoteController {
         NoteResponse response = noteService.updateNote(user.getId(),noteId ,request);
         return  ResponseEntity.ok(response);
     }
-    @DeleteMapping("/{noteId}")
+    @DeleteMapping("/delete/{noteId}")
     public ResponseEntity<Void> delete(@PathVariable Long noteId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         noteService.deleteNote(user.getId(), noteId);

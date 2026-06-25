@@ -1,6 +1,7 @@
 package com.estudamais.backend.service;
 import com.estudamais.backend.request.GoalRequest;
 import com.estudamais.backend.request.StudySessionRequest;
+import com.estudamais.backend.response.DashboardResponse;
 import com.estudamais.backend.response.GoalResponse;
 import com.estudamais.backend.response.StudySessionResponse;
 
@@ -11,4 +12,5 @@ public interface StudyService {
     List<StudySessionResponse> getUserHistory(Long userId);
     GoalResponse saveOrUpdateGoal(Long userId, GoalRequest request);
     GoalResponse getGoal(Long userId);
+    DashboardResponse getDashboardStats(Long userId);
 }

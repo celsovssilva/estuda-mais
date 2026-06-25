@@ -6,7 +6,6 @@ import com.estudamais.backend.repository.SheduleRepository;
 import com.estudamais.backend.request.ScheduleRequest;
 import com.estudamais.backend.response.ScheduleResponse;
 import com.estudamais.backend.service.ScheduleService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleResponse updateSchedule(Long userId, Long scheduleId, ScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
-                .filter(s -> s.getUserId().equals(userId))
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
         schedule.setTitle(request.title());

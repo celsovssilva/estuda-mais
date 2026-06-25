@@ -6,6 +6,7 @@ import com.estudamais.backend.repository.StudyGoalRepository;
 import com.estudamais.backend.repository.StudySessionRepository;
 import com.estudamais.backend.request.GoalRequest;
 import com.estudamais.backend.request.StudySessionRequest;
+import com.estudamais.backend.response.DashboardResponse;
 import com.estudamais.backend.response.GoalResponse;
 import com.estudamais.backend.response.StudySessionResponse;
 import com.estudamais.backend.service.StudyService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,5 +79,18 @@ public class StudyServiceImpl implements StudyService {
         StudyGoal goal = goalRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Nenhuma meta configurada para este aluno."));
         return new GoalResponse(goal);
+    }
+
+    @Override
+    public DashboardResponse getDashboardStats(Long userId) {
+        List<StudySession> allSessions = sessionRepository.findAllByUserId(userId);
+        Integer totalMinutes= allSessions.stream().mapToInt(StudySession::getDurationMinutes)
+                .sum();
+        Long totalSessions = (long) allSessions.size();
+        List<Object[]> groupedResults = sessionRepository.getMinutesGroupedBySubject(userId);
+        Map<String,Integer> minutsBySubject = groupedResults.stream()
+                .collect(Collectors.toMap(result ->(String) result[0],
+                        result -> ((Number) result[1]).intValue()));
+        return new DashboardResponse(totalMinutes, totalSessions, minutsBySubject);
     }
 }

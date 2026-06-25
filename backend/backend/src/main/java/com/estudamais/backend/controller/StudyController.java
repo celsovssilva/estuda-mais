@@ -3,6 +3,7 @@ package com.estudamais.backend.controller;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.request.GoalRequest;
 import com.estudamais.backend.request.StudySessionRequest;
+import com.estudamais.backend.response.DashboardResponse;
 import com.estudamais.backend.response.GoalResponse;
 import com.estudamais.backend.response.StudySessionResponse;
 import com.estudamais.backend.service.StudyService;
@@ -47,6 +48,12 @@ public class StudyController {
     public ResponseEntity<List<StudySessionResponse>> getUserHistory(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         List<StudySessionResponse> response = studyService.getUserHistory(user.getId());
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardResponse> getDashboardStats(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        DashboardResponse response = studyService.getDashboardStats(user.getId());
         return ResponseEntity.ok(response);
     }
 }

@@ -1,5 +1,6 @@
 package com.estudamais.backend.entity;
 
+import com.estudamais.backend.response.AuthResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,9 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+    public User(AuthResponse user) {
+    }
 
     @Override
     public String getUsername() { return email; }

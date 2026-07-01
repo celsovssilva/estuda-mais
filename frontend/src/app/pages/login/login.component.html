@@ -1,0 +1,36 @@
+<div class="auth-wrapper">
+    <div class="login-container">
+        <h2>Entrar no EstudaMais</h2>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <div *ngIf="errorMessage" class="error-message">
+                {{ errorMessage }}
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" formControlName="email" placeholder="Digite seu e-mail" />
+                <small *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-text">
+                    Insira um e-mail válido.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input id="password" type="password" formControlName="password" placeholder="Digite sua senha" />
+                <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-text">
+                    A senha precisa ter pelo menos 6 caracteres.
+                </small>
+            </div>
+
+            <button type="submit" [disabled]="isLoading" class="btn-submit">
+                {{ isLoading ? 'Autenticando...' : 'Entrar' }}
+            </button>
+        </form>
+
+        <p class="redirect-text">
+            Não tem uma conta? <a routerLink="/register">Cadastre-se aqui</a>
+        </p>
+    </div>
+</div>

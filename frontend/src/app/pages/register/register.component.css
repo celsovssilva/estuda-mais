@@ -1,0 +1,108 @@
+/* Reaproveita a estrutura do formulário */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-bottom: 24px;
+    color: #333333;
+    font-size: 24px;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #ffeef0;
+    color: #ea4335;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 4px solid #ea4335;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555555;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
+}
+
+.error-text {
+    color: #ea4335;
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745; /* Botão verde para cadastro */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.btn-submit:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.redirect-text {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #666666;
+}
+
+.redirect-text a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.redirect-text a:hover {
+    text-decoration: underline;
+}

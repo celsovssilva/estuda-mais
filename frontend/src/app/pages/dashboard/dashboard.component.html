@@ -1,164 +1,202 @@
 <div class="dashboard-container">
+
+    <div class="modal-overlay" *ngIf="showDailyPopup">
+        <div class="daily-modal">
+            <div class="modal-header">
+                <h2>🚀 Agenda do Dia!</h2>
+                <button (click)='closePopup()' class="btn-close-modal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="todayEvents.length > 0" class="modal-section">
+                    <h4>📅 Eventos e Prazos de Hoje:</h4>
+                    <ul class="modal-list">
+                        <li *ngFor="let ev of todayEvents">
+                            <span class="badge-type-dot" [style.background-color]="ev.type === 'DAY' || ev.tipo === 'DAY' ? '#3b82f6' : ev.type === 'WEEK' || ev.tipo === 'WEEK' ? '#10b981' : ev.type === 'MONTH' || ev.tipo === 'MONTH' ? '#8b5cf6' : '#ec4899'"></span>
+                            <strong>{{ ev.title || ev.titulo }}</strong> <span *ngIf="ev.description || ev.descricao">- {{ ev.description || ev.descricao }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div *ngIf="todayTasks.length > 0" class="modal-section">
+                    <h4>📌 Tarefas Pendentes para Hoje:</h4>
+                    <ul class="modal-list">
+                        <li *ngFor="let tk of todayTasks">
+                            <span class="badge-type-dot" style="background-color: #f59e0b;"></span>
+                            {{ tk.description || tk.descricao }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="motivation-tip">
+                    🎯 "A constância é a chave para a aprovação." Excelente jornada de estudos!
+                </div>
+            </div>
+            <button class="btn-submit-block bg-blue" style="margin-top: 15px;" (click)="closePopup()">Vamos começar!</button>
+        </div>
+    </div>
+
     <header class="dashboard-header">
         <div class="header-logo">
             <span class="logo-icon">🎓</span>
-            <h1 class="header-title">EstudaMais <span class="badge">Meu Painel</span></h1>
+            <h1 class="header-title">EstudaMais <span class="badge-app">Painel Central</span></h1>
         </div>
         <button class="btn-logout" (click)="onLogout()">
-            <span class="btn-icon">🚪</span> Sair
+            <span>🚪</span> Sair
         </button>
     </header>
 
+    <div *ngIf="latestFeedback" class="feedback-banner">
+        <span>🚀</span> <strong>Rendimento Atualizado!</strong> {{ latestFeedback }}
+    </div>
+
     <main class="dashboard-grid">
 
-        <section class="card card-checklist">
-            <h2><span>📌</span> Minhas Tarefas</h2>
-
-            <div class="checklist-form">
-                <input
-                        type="text"
-                        placeholder="O que você precisa estudar hoje?"
-                        [(ngModel)]="newTask.description"
-                        class="input-desc">
-                <input
-                        type="date"
-                        [(ngModel)]="newTask.executionDate"
-                        class="input-date">
-                <button class="btn-add" (click)="addTask()">+</button>
+        <section class="card">
+            <h2><span>📌</span> Minhas Tarefas (Checklist)</h2>
+            <div class="form-row">
+                <input type="text" placeholder="Nova tarefa..." [(ngModel)]="newTask.description" class="input-field flex-3">
+                <input type="date" [(ngModel)]="newTask.executionDate" class="input-field flex-2">
+                <button class="btn-primary-action" (click)="addTask()">+</button>
             </div>
 
-            <div *ngIf="tasks.length === 0" class="empty-state">
-                <p>Nenhuma tarefa cadastrada para hoje.</p>
-            </div>
+            <div *ngIf="tasks.length === 0" class="empty-state"><p>Nenhuma tarefa pendente.</p></div>
 
-            <ul class="task-list">
-                <li class="task-item" *ngFor="let task of tasks" [class.item-completed]="task.completed">
-                    <div class="task-info">
-                        <label class="checkbox-container">
-                            <input
-                                    type="checkbox"
-                                    [checked]="task.completed"
-                                    (change)="toggleTask(task)">
+            <ul class="item-list">
+                <li class="list-item" *ngFor="let task of tasks" [class.completed-bg]="task.completed">
+                    <div class="item-main-content">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)">
                             <span class="checkmark"></span>
                         </label>
-                        <div class="task-text-group">
-                            <span class="task-text" [class.completed]="task.completed">
-                                {{ task.description }}
-                            </span>
-                            <small class="task-date">📅 {{ task.executionDate | date:'dd/MM/yyyy' }}</small>
+                        <div class="text-group">
+                            <span class="main-text" [class.line-through]="task.completed">{{ task.description || task.descricao }}</span>
+                            <small class="sub-text">📅 {{ (task.executionDate || task.dataExecucao) | date:'dd/MM/yyyy' }}</small>
                         </div>
                     </div>
-                    <button class="btn-delete" (click)="deleteTask(task.id)" title="Excluir tarefa">
-                        🗑️
-                    </button>
+                    <button class="btn-icon-delete" (click)="deleteTask(task.id)">🗑️</button>
                 </li>
             </ul>
         </section>
 
-        <section class="card card-notes">
+        <section class="card">
             <h2><span>📝</span> Notas Rápidas</h2>
-
-            <div class="note-form">
-                <div class="d-flex justify-content-between align-items-center mb-1" *ngIf="isEditingNote" style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                    <small style="color: #d97706; font-weight: bold; font-size: 0.8rem;">Modo de Edição</small>
-                    <button type="button" (click)="cancelEditNote()" style="background: none; border: none; color: #718096; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Cancelar</button>
+            <div class="form-container">
+                <div *ngIf="isEditingNote" class="editing-indicator">
+                    <span>✏️ Modo de Edição</span>
+                    <button (click)="cancelEditNote()">Cancelar</button>
                 </div>
-                <input
-                        type="text"
-                        placeholder="Título do lembrete..."
-                        [(ngModel)]="newNote.title"
-                        class="input-note-title">
-                <textarea
-                        rows="2"
-                        placeholder="Escreva seus insights rápidos aqui..."
-                        [(ngModel)]="newNote.content"
-                        class="textarea-note-content"></textarea>
-                <button class="btn-save-note" (click)="saveNote()" [style.background-color]="isEditingNote ? '#df9a00' : ''">
+                <input type="text" placeholder="Título da nota..." [(ngModel)]="newNote.title" class="input-field">
+                <textarea rows="2" placeholder="Escreva sua nota aqui..." [(ngModel)]="newNote.content" class="textarea-field"></textarea>
+                <button class="btn-submit-block" (click)="saveNote()" [style.background-color]="isEditingNote ? '#f59e0b' : '#4f46e5'">
                     {{ isEditingNote ? 'Atualizar Nota' : 'Salvar Nota' }}
                 </button>
             </div>
 
-            <div *ngIf="notes.length === 0" class="empty-state">
-                <p>Nenhuma nota ou insight salvo ainda.</p>
-            </div>
+            <div *ngIf="notes.length === 0" class="empty-state"><p>Nenhuma nota salva.</p></div>
 
-            <div class="notes-wrapper">
-                <div class="note-item" *ngFor="let note of notes">
-                    <div class="note-content-block" style="flex: 1;">
-                        <h3 class="note-item-title">{{ note.title }}</h3>
-                        <p class="note-item-text" style="white-space: pre-line;">{{ note.content }}</p>
-                        <span class="note-item-date">⏱️ {{ note.referenceDate | date:'dd/MM/yyyy' }}</span>
+            <div class="scrollable-wrapper">
+                <div class="note-box" *ngFor="let note of notes">
+                    <div class="note-body">
+                        <h3>{{ note.title || note.titulo }}</h3>
+                        <p>{{ note.content || note.conteudo }}</p>
+                        <small>⏱️ {{ (note.referenceDate || note.dataReferencia) | date:'dd/MM/yyyy' }}</small>
                     </div>
-                    <div class="note-actions" style="display: flex; gap: 8px; align-self: flex-start;">
-                        <button class="btn-delete-note" (click)="prepareEditNote(note)" title="Editar nota" style="color: #4f46e5;">
-                            ✏️
-                        </button>
-                        <button class="btn-delete-note" (click)="deleteNote(note.id)" title="Excluir nota">
-                            ✕
-                        </button>
+                    <div class="note-ctrls">
+                        <button class="btn-mini-action text-indigo" (click)="prepareEditNote(note)">✏️</button>
+                        <button class="btn-mini-action text-red" (click)="deleteNote(note.id)">✕</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="card card-schedule full-width-card">
+        <section class="card full-width">
             <h2><span>📅</span> Cronograma Geral</h2>
 
-            <div class="schedule-form" style="background: #f8fafc; padding: 20px; border-radius: 14px; border: 1px solid var(--border-color); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
-
-                <div style="flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 10px;">
-                    <div class="d-flex justify-content-between align-items-center" *ngIf="isEditingSchedule" style="display: flex; justify-content: space-between;">
-                        <small style="color: #df9a00; font-weight: bold; font-size: 0.85rem;">✏️ Editando Cronograma</small>
-                        <button type="button" (click)="cancelEditSchedule()" style="background: none; border: none; color: #718096; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Cancelar</button>
+            <div class="schedule-form-wrapper">
+                <div class="inputs-column-large">
+                    <div *ngIf="isEditingSchedule" class="editing-indicator">
+                        <span>✏️ Editando Evento Selecionado</span>
+                        <button (click)="cancelEditSchedule()">Cancelar Nova Criação</button>
                     </div>
-                    <input type="text" class="input-desc w-100" placeholder="Título do evento ou meta..." [(ngModel)]="newSchedule.title">
-                    <input type="text" class="input-desc w-100" placeholder="Breve descrição ou detalhes adicionais..." [(ngModel)]="newSchedule.description">
+                    <input type="text" class="input-field" placeholder="Título do evento ou meta..." [(ngModel)]="newSchedule.title">
+                    <input type="text" class="input-field" placeholder="Breve descrição ou detalhes adicionais..." [(ngModel)]="newSchedule.description">
                 </div>
-
-                <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 10px;">
-                    <input type="date" class="input-date w-100" [(ngModel)]="newSchedule.targetDate">
-
-                    <select class="input-date w-100" [(ngModel)]="newSchedule.type" style="background-color: #ffffff; padding: 11px;">
+                <div class="inputs-column-small">
+                    <input type="date" class="input-field" [(ngModel)]="newSchedule.targetDate">
+                    <select class="select-field" [(ngModel)]="newSchedule.type">
                         <option value="DAY">📅 Diário</option>
                         <option value="WEEK">🗓️ Semanal</option>
                         <option value="MONTH">📊 Mensal</option>
                         <option value="YEAR">🏆 Anual</option>
                     </select>
-
-                    <button class="btn-save-note w-100" (click)="saveSchedule()" [style.background-color]="isEditingSchedule ? '#df9a00' : 'var(--primary)'" style="padding: 11px; margin-top: auto; font-weight: bold;">
-                        {{ isEditingSchedule ? 'Atualizar Evento' : '+ Adicionar ao Cronograma' }}
+                    <button class="btn-submit-block height-fix" (click)="saveSchedule()" [style.background-color]="isEditingSchedule ? '#f59e0b' : '#4f46e5'">
+                        {{ isEditingSchedule ? 'Confirmar Alteração' : '+ Adicionar ao Cronograma' }}
+                    </button>
+                    <button *ngIf="isEditingSchedule" class="btn-submit-block bg-green" style="margin-top:5px; padding:6px;" (click)="deleteSchedule(editingScheduleId!)">
+                        🗑️ Excluir Registro
                     </button>
                 </div>
             </div>
 
-            <div *ngIf="schedules.length === 0" class="empty-state">
-                <p>Nenhuma atividade ou planejamento no seu cronograma no momento.</p>
+            <div class="calendar-render-box">
+                <full-calendar [options]="calendarOptions"></full-calendar>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span>🎯</span> Metas de Estudo Diárias</h2>
+            <div class="form-container">
+                <input type="text" placeholder="Categoria (Ex: Dev, OAB, Concurso)" [(ngModel)]="newGoal.category" class="input-field">
+                <div class="input-row-align">
+                    <label>Minutos/Dia:</label>
+                    <input type="number" min="1" [(ngModel)]="newGoal.targetMinutesPerDay" class="input-field inline-number">
+                </div>
+                <button class="btn-submit-block bg-blue" (click)="submitGoal()">Fixar Meta Diária</button>
             </div>
 
-            <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px;">
-                <div class="schedule-item" *ngFor="let schedule of schedules"
-                     [style.border-left-color]="schedule.type === 'DAY' ? '#3b82f6' : schedule.type === 'WEEK' ? '#10b981' : schedule.type === 'MONTH' ? '#8b5cf6' : '#ec4899'"
-                     style="background: #ffffff; padding: 18px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; transition: transform 0.2s;">
+            <div *ngIf="goals.length === 0" class="empty-state"><p>Nenhuma meta ativa cadastrada.</p></div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span [style.background-color]="schedule.type === 'DAY' ? '#eff6ff' : schedule.type === 'WEEK' ? '#ecfdf5' : schedule.type === 'MONTH' ? '#f5f3ff' : '#fdf2f8'"
-                              [style.color]="schedule.type === 'DAY' ? '#1d4ed8' : schedule.type === 'WEEK' ? '#047857' : schedule.type === 'MONTH' ? '#6d28d9' : '#be185d'"
-                              style="font-size: 0.72rem; padding: 4px 10px; border-radius: 99px; font-weight: 700; letter-spacing: 0.5px;">
-                            {{ schedule.type === 'DAY' ? 'DIÁRIO' : schedule.type === 'WEEK' ? 'SEMANAL' : schedule.type === 'MONTH' ? 'MENSAL' : 'ANUAL' }}
-                        </span>
+            <div class="scrollable-wrapper" style="max-height: 250px;">
+                <div class="goal-box-item" *ngFor="let goal of goals">
+                    <h3>{{ goal.category || goal.categoria }}</h3>
+                    <p>⏱️ Alvo: <strong>{{ goal.targetMinutesPerDay || goal.minutosPorDia }} min</strong> por dia</p>
+                </div>
+            </div>
+        </section>
 
-                        <div style="display: flex; gap: 6px;">
-                            <button class="btn-delete-note" (click)="prepareEditSchedule(schedule)" title="Editar" style="color: var(--primary); font-size: 0.95rem;">✏️</button>
-                            <button class="btn-delete-note" (click)="deleteSchedule(schedule.id)" title="Deletar" style="font-size: 0.95rem;">✕</button>
-                        </div>
+        <section class="card">
+            <h2><span>⏱️</span> Registrar Tempo Estudado</h2>
+            <div class="form-container">
+                <input type="text" placeholder="Qual matéria você estudou agora?" [(ngModel)]="newSession.subject" class="input-field">
+
+                <div class="input-row-align" style="margin-top: 15px; margin-bottom: 15px;">
+                    <label>Tempo em min:</label>
+                    <input type="number" min="1" [(ngModel)]="newSession.durationMinutes" class="input-field inline-number">
+                </div>
+
+                <button class="btn-submit-block bg-green" (click)="submitSession()">💾 Computar Sessão de Foco</button>
+            </div>
+
+            <div class="metrics-summary-box">
+                <h4>📊 Resumo do Dashboard Integrado:</h4>
+                <p>{{ dashboardMetrics?.summaryText || dashboardMetrics?.textoResumo || 'Insira registros de foco para consolidar o cálculo do seu rendimento de hoje.' }}</p>
+            </div>
+        </section>
+
+        <section class="card full-width">
+            <h2><span>📜</span> Histórico de Sessões de Foco Realizadas</h2>
+            <div *ngIf="sessions.length === 0" class="empty-state"><p>Nenhuma sessão computada recentemente.</p></div>
+
+            <div class="dynamic-responsive-grid compact">
+                <div class="session-card-item" *ngFor="let session of sessions">
+                    <div class="session-card-top">
+                        <span class="duration-pill">⚡ {{ session.durationMinutes || session.duracaoMinutos }} MIN</span>
+                        <small>📅 {{ (session.studyDate || session.dataEstudo) | date:'dd/MM/yyyy' }}</small>
                     </div>
-
-                    <h3 style="margin: 0 0 6px 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">{{ schedule.title }}</h3>
-                    <p style="margin: 0 0 16px 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.4; flex-grow: 1;">{{ schedule.description }}</p>
-
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 10px;">
-                        <span>📅 Data Alvo:</span> {{ schedule.targetDate | date:'dd/MM/yyyy' }}
-                    </div>
+                    <h3>{{ session.subject || session.materia }}</h3>
+                    <p *ngIf="session.feedbackMessage || session.mensagemFeedback" class="feedback-text-bubble">
+                        💡 {{ session.feedbackMessage || session.mensagemFeedback }}
+                    </p>
                 </div>
             </div>
         </section>

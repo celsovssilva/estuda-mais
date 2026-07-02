@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChecklistService } from '../../core/services/checklist/checklist.service';
 import { AuthService } from '../../core/services/auth/auth.services';
+import { NoteService } from '../../core/services/note/note.service';
 import { ChecklistTaskResponse, ChecklistTaskRequest } from '../../core/models/checklist.models';
+import { Note } from '../../core/models/note.models';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,20 +18,31 @@ import { ChecklistTaskResponse, ChecklistTaskRequest } from '../../core/models/c
 export class DashboardComponent implements OnInit {
     private checklistService = inject(ChecklistService);
     private authService = inject(AuthService);
+    private noteService = inject(NoteService);
     private router = inject(Router);
 
+    // Estruturas do módulo de Checklist (Mantido intacto)
     tasks: ChecklistTaskResponse[] = [];
-
-    // Objeto para o formulário de nova tarefa
     newTask: ChecklistTaskRequest = {
         description: '',
-        executionDate: new Date().toISOString().split('T')[0] // Data de hoje padrão
+        executionDate: new Date().toISOString().split('T')[0]
     };
+
+    // Estruturas do módulo de Notas Rápidas
+    notes: Note[] = [];
+    newNote = {
+        title: '',
+        content: ''
+    };
+    isEditingNote = false;
+    editingNoteId: number | null = null;
 
     ngOnInit(): void {
         this.loadTasks();
+        this.loadNotes();
     }
 
+    // ==================== MÓDULO CHECKLIST (INTACTO) ====================
     loadTasks(): void {
         this.checklistService.getTasksByUser().subscribe({
             next: (res) => this.tasks = res,
@@ -43,7 +56,7 @@ export class DashboardComponent implements OnInit {
         this.checklistService.createTask(this.newTask).subscribe({
             next: (res) => {
                 this.tasks.push(res);
-                this.newTask.description = ''; // Limpa campo
+                this.newTask.description = '';
             },
             error: (err) => alert('Erro ao criar tarefa')
         });
@@ -69,6 +82,76 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    // ==================== MÓDULO NOTAS RÁPIDAS ====================
+    loadNotes(): void {
+        this.noteService.getNotesByUser().subscribe({
+            next: (res) => this.notes = res,
+            error: (err) => console.error('Erro ao carregar notas', err)
+        });
+    }
+
+    saveNote(): void {
+        if (!this.newNote.title || !this.newNote.content) return;
+
+        const noteData: Note = {
+            title: this.newNote.title,
+            content: this.newNote.content,
+            referenceDate: new Date().toISOString().split('T')[0]
+        };
+
+        if (this.isEditingNote && this.editingNoteId !== null) {
+            this.noteService.updateNote(this.editingNoteId, noteData).subscribe({
+                next: (res) => {
+                    this.notes = this.notes.map(n => n.id === this.editingNoteId ? res : n);
+                    this.resetNoteForm();
+                },
+                error: (err) => alert('Erro ao atualizar nota')
+            });
+        } else {
+            this.noteService.createNote(noteData).subscribe({
+                next: (res) => {
+                    this.notes.push(res);
+                    this.resetNoteForm();
+                },
+                error: (err) => alert('Erro ao criar nota')
+            });
+        }
+    }
+
+    prepareEditNote(note: Note): void {
+        if (!note.id) return;
+        this.isEditingNote = true;
+        this.editingNoteId = note.id;
+        this.newNote.title = note.title;
+        this.newNote.content = note.content;
+    }
+
+    cancelEditNote(): void {
+        this.resetNoteForm();
+    }
+
+    resetNoteForm(): void {
+        this.isEditingNote = false;
+        this.editingNoteId = null;
+        this.newNote.title = '';
+        this.newNote.content = '';
+    }
+
+    deleteNote(id: number | undefined): void {
+        if (id === undefined) return;
+
+        if (confirm('Deseja excluir esta nota?')) {
+            this.noteService.deleteNote(id).subscribe({
+                next: () => {
+                    this.notes = this.notes.filter(n => n.id !== id);
+                    if (this.editingNoteId === id) this.resetNoteForm();
+                },
+                error: (err) => console.error('Erro ao deletar nota', err)
+            });
+        }
+    }
+
+    // ==================== CONTROLE GERAL (INTACTO) ====================
     onLogout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);

@@ -47,7 +47,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.GET,"api/note/getByDateNote").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/note/getByUserNote").authenticated();
                     req.requestMatchers(HttpMethod.PUT,"api/note/update/{noteId}").authenticated();
-                    req.requestMatchers(HttpMethod.DELETE,"api/checklist/delete/{taskId}").authenticated();
+                    req.requestMatchers(HttpMethod.DELETE,"api/note/delete/{noteId}").authenticated();
                     //schedule
                     req.requestMatchers(HttpMethod.POST,"api/schedule/create").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/schedule/getByUser").authenticated();

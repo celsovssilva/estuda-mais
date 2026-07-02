@@ -71,7 +71,7 @@ public class ChecklistTaskImpl implements ChecklistTaskService {
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
 
-        if (!c.getUser().equals(userId)) {
+        if (!c.getUser().getId().equals(userId)) {
             throw new RuntimeException("Acesso negado: esta tarefa não pertence a este usuário.");
         }
         c.setCompleted(!c.isCompleted());

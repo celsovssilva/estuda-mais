@@ -102,10 +102,64 @@
         </section>
 
         <section class="card card-schedule full-width-card">
-            <h2><span>📅</span> Cronograma Semanal</h2>
-            <div class="schedule-placeholder">
-                <div class="loader-icon">⚙️</div>
-                <p>Funcionalidade em desenvolvimento...</p>
+            <h2><span>📅</span> Cronograma Geral</h2>
+
+            <div class="schedule-form" style="background: #f8fafc; padding: 20px; border-radius: 14px; border: 1px solid var(--border-color); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
+
+                <div style="flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 10px;">
+                    <div class="d-flex justify-content-between align-items-center" *ngIf="isEditingSchedule" style="display: flex; justify-content: space-between;">
+                        <small style="color: #df9a00; font-weight: bold; font-size: 0.85rem;">✏️ Editando Cronograma</small>
+                        <button type="button" (click)="cancelEditSchedule()" style="background: none; border: none; color: #718096; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Cancelar</button>
+                    </div>
+                    <input type="text" class="input-desc w-100" placeholder="Título do evento ou meta..." [(ngModel)]="newSchedule.title">
+                    <input type="text" class="input-desc w-100" placeholder="Breve descrição ou detalhes adicionais..." [(ngModel)]="newSchedule.description">
+                </div>
+
+                <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 10px;">
+                    <input type="date" class="input-date w-100" [(ngModel)]="newSchedule.targetDate">
+
+                    <select class="input-date w-100" [(ngModel)]="newSchedule.type" style="background-color: #ffffff; padding: 11px;">
+                        <option value="DAY">📅 Diário</option>
+                        <option value="WEEK">🗓️ Semanal</option>
+                        <option value="MONTH">📊 Mensal</option>
+                        <option value="YEAR">🏆 Anual</option>
+                    </select>
+
+                    <button class="btn-save-note w-100" (click)="saveSchedule()" [style.background-color]="isEditingSchedule ? '#df9a00' : 'var(--primary)'" style="padding: 11px; margin-top: auto; font-weight: bold;">
+                        {{ isEditingSchedule ? 'Atualizar Evento' : '+ Adicionar ao Cronograma' }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="schedules.length === 0" class="empty-state">
+                <p>Nenhuma atividade ou planejamento no seu cronograma no momento.</p>
+            </div>
+
+            <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px;">
+                <div class="schedule-item" *ngFor="let schedule of schedules"
+                     [style.border-left-color]="schedule.type === 'DAY' ? '#3b82f6' : schedule.type === 'WEEK' ? '#10b981' : schedule.type === 'MONTH' ? '#8b5cf6' : '#ec4899'"
+                     style="background: #ffffff; padding: 18px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; transition: transform 0.2s;">
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span [style.background-color]="schedule.type === 'DAY' ? '#eff6ff' : schedule.type === 'WEEK' ? '#ecfdf5' : schedule.type === 'MONTH' ? '#f5f3ff' : '#fdf2f8'"
+                              [style.color]="schedule.type === 'DAY' ? '#1d4ed8' : schedule.type === 'WEEK' ? '#047857' : schedule.type === 'MONTH' ? '#6d28d9' : '#be185d'"
+                              style="font-size: 0.72rem; padding: 4px 10px; border-radius: 99px; font-weight: 700; letter-spacing: 0.5px;">
+                            {{ schedule.type === 'DAY' ? 'DIÁRIO' : schedule.type === 'WEEK' ? 'SEMANAL' : schedule.type === 'MONTH' ? 'MENSAL' : 'ANUAL' }}
+                        </span>
+
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn-delete-note" (click)="prepareEditSchedule(schedule)" title="Editar" style="color: var(--primary); font-size: 0.95rem;">✏️</button>
+                            <button class="btn-delete-note" (click)="deleteSchedule(schedule.id)" title="Deletar" style="font-size: 0.95rem;">✕</button>
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 0 0 6px 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">{{ schedule.title }}</h3>
+                    <p style="margin: 0 0 16px 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.4; flex-grow: 1;">{{ schedule.description }}</p>
+
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                        <span>📅 Data Alvo:</span> {{ schedule.targetDate | date:'dd/MM/yyyy' }}
+                    </div>
+                </div>
             </div>
         </section>
 

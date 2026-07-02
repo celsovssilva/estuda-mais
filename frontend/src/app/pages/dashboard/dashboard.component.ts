@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { ChecklistService } from '../../core/services/checklist/checklist.service';
 import { AuthService } from '../../core/services/auth/auth.services';
 import { NoteService } from '../../core/services/note/note.service';
+import { ScheduleService } from '../../core/services/schedule/schedule.service';
 import { ChecklistTaskResponse, ChecklistTaskRequest } from '../../core/models/checklist.models';
 import { Note } from '../../core/models/note.models';
+import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,30 +21,39 @@ export class DashboardComponent implements OnInit {
     private checklistService = inject(ChecklistService);
     private authService = inject(AuthService);
     private noteService = inject(NoteService);
+    private scheduleService = inject(ScheduleService);
     private router = inject(Router);
 
-    // Estruturas do módulo de Checklist (Mantido intacto)
+
     tasks: ChecklistTaskResponse[] = [];
     newTask: ChecklistTaskRequest = {
         description: '',
         executionDate: new Date().toISOString().split('T')[0]
     };
 
-    // Estruturas do módulo de Notas Rápidas
+
     notes: Note[] = [];
-    newNote = {
-        title: '',
-        content: ''
-    };
+    newNote = { title: '', content: '' };
     isEditingNote = false;
     editingNoteId: number | null = null;
+
+
+    schedules: ScheduleResponse[] = [];
+    newSchedule: ScheduleRequest = {
+        title: '',
+        description: '',
+        targetDate: new Date().toISOString().split('T')[0],
+        type: 'DAY' // Pode variar entre: DAY, WEEK, MONTH, YEAR
+    };
+    isEditingSchedule = false;
+    editingScheduleId: number | null = null;
 
     ngOnInit(): void {
         this.loadTasks();
         this.loadNotes();
+        this.loadSchedules();
     }
 
-    // ==================== MÓDULO CHECKLIST (INTACTO) ====================
     loadTasks(): void {
         this.checklistService.getTasksByUser().subscribe({
             next: (res) => this.tasks = res,
@@ -82,7 +93,7 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    // ==================== MÓDULO NOTAS RÁPIDAS ====================
+
     loadNotes(): void {
         this.noteService.getNotesByUser().subscribe({
             next: (res) => this.notes = res,
@@ -151,7 +162,87 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    // ==================== CONTROLE GERAL (INTACTO) ====================
+
+    loadSchedules(): void {
+        this.scheduleService.getSchedulesByUser().subscribe({
+            next: (res) => this.schedules = res,
+            error: (err) => console.error('Erro ao carregar cronograma', err)
+        });
+    }
+
+    saveSchedule(): void {
+        if (!this.newSchedule.title || !this.newSchedule.targetDate) return;
+
+        if (this.isEditingSchedule && this.editingScheduleId !== null) {
+            this.scheduleService.updateSchedule(this.editingScheduleId, this.newSchedule).subscribe({
+                next: (res) => {
+                    this.schedules = this.schedules.map(s => s.id === this.editingScheduleId ? res : s);
+                    this.resetScheduleForm();
+                },
+                error: (err) => alert('Erro ao atualizar cronograma')
+            });
+        } else {
+            this.scheduleService.createSchedule(this.newSchedule).subscribe({
+                next: (res) => {
+                    this.schedules.push(res);
+                    this.resetScheduleForm();
+                },
+                error: (err) => alert('Erro ao criar cronograma')
+            });
+        }
+    }
+
+    prepareEditSchedule(schedule: ScheduleResponse): void {
+        if (!schedule.id) return;
+        this.isEditingSchedule = true;
+        this.editingScheduleId = schedule.id;
+        this.newSchedule = {
+            title: schedule.title,
+            description: schedule.description,
+            targetDate: schedule.targetDate,
+            type: schedule.type
+        };
+    }
+
+    cancelEditSchedule(): void {
+        this.resetScheduleForm();
+    }
+
+    resetScheduleForm(): void {
+        this.isEditingSchedule = false;
+        this.editingScheduleId = null;
+        this.newSchedule = {
+            title: '',
+            description: '',
+            targetDate: new Date().toISOString().split('T')[0],
+            type: 'DAY'
+        };
+    }
+
+    deleteSchedule(id: number | undefined): void {
+        if (id === undefined) return;
+        if (confirm('Deseja excluir este evento do cronograma?')) {
+            this.scheduleService.deleteSchedule(id).subscribe({
+                next: () => {
+                    this.schedules = this.schedules.filter(s => s.id !== id);
+                    if (this.editingScheduleId === id) this.resetScheduleForm();
+                },
+                error: (err) => console.error('Erro ao deletar evento', err)
+            });
+        }
+    }
+
+    // Auxiliar para retornar cores ou ícones na interface dinamicamente se necessário
+    getScheduleBadgeClass(type: string): string {
+        switch(type) {
+            case 'DAY': return 'badge-day';
+            case 'WEEK': return 'badge-week';
+            case 'MONTH': return 'badge-month';
+            case 'YEAR': return 'badge-year';
+            default: return 'badge-day';
+        }
+    }
+
     onLogout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);

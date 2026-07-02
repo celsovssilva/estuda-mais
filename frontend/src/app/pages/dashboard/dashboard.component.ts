@@ -2,13 +2,19 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
+// Serviços do Sistema
 import { ChecklistService } from '../../core/services/checklist/checklist.service';
 import { AuthService } from '../../core/services/auth/auth.services';
 import { NoteService } from '../../core/services/note/note.service';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
+import { StudyService } from '../../core/services/study/study.service';
+
+// Modelos de Dados
 import { ChecklistTaskResponse, ChecklistTaskRequest } from '../../core/models/checklist.models';
 import { Note } from '../../core/models/note.models';
 import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
+import { GoalRequest, GoalResponse, StudySessionRequest, StudySessionResponse } from '../../core/models/study.models';
 
 @Component({
     selector: 'app-dashboard',
@@ -22,6 +28,7 @@ export class DashboardComponent implements OnInit {
     private authService = inject(AuthService);
     private noteService = inject(NoteService);
     private scheduleService = inject(ScheduleService);
+    private studyService = inject(StudyService);
     private router = inject(Router);
 
 
@@ -43,16 +50,59 @@ export class DashboardComponent implements OnInit {
         title: '',
         description: '',
         targetDate: new Date().toISOString().split('T')[0],
-        type: 'DAY' // Pode variar entre: DAY, WEEK, MONTH, YEAR
+        type: 'DAY'
     };
     isEditingSchedule = false;
     editingScheduleId: number | null = null;
+
+
+    goals: GoalResponse[] = [];
+    sessions: StudySessionResponse[] = [];
+    dashboardMetrics: any = null;
+
+    newGoal: GoalRequest = {
+        category: '',
+        targetMinutesPerDay: 30
+    };
+
+    newSession: StudySessionRequest = {
+        subject: '',
+        durationMinutes: 45
+    };
+
+    latestFeedback: string | null = null;
 
     ngOnInit(): void {
         this.loadTasks();
         this.loadNotes();
         this.loadSchedules();
+        this.loadGoals();
+        this.loadSessionHistory();
+        this.loadDashboardMetrics();
     }
+
+
+    submitSession(): void {
+        if (!this.newSession.subject || this.newSession.durationMinutes < 1) return;
+
+        this.studyService.registerSession(this.newSession).subscribe({
+            next: (res) => {
+                this.sessions.unshift(res);
+                this.latestFeedback = res.feedbackMessage;
+
+                this.newSession.subject = '';
+                this.newSession.durationMinutes = 45;
+
+                this.loadDashboardMetrics();
+                setTimeout(() => this.latestFeedback = null, 8000);
+            },
+            error: (err) => {
+                alert('Erro ao registrar sessão de estudos.');
+                console.error(err);
+            }
+        });
+    }
+
 
     loadTasks(): void {
         this.checklistService.getTasksByUser().subscribe({
@@ -63,7 +113,6 @@ export class DashboardComponent implements OnInit {
 
     addTask(): void {
         if (!this.newTask.description) return;
-
         this.checklistService.createTask(this.newTask).subscribe({
             next: (res) => {
                 this.tasks.push(res);
@@ -75,9 +124,7 @@ export class DashboardComponent implements OnInit {
 
     toggleTask(task: ChecklistTaskResponse): void {
         this.checklistService.toggleTask(task.id).subscribe({
-            next: () => {
-                task.completed = !task.completed;
-            },
+            next: () => { task.completed = !task.completed; },
             error: (err) => console.error('Erro ao atualizar status', err)
         });
     }
@@ -85,10 +132,8 @@ export class DashboardComponent implements OnInit {
     deleteTask(id: number): void {
         if (confirm('Deseja excluir esta tarefa?')) {
             this.checklistService.deleteTask(id).subscribe({
-                next: () => {
-                    this.tasks = this.tasks.filter(t => t.id !== id);
-                },
-                error: (err) => console.error('Erro ao deletar', err)
+                next: () => { this.tasks = this.tasks.filter(t => t.id !== id); },
+                error: (err) => console.error('Erro ao deletar tarefa', err)
             });
         }
     }
@@ -137,9 +182,7 @@ export class DashboardComponent implements OnInit {
         this.newNote.content = note.content;
     }
 
-    cancelEditNote(): void {
-        this.resetNoteForm();
-    }
+    cancelEditNote(): void { this.resetNoteForm(); }
 
     resetNoteForm(): void {
         this.isEditingNote = false;
@@ -150,7 +193,6 @@ export class DashboardComponent implements OnInit {
 
     deleteNote(id: number | undefined): void {
         if (id === undefined) return;
-
         if (confirm('Deseja excluir esta nota?')) {
             this.noteService.deleteNote(id).subscribe({
                 next: () => {
@@ -161,7 +203,6 @@ export class DashboardComponent implements OnInit {
             });
         }
     }
-
 
     loadSchedules(): void {
         this.scheduleService.getSchedulesByUser().subscribe({
@@ -204,9 +245,7 @@ export class DashboardComponent implements OnInit {
         };
     }
 
-    cancelEditSchedule(): void {
-        this.resetScheduleForm();
-    }
+    cancelEditSchedule(): void { this.resetScheduleForm(); }
 
     resetScheduleForm(): void {
         this.isEditingSchedule = false;
@@ -221,7 +260,7 @@ export class DashboardComponent implements OnInit {
 
     deleteSchedule(id: number | undefined): void {
         if (id === undefined) return;
-        if (confirm('Deseja excluir este evento do cronograma?')) {
+        if (confirm('Deseja excluir este evento?')) {
             this.scheduleService.deleteSchedule(id).subscribe({
                 next: () => {
                     this.schedules = this.schedules.filter(s => s.id !== id);
@@ -232,15 +271,37 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    // Auxiliar para retornar cores ou ícones na interface dinamicamente se necessário
-    getScheduleBadgeClass(type: string): string {
-        switch(type) {
-            case 'DAY': return 'badge-day';
-            case 'WEEK': return 'badge-week';
-            case 'MONTH': return 'badge-month';
-            case 'YEAR': return 'badge-year';
-            default: return 'badge-day';
-        }
+    loadGoals(): void {
+        this.studyService.getGoals().subscribe({
+            next: (res) => this.goals = res,
+            error: (err) => console.error('Erro ao buscar metas', err)
+        });
+    }
+
+    loadSessionHistory(): void {
+        this.studyService.getSessionHistory().subscribe({
+            next: (res) => this.sessions = res,
+            error: (err) => console.error('Erro ao buscar histórico', err)
+        });
+    }
+
+    loadDashboardMetrics(): void {
+        this.studyService.getStudyDashboard().subscribe({
+            next: (res) => this.dashboardMetrics = res,
+            error: (err) => console.error('Erro ao carregar métricas', err)
+        });
+    }
+
+    submitGoal(): void {
+        if (!this.newGoal.category || this.newGoal.targetMinutesPerDay < 1) return;
+        this.studyService.saveGoal(this.newGoal).subscribe({
+            next: (res) => {
+                this.goals.push(res);
+                this.newGoal.category = '';
+                this.loadDashboardMetrics();
+            },
+            error: (err) => alert('Erro ao salvar meta.')
+        });
     }
 
     onLogout(): void {

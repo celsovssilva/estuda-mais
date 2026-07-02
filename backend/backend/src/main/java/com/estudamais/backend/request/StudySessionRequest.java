@@ -5,5 +5,5 @@ import lombok.Data;
 
 public record StudySessionRequest(
         @NotBlank String subject,
-        @NotNull @Min(1) Integer durationMinutes
+        @NotNull @Min(1) @Max(480)Integer durationMinutes
 ) {}

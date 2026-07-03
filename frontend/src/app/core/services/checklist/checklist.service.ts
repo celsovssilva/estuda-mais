@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChecklistTaskRequest, ChecklistTaskResponse } from '../../models/checklist.models';
+import {environment} from "../../../../environment";
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +13,7 @@ export class ChecklistService {
     private http = inject(HttpClient);
 
     // URL base do seu Spring Boot para o checklist
-    private apiUrl = 'http://localhost:8080/api/checklist';
+   private apiUrl: string = `${environment.apiUrl}/api/checklist`;
 
     // 1. Criar tarefa (POST)
     createTask(task: ChecklistTaskRequest): Observable<ChecklistTaskResponse> {

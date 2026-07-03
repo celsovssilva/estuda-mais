@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ScheduleRequest, ScheduleResponse } from '../../models/schedule.models';
+import {environment} from "../../../../environment";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ScheduleService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/api/schedule'; // Ajuste se a porta for diferente
+    private apiUrl: string = `${environment.apiUrl}/api/schedule`; // Ajuste se a porta for diferente
 
     createSchedule(schedule: ScheduleRequest): Observable<ScheduleResponse> {
         return this.http.post<ScheduleResponse>(`${this.apiUrl}/create`, schedule);

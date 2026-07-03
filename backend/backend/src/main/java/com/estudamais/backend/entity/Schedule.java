@@ -4,6 +4,7 @@ package com.estudamais.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "tb_schedules")
@@ -29,4 +30,8 @@ public class Schedule {
 
     @Enumerated(EnumType.STRING)
     private ScheduleType type;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
 }

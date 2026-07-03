@@ -3,6 +3,8 @@ export interface ScheduleRequest {
     description: string;
     targetDate: string;
     type: 'DAY' | 'WEEK' | 'MONTH' | 'YEAR' | string;
+    startTime: string | null;
+    endTime: string | null;
 }
 
 export interface ScheduleResponse {
@@ -11,4 +13,6 @@ export interface ScheduleResponse {
     description: string;
     targetDate: string;
     type: string;
+    startTime: string | null;
+    endTime: string | null;
 }

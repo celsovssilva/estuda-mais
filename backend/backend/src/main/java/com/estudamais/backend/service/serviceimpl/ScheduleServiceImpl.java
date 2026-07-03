@@ -24,6 +24,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .description(request.description())
                 .targetDate(request.targetDate())
                 .type(request.type())
+                .startTime(request.startTime())
+                .endTime(request.endTime())
                 .build();
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }
@@ -51,6 +53,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setDescription(request.description());
         schedule.setTargetDate(request.targetDate());
         schedule.setType(request.type());
+        schedule.getStartTime();
+        schedule.getEndTime();
 
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }

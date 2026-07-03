@@ -24,7 +24,7 @@ export class AuthService {
         return this.http.post(`${this.apiUrl}/register`, userData);
     }
     updateProfile(profileData: any): Observable<any> {
-        return this.http.put(`${this.apiUrl}/api/auth/update`, profileData);
+        return this.http.put(`${this.apiUrl}/update`, profileData);
     }
 
 

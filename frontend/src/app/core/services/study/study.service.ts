@@ -2,14 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GoalRequest, GoalResponse, StudySessionRequest, StudySessionResponse } from '../../models/study.models';
-import {environment} from "../../../../environment";
+
 
 @Injectable({
     providedIn: 'root'
 })
 export class StudyService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/api/study`;
+    private apiUrl: string=  'http://localhost:8080/api/study';
 
     // --- Rotas de Metas (Goals) ---
     saveGoal(goal: GoalRequest): Observable<GoalResponse> {

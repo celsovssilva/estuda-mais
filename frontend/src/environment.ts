@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
 
-    apiUrl: 'https://estuda-mais.onrender.com'
+    apiUrl: 'http://localhost:8080'
 };

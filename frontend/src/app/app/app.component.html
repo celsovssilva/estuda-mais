@@ -1,0 +1,18 @@
+<div class="app-container">
+
+    <aside class="sidebar" *ngIf="isLoggedIn()">
+        <div class="logo">🎓 Painel Aluno</div>
+        <nav>
+            <a routerLink="/dashboard" routerLinkActive="active">📊 Dashboard</a>
+            <a routerLink="/checklist" routerLinkActive="active">✅ Minhas Tarefas</a>
+            <a routerLink="/agenda" routerLinkActive="active">📅 Agenda</a>
+            <a routerLink="/perfil" routerLinkActive="active">👤 Meu Perfil</a>
+        </nav>
+        <button class="btn-logout" (click)="logout()">Sair</button>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

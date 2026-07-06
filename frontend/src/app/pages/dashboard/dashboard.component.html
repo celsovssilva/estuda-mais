@@ -1,139 +1,63 @@
-<main class="dashboard-grid">
-    <section class="card metrics-card">
-        <h2><span>📊</span> Painel de Desempenho Integrado</h2>
-        <div class="metrics-container">
-            <div class="metric-item">
-                <span class="metric-value">{{ metrics.completedTasks }}</span>
-                <span class="metric-label">Tarefas Concluídas</span>
+<nav class="dashboard-nav">
+    <a routerLink="/dashboard" class="nav-link active">📊 Meu Dashboard</a>
+    <a routerLink="/checklist" class="nav-link">✅ Minhas Tarefas</a>
+</nav>
+
+<div class="dashboard-wrapper">
+
+    <section class="metrics-section">
+        <h2>📊 Painel de Desempenho Integrado</h2>
+
+        <div class="metrics-grid">
+            <div class="metric-card completed">
+                <div class="card-icon">✅</div>
+                <div class="card-info">
+                    <h3>Concluídas</h3>
+                    <p class="card-value">{{ metrics.completedTasks }}</p>
+                </div>
             </div>
-            <div class="metric-item">
-                <span class="metric-value">{{ metrics.pendingTasks }}</span>
-                <span class="metric-label">Tarefas Pendentes</span>
+
+            <div class="metric-card pending">
+                <div class="card-icon">⏳</div>
+                <div class="card-info">
+                    <h3>Pendentes</h3>
+                    <p class="card-value">{{ metrics.pendingTasks }}</p>
+                </div>
             </div>
-            <div class="metric-item" style="border-left-color: #10b981;">
-                <span class="metric-value">{{ metrics.totalSchedules }}</span>
-                <span class="metric-label">Compromissos Agendados</span>
+
+            <div class="metric-card schedule">
+                <div class="card-icon">📅</div>
+                <div class="card-info">
+                    <h3>Compromissos</h3>
+                    <p class="card-value">{{ metrics.totalSchedules }}</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="card">
-        <h2><span>👤</span> Meu Perfil (Dados do Aluno)</h2>
-        <div class="form-container">
-            <div class="input-row-align">
-                <label>Nome Completo:</label>
-                <input type="text" [(ngModel)]="profileData.name" placeholder="Seu nome completo" class="input-field">
+    <section class="profile-section">
+        <h2>👤 Meu Perfil (Dados do Aluno)</h2>
+
+        <div class="profile-card">
+            <div class="form-group">
+                <label for="name">Nome completo</label>
+                <input id="name" type="text" [(ngModel)]="profileData.name" placeholder="Digite seu nome">
             </div>
-            <div class="input-row-align">
-                <label>E-mail de Acesso:</label>
-                <input type="email" [(ngModel)]="profileData.email" placeholder="seu.email@exemplo.com" class="input-field">
+
+            <div class="form-group">
+                <label for="email">E-mail de acesso</label>
+                <input id="email" type="email" [(ngModel)]="profileData.email" placeholder="Digite seu e-mail">
             </div>
-            <div class="input-row-align">
-                <label>Nova Senha:</label>
-                <input type="password" [(ngModel)]="profileData.password" placeholder="Mínimo 6 caracteres" class="input-field">
+
+            <div class="form-group">
+                <label for="password">Nova senha de segurança</label>
+                <input id="password" type="password" [(ngModel)]="profileData.password" placeholder="Mínimo 6 caracteres">
             </div>
-            <button class="btn-submit-block" (click)="submitProfileUpdate()" [disabled]="isSavingProfile" [style.background-color]="isSavingProfile ? '#94a3b8' : '#4f46e5'">
-                {{ isSavingProfile ? 'Atualizando...' : '💾 Atualizar Cadastro' }}
+
+            <button class="btn-save" (click)="submitProfileUpdate()" [disabled]="isSavingProfile">
+                {{ isSavingProfile ? 'Salvando...' : 'Atualizar Dados' }}
             </button>
         </div>
     </section>
 
-    <section class="card">
-        <h2><span>📌</span> Minhas Tarefas (Checklist)</h2>
-        <div class="form-inline-container">
-            <input type="text" [(ngModel)]="newTaskTitle" placeholder="O que você precisa estudar hoje?" class="input-field">
-            <input type="date" [(ngModel)]="newTaskDate" class="input-field" style="width: auto;">
-            <button class="btn-primary-square" (click)="addTask()">+</button>
-        </div>
-        <ul class="task-list">
-            <li *ngFor="let task of tasks" [class.completed]="task.completed">
-                <input type="checkbox" [(ngModel)]="task.completed" (change)="toggleTask(task)">
-                <span>{{ task.description }}</span>
-                <button class="btn-delete-icon" (click)="deleteTask(task.id)">🗑️</button>
-            </li>
-            <li *ngIf="tasks.length === 0" class="empty-warn">Nenhuma tarefa cadastrada.</li>
-        </ul>
-    </section>
-
-    <section class="card">
-        <h2><span>📝</span> Notas Rápidas</h2>
-        <div class="form-container">
-            <input type="text" [(ngModel)]="newNoteTitle" placeholder="Título da nota..." class="input-field">
-            <textarea [(ngModel)]="newNoteContent" placeholder="Escreva sua nota aqui..." class="input-field" rows="2"></textarea>
-            <button class="btn-submit-block" (click)="addNote()">Salvar Nota</button>
-        </div>
-        <div class="notes-container">
-            <div *ngFor="let note of notes" class="note-item-box">
-                <h3>{{ note.title }}</h3>
-                <p>{{ note.content }}</p>
-                <button class="btn-delete-icon" (click)="deleteNote(note.id)">❌</button>
-            </div>
-            <div *ngIf="notes.length === 0" class="empty-warn">Nenhuma nota salva.</div>
-        </div>
-    </section>
-
-    <section class="card full-width-card">
-        <h2><span>📅</span> Planejador de Cronograma Geral</h2>
-        <div class="schedule-dashboard-wrapper">
-
-            <div class="schedule-form-side">
-                <h3>Novo Evento ou Meta de Estudo</h3>
-                <input type="text" [(ngModel)]="newScheduleTitle" placeholder="Título do evento ou matéria..." class="input-field">
-                <textarea [(ngModel)]="newScheduleDescription" placeholder="Breve descrição ou detalhes adicionais..." class="input-field" rows="2"></textarea>
-
-                <div class="input-grid-fields">
-                    <div>
-                        <label>Data Alvo:</label>
-                        <input type="date" [(ngModel)]="newScheduleDate" class="input-field">
-                    </div>
-                    <div>
-                        <label>Periodicidade:</label>
-                        <select [(ngModel)]="newScheduleType" class="input-field">
-                            <option value="DAY">Diário</option>
-                            <option value="WEEK">Semanal</option>
-                            <option value="MONTH">Mensal</option>
-                            <option value="YEAR">Anual</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="input-grid-fields" *ngIf="newScheduleType === 'DAY'">
-                    <div>
-                        <label>🕒 Hora Início:</label>
-                        <input type="time" [(ngModel)]="newScheduleStartTime" class="input-field">
-                    </div>
-                    <div>
-                        <label>🏁 Hora Término:</label>
-                        <input type="time" [(ngModel)]="newScheduleEndTime" class="input-field">
-                    </div>
-                </div>
-
-                <button class="btn-submit-block" style="background-color: #4f46e5; margin-top: 10px;" (click)="addSchedule()">
-                    ✨ Adicionar ao Cronograma
-                </button>
-            </div>
-
-            <div class="schedule-display-side">
-                <h3>Compromissos Planejados</h3>
-                <div class="schedule-grid-container">
-                    <div *ngFor="let item of schedules" class="schedule-item-card" [ngClass]="item.type">
-                        <span class="badge">{{ item.type }}</span>
-                        <h3>{{ item.title }}</h3>
-                        <p>{{ item.description }}</p>
-
-                        <div class="schedule-time-footer">
-                            <span>📅 {{ item.targetDate | date:'dd/MM/yyyy' }}</span>
-                            <span *ngIf="item.startTime" class="time-range-indicator">
-                                ⏰ <b>{{ item.startTime }}</b> até <b>{{ item.endTime || '--:--' }}</b>
-                            </span>
-                        </div>
-
-                        <button class="btn-delete-icon" (click)="deleteSchedule(item.id)">❌</button>
-                    </div>
-                    <div *ngIf="schedules.length === 0" class="empty-warn">Nenhum evento registrado no cronograma.</div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-</main>
+</div>

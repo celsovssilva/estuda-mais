@@ -1,300 +1,152 @@
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-    padding: 24px;
-    background-color: #f8fafc;
-    min-height: 100vh;
-    align-items: start;
-}
-
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    border: 1px solid #e2e8f0;
+/* Container Geral */
+.dashboard-wrapper {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
+    gap: 30px;
 }
 
-.metrics-card, .full-width-card {
-    grid-column: 1 / -1;
+/* Barra de Navegação Superior */
+.dashboard-nav {
+    display: flex;
+    gap: 15px;
+    padding: 15px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
 }
 
+.nav-link {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #4f46e5;
+    background-color: #f8fafc;
+}
+
+.nav-link.active {
+    color: #4f46e5;
+    background-color: #eef2ff;
+}
+
+/* Títulos das Seções */
 h2 {
-    font-size: 1.25rem;
     color: #1e293b;
-    margin-bottom: 20px;
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+}
+
+/* Grid de Cards de Métricas */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* Design dos Cards */
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    border-bottom: 2px solid #f1f5f9;
-    padding-bottom: 10px;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.metrics-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.card-icon {
+    font-size: 2rem;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Variações de Cores dos Cards baseado no status */
+.metric-card.completed .card-icon { background-color: #dcfce7; }
+.metric-card.pending .card-icon { background-color: #fef3c7; }
+.metric-card.schedule .card-icon { background-color: #e0e7ff; }
+
+.card-info h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-value {
+    margin: 4px 0 0 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Área de Perfil */
+.profile-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
 }
 
-.metric-item {
-    background: #f1f5f9;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: center;
-    border-left: 4px solid #4f46e5;
-}
-
-.metric-value {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.metric-label {
-    font-size: 0.875rem;
-    color: #64748b;
-    font-weight: 500;
-}
-
-.form-container, .schedule-form-side {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.input-row-align {
+.form-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.input-grid-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.input-grid-fields label {
-    font-size: 0.75rem;
+.form-group label {
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #64748b;
-    display: block;
-    margin-bottom: 4px;
+    color: #475569;
 }
 
-.input-field {
-    width: 100%;
+.form-group input {
     padding: 10px 14px;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.95rem;
-    color: #334155;
-    background-color: #fff;
-    box-sizing: border-box;
-}
-
-.input-field:focus {
     outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
     border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.btn-submit-block {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.form-inline-container {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.btn-primary-square {
+/* Botão de Salvar */
+.btn-save {
     background-color: #4f46e5;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 0 16px;
-    font-size: 1.25rem;
-    cursor: pointer;
-}
-
-.task-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.task-list li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: #f8fafc;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-}
-
-/* Quando a li tiver a classe .completed, ela muda o fundo e ganha opacidade */
-.task-list li.completed {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    opacity: 0.7;
-}
-
-.task-list li.completed span {
-    text-decoration: line-through;
-    color: #94a3b8;
-}
-.btn-delete-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.notes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 250px;
-    overflow-y: auto;
-    margin-top: 12px;
-}
-
-.note-item-box {
-    background: #fffbeb;
-    border: 1px solid #fde68a;
     padding: 12px;
-    border-radius: 6px;
-    position: relative;
-}
-
-.note-item-box .btn-delete-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-}
-
-.schedule-dashboard-wrapper {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 32px;
-}
-
-@media (min-width: 900px) {
-    .schedule-dashboard-wrapper {
-        grid-template-columns: 350px 1fr;
-    }
-}
-
-.schedule-form-side h3, .schedule-display-side h3 {
-    font-size: 1rem;
-    color: #475569;
-    margin-top: 0;
-    margin-bottom: 12px;
-    border-bottom: 1px dashed #e2e8f0;
-    padding-bottom: 6px;
-}
-
-.schedule-grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    max-height: 500px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-.schedule-item-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    padding: 16px;
     border-radius: 8px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
 }
 
-.schedule-item-card.DAY { border-left: 5px solid #3b82f6; background-color: #eff6ff; }
-.schedule-item-card.WEEK { border-left: 5px solid #10b981; background-color: #f0fdf4; }
-.schedule-item-card.MONTH { border-left: 5px solid #f59e0b; background-color: #fffbeb; }
-.schedule-item-card.YEAR { border-left: 5px solid #ec4899; background-color: #fdf2f8; }
-
-.schedule-item-card h3 {
-    font-size: 1.05rem;
-    margin: 0 0 6px 0;
-    color: #1e293b;
-    border: none;
-    padding: 0;
+.btn-save:hover {
+    background-color: #4338ca;
 }
 
-.schedule-item-card p {
-    font-size: 0.875rem;
-    color: #475569;
-    margin: 0 0 12px 0;
-    flex-grow: 1;
-}
-
-.schedule-time-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-    color: #64748b;
-    border-top: 1px solid rgba(0,0,0,0.04);
-    padding-top: 8px;
-}
-
-.time-range-indicator {
-    color: #1e293b;
-    background: rgba(255,255,255,0.6);
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: inline-block;
-    width: fit-content;
-}
-
-.schedule-item-card .badge {
-    position: absolute;
-    top: 12px;
-    right: 36px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.DAY .badge { background: #dbeafe; color: #1e40af; }
-.WEEK .badge { background: #dcfce7; color: #166534; }
-.MONTH .badge { background: #fef3c7; color: #92400e; }
-.YEAR .badge { background: #fce7f3; color: #9d174d; }
-
-.schedule-item-card .btn-delete-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.empty-warn {
-    color: #94a3b8;
-    font-size: 0.9rem;
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 20px 0;
+.btn-save:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
 }

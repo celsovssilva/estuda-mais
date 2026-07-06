@@ -4,6 +4,7 @@ import { RegisterComponent } from '../pages/register/register.component';
 import {DashboardComponent} from "../pages/dashboard/dashboard.component";
 import {ChecklistComponent} from "../pages/checklist/checklist.component";
 import {PerfilComponent}   from "../pages/profile/profile.component"
+import {AgendaComponent} from "../pages/schedule/schedule.component";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -12,5 +13,6 @@ export const routes: Routes = [
     {path: 'dashboard', component:DashboardComponent},
     { path: 'checklist', component: ChecklistComponent },
     {path: 'perfil', component: PerfilComponent},
+    {path: 'schedule', component: AgendaComponent},
     { path: '**', redirectTo: '/dashboard' }
 ];

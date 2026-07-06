@@ -1,0 +1,111 @@
+<nav class="top-nav">
+    <a routerLink="/dashboard" class="nav-link" routerLinkActive="active">📊 Meu Dashboard</a>
+    <a routerLink="/checklist" class="nav-link" routerLinkActive="active">✅ Minhas Tarefas</a>
+    <a routerLink="/agenda" class="nav-link" routerLinkActive="active">📅 Agenda</a>
+    <a routerLink="/perfil" class="nav-link" routerLinkActive="active">👤 Meu Perfil</a>
+</nav>
+
+<div class="agenda-wrapper">
+
+    <div class="agenda-card">
+        <h3>📝 Agendar Novo Compromisso</h3>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Título</label>
+                <input type="text" [(ngModel)]="formSchedule.title" placeholder="Ex: Estudar Spring Boot">
+            </div>
+
+            <div class="input-group">
+                <label>Tipo de Recorrência/Escopo</label>
+                <select [(ngModel)]="formSchedule.type">
+                    <option value="DAY">Diário (DAY)</option>
+                    <option value="WEEK">Semanal (WEEK)</option>
+                    <option value="MONTH">Mensal (MONTH)</option>
+                    <option value="YEAR">Anual (YEAR)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Data de Execução</label>
+                <input type="date" [(ngModel)]="formSchedule.targetDate">
+            </div>
+
+            <div class="time-range">
+                <div class="input-group">
+                    <label>Início</label>
+                    <input type="time" [(ngModel)]="formSchedule.startTime">
+                </div>
+                <div class="input-group">
+                    <label>Término</label>
+                    <input type="time" [(ngModel)]="formSchedule.endTime">
+                </div>
+            </div>
+
+            <div class="input-group full-width">
+                <label>Descrição do Compromisso</label>
+                <input type="text" [(ngModel)]="formSchedule.description" placeholder="Anotações extras sobre a atividade...">
+            </div>
+        </div>
+        <button class="btn-primary" (click)="addSchedule()">Salvar na Agenda</button>
+    </div>
+
+    <div class="view-controls">
+        <div class="toggle-mode">
+            <button [class.active]="viewMode === 'MONTH'" (click)="setMode('MONTH')">Mês</button>
+            <button [class.active]="viewMode === 'DAY'" (click)="setMode('DAY')">Dia Específico</button>
+        </div>
+
+        <div class="calendar-nav" *ngIf="viewMode === 'MONTH'">
+            <button (click)="navigateMonth(-1)">◀</button>
+            <span><strong>{{ monthNames[currentMonth] }} / {{ currentYear }}</strong></span>
+            <button (click)="navigateMonth(1)">▶</button>
+        </div>
+
+        <div class="day-picker" *ngIf="viewMode === 'DAY'">
+            <input type="date" [(ngModel)]="selectedDateStr" (change)="filterSchedules()">
+        </div>
+    </div>
+
+    <div class="agenda-card" *ngIf="viewMode === 'MONTH'">
+        <div class="calendar-grid-header">
+            <div *ngFor="let dayName of weekDays" class="weekday-label">{{ dayName }}</div>
+        </div>
+
+        <div class="calendar-grid-body">
+            <div *ngFor="let week of calendarWeeks" class="calendar-week-row">
+                <div *ngFor="let cell of week"
+                     class="calendar-day-cell"
+                     [class.empty]="!cell"
+                     [class.selected]="cell?.dateStr === selectedDateStr"
+                     [class.has-events]="cell?.hasEvents"
+                     (click)="cell && selectDay(cell.dateStr)">
+                    <span class="day-number" *ngIf="cell">{{ cell.day }}</span>
+                    <span class="event-badge" *ngIf="cell?.hasEvents">{{ cell.eventsCount }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="agenda-card">
+        <h3>📋 Atividades Filtradas (Modo: {{ viewMode === 'MONTH' ? 'Mensal' : 'Diário' }})</h3>
+        <ul class="schedule-list">
+            <li *ngFor="let item of filteredSchedules" class="schedule-item">
+                <div class="schedule-details">
+                    <span class="badge-type">{{ item.type }}</span>
+                    <h4>{{ item.title }}</h4>
+                    <p class="desc">{{ item.description }}</p>
+                    <p class="time-info">
+                        📅 {{ item.targetDate | date:'dd/MM/yyyy' }}
+                        <span *ngIf="item.startTime"> ⏰ das {{ item.startTime }}</span>
+                        <span *ngIf="item.endTime"> até às {{ item.endTime }}</span>
+                    </p>
+                </div>
+                <button class="btn-delete" (click)="deleteSchedule(item.id)">🗑️</button>
+            </li>
+            <li *ngIf="filteredSchedules.length === 0" class="empty-state">
+                Nenhum compromisso agendado para o período selecionado.
+            </li>
+        </ul>
+    </div>
+
+</div>

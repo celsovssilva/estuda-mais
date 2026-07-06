@@ -1,0 +1,125 @@
+/* Container Geral da Tela de Perfil */
+.profile-wrapper {
+    max-width: 1000px;
+    margin: 4rem auto; /* Aumentado o espaçamento superior para desgrudar do topo */
+    padding: 0 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente tudo que estiver dentro */
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Seção de Conteúdo */
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px; /* Garante que o título acompanhe exatamente o tamanho do card */
+}
+
+/* Título Principal */
+.profile-section h2 {
+    color: #1e293b;
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Card Branco Centralizado */
+.profile-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* Grupos de Formulário (Corrige o desalinhamento da imagem ec8623.png) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Labels dos Campos */
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: none;
+    letter-spacing: 0.3px;
+}
+
+/* Inputs Padronizados */
+.form-group input {
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #334155;
+    background-color: #ffffff;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efeito de Foco nos Inputs */
+.form-group input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Placeholder sutil */
+.form-group input::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+/* Botão de Salvar/Atualizar */
+.btn-save {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Efeito Hover do Botão */
+.btn-save:hover {
+    background-color: #4338ca;
+}
+
+/* Efeito de Clique do Botão */
+.btn-save:active {
+    transform: scale(0.98);
+}
+
+/* Estado Desabilitado (Quando está salvando) */
+.btn-save:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}

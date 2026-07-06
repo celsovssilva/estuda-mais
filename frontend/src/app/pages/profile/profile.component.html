@@ -1,0 +1,26 @@
+<div class="profile-wrapper">
+    <section class="profile-section">
+        <h2>👤 Meu Perfil (Dados do Aluno)</h2>
+
+        <div class="profile-card">
+            <div class="form-group">
+                <label for="name">Nome completo</label>
+                <input id="name" type="text" [(ngModel)]="profileData.name" placeholder="Digite seu nome">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail de acesso</label>
+                <input id="email" type="email" [(ngModel)]="profileData.email" placeholder="Digite seu e-mail">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Nova senha de segurança</label>
+                <input id="password" type="password" [(ngModel)]="profileData.password" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <button class="btn-save" (click)="submitProfileUpdate()" [disabled]="isSavingProfile">
+                {{ isSavingProfile ? 'Salvando...' : 'Atualizar Dados' }}
+            </button>
+        </div>
+    </section>
+</div>

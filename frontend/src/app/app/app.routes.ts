@@ -3,6 +3,7 @@ import { LoginComponent } from '../pages/login/login.component';
 import { RegisterComponent } from '../pages/register/register.component';
 import {DashboardComponent} from "../pages/dashboard/dashboard.component";
 import {ChecklistComponent} from "../pages/checklist/checklist.component";
+import {PerfilComponent}   from "../pages/profile/profile.component"
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -10,5 +11,6 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     {path: 'dashboard', component:DashboardComponent},
     { path: 'checklist', component: ChecklistComponent },
+    {path: 'perfil', component: PerfilComponent},
     { path: '**', redirectTo: '/dashboard' }
 ];

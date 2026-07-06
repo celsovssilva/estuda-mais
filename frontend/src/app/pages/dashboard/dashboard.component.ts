@@ -86,6 +86,7 @@ export class DashboardComponent implements OnInit {
     }
 
     loadDashboardMetrics(): void {
+
         this.checklistService.getTasksByUser().subscribe({
             next: (res: any) => {
                 const list = Array.isArray(res) ? res : [];
@@ -133,9 +134,37 @@ export class DashboardComponent implements OnInit {
     }
 
     toggleTask(task: any): void {
+
+        const originalState = !task.done;
+
+
+        if (task.done) {
+            this.metrics.completedTasks++;
+            this.metrics.pendingTasks--;
+        } else {
+            this.metrics.completedTasks--;
+            this.metrics.pendingTasks++;
+        }
+
+
         this.checklistService.toggleTask(task.id).subscribe({
-            next: () => { this.loadTasks(); this.loadDashboardMetrics(); },
-            error: (err) => console.error(err)
+            next: () => {
+
+                console.log('Tarefa atualizada no servidor com sucesso.');
+            },
+            error: (err) => {
+                console.error('Erro ao atualizar tarefa:', err);
+                alert('Não foi possível salvar o status da tarefa no servidor.');
+
+                task.done = originalState;
+                if (task.done) {
+                    this.metrics.completedTasks++;
+                    this.metrics.pendingTasks--;
+                } else {
+                    this.metrics.completedTasks--;
+                    this.metrics.pendingTasks++;
+                }
+            }
         });
     }
 

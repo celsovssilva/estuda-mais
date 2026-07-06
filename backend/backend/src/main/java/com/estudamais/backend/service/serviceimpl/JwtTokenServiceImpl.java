@@ -2,6 +2,7 @@ package com.estudamais.backend.service.serviceimpl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.service.JwtService;
 import io.jsonwebtoken.JwtException;
@@ -26,8 +27,8 @@ public class JwtTokenServiceImpl implements JwtService {
                     .build()
                     .verify(jwt)
                     .getSubject();
-        } catch (JwtException e) {
-            throw new RuntimeException("erro ao verificar token" + e);
+        } catch (JWTVerificationException e) {
+            throw new RuntimeException("Erro ao verificar token: " + e.getMessage());
         }
     }
 

@@ -1,45 +1,51 @@
-package com.estudamais.backend.config;
+    package com.estudamais.backend.config;
 
-import com.estudamais.backend.repository.UserRepository;
-import com.estudamais.backend.service.JwtService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+    import com.estudamais.backend.repository.UserRepository;
+    import com.estudamais.backend.service.JwtService;
+    import jakarta.servlet.FilterChain;
+    import jakarta.servlet.ServletException;
+    import jakarta.servlet.http.HttpServletRequest;
+    import jakarta.servlet.http.HttpServletResponse;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+    import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.stereotype.Component;
+    import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+    import java.io.IOException;
 
-@Component
-public class SecurityFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepository userRepository;
+    @Component
+    public class SecurityFilter extends OncePerRequestFilter {
+        @Autowired
+        private JwtService jwtService;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = recuperarToken(request);
-        if(token != null){
-            var subject = jwtService.getSubject(token);
-            var user = userRepository.findByEmail(subject).orElse(null);
-            if(user != null){
-                var authentication = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+            var token = recuperarToken(request);
+
+            if (token != null) {
+                try {
+                    var subject = jwtService.getSubject(token);
+                    var user = userRepository.findByEmail(subject).orElse(null);
+
+                    if (user != null) {
+                        var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                } catch (RuntimeException e) {
+                    SecurityContextHolder.clearContext();
+                }
             }
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request,response);
-    }
-    private String recuperarToken(HttpServletRequest request){
-        var authorizationHeader = request.getHeader("Authorization");
-        if(authorizationHeader != null){
-            return authorizationHeader.replace("Bearer ","").trim();
-        }
-        return  null;
+        private String recuperarToken(HttpServletRequest request){
+            var authorizationHeader = request.getHeader("Authorization");
+            if(authorizationHeader != null){
+                return authorizationHeader.replace("Bearer ","").trim();
+            }
+            return  null;
 
+        }
     }
-}

@@ -47,7 +47,7 @@
         </div>
         <ul class="task-list">
             <li *ngFor="let task of tasks" [class.completed]="task.done">
-                <input type="checkbox" [checked]="task.done" (change)="toggleTask(task)">
+                <input type="checkbox" [(ngModel)]="task.done" (change)="toggleTask(task)">
                 <span>{{ task.description }}</span>
                 <button class="btn-delete-icon" (click)="deleteTask(task.id)">🗑️</button>
             </li>
@@ -124,8 +124,8 @@
                         <div class="schedule-time-footer">
                             <span>📅 {{ item.targetDate | date:'dd/MM/yyyy' }}</span>
                             <span *ngIf="item.startTime" class="time-range-indicator">
-                ⏰ <b>{{ item.startTime }}</b> até <b>{{ item.endTime || '--:--' }}</b>
-              </span>
+                                ⏰ <b>{{ item.startTime }}</b> até <b>{{ item.endTime || '--:--' }}</b>
+                            </span>
                         </div>
 
                         <button class="btn-delete-icon" (click)="deleteSchedule(item.id)">❌</button>

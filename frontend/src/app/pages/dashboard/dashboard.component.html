@@ -46,8 +46,8 @@
             <button class="btn-primary-square" (click)="addTask()">+</button>
         </div>
         <ul class="task-list">
-            <li *ngFor="let task of tasks" [class.completed]="task.done">
-                <input type="checkbox" [(ngModel)]="task.done" (change)="toggleTask(task)">
+            <li *ngFor="let task of tasks" [class.completed]="task.completed">
+                <input type="checkbox" [(ngModel)]="task.completed" (change)="toggleTask(task)">
                 <span>{{ task.description }}</span>
                 <button class="btn-delete-icon" (click)="deleteTask(task.id)">🗑️</button>
             </li>

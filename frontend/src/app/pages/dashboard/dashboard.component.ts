@@ -6,6 +6,7 @@ import { ChecklistService } from '../../core/services/checklist/checklist.servic
 import { NoteService } from '../../core/services/note/note.service';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
 import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,6 +20,7 @@ export class DashboardComponent implements OnInit {
     private checklistService = inject(ChecklistService);
     private noteService = inject(NoteService);
     private scheduleService = inject(ScheduleService);
+    private router = inject(Router);
 
     profileData = {
         name: '',
@@ -85,38 +87,43 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    loadDashboardMetrics(): void {
-
-        this.checklistService.getTasksByUser().subscribe({
-            next: (res: any) => {
-                const list = Array.isArray(res) ? res : [];
-                this.metrics.completedTasks = list.filter((t: any) => t.done).length;
-                this.metrics.pendingTasks = list.filter((t: any) => !t.done).length;
-            }
-        });
-        this.scheduleService.getSchedulesByUser().subscribe({
-            next: (res: any) => {
-                this.metrics.totalSchedules = Array.isArray(res) ? res.length : 0;
-            }
-        });
-    }
-
     submitProfileUpdate(): void {
-        if (!this.profileData.name || !this.profileData.email || !this.profileData.password) {
-            alert('Por favor, preencha todos os campos, incluindo a confirmação da senha.');
+        const nameTrimmed = this.profileData.name?.trim();
+        const emailTrimmed = this.profileData.email?.trim();
+        const passwordTrimmed = this.profileData.password?.trim();
+
+        if (!nameTrimmed || !emailTrimmed || !passwordTrimmed) {
+            alert('Por favor, mantenha seu nome e e-mail e digite a nova senha.');
             return;
         }
+
+        if (passwordTrimmed.length < 6) {
+            alert('A nova senha deve conter no mínimo 6 caracteres.');
+            return;
+        }
+
+        const updatePayload = {
+            name: nameTrimmed,
+            email: emailTrimmed,
+            password: passwordTrimmed
+        };
+
         this.isSavingProfile = true;
-        this.authService.updateProfile(this.profileData).subscribe({
+
+        this.authService.updateProfile(updatePayload).subscribe({
             next: () => {
                 this.isSavingProfile = false;
-                alert('Perfil atualizado com sucesso!');
-                this.profileData.password = '';
+                alert('Perfil atualizado com sucesso! Por segurança, por favor faça login novamente com seus novos dados.');
+
+                localStorage.clear();
+
+
+                this.router.navigate(['/login']);
             },
             error: (err) => {
                 this.isSavingProfile = false;
-                console.error(err);
-                alert('Falha ao atualizar dados.');
+                console.error('Erro na requisição:', err);
+                alert('Falha ao atualizar cadastro. Verifique os dados inseridos.');
             }
         });
     }
@@ -135,10 +142,10 @@ export class DashboardComponent implements OnInit {
 
     toggleTask(task: any): void {
 
-        const originalState = !task.done;
+        const originalState = !task.completed;
 
 
-        if (task.done) {
+        if (task.completed) {
             this.metrics.completedTasks++;
             this.metrics.pendingTasks--;
         } else {
@@ -149,21 +156,37 @@ export class DashboardComponent implements OnInit {
 
         this.checklistService.toggleTask(task.id).subscribe({
             next: () => {
-
                 console.log('Tarefa atualizada no servidor com sucesso.');
             },
             error: (err) => {
                 console.error('Erro ao atualizar tarefa:', err);
                 alert('Não foi possível salvar o status da tarefa no servidor.');
 
-                task.done = originalState;
-                if (task.done) {
+
+                task.completed = originalState;
+                if (task.completed) {
                     this.metrics.completedTasks++;
                     this.metrics.pendingTasks--;
                 } else {
                     this.metrics.completedTasks--;
                     this.metrics.pendingTasks++;
                 }
+            }
+        });
+    }
+
+    loadDashboardMetrics(): void {
+        this.checklistService.getTasksByUser().subscribe({
+            next: (res: any) => {
+                const list = Array.isArray(res) ? res : [];
+                // Ajustado de t.done para t.completed para ler os dados certos ao logar/carregar a página
+                this.metrics.completedTasks = list.filter((t: any) => t.completed).length;
+                this.metrics.pendingTasks = list.filter((t: any) => !t.completed).length;
+            }
+        });
+        this.scheduleService.getSchedulesByUser().subscribe({
+            next: (res: any) => {
+                this.metrics.totalSchedules = Array.isArray(res) ? res.length : 0;
             }
         });
     }

@@ -1,11 +1,11 @@
-# Estágio 1: Build da aplicação usando Maven com a imagem atualizada do Temurin
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Estágio 1: Build da aplicação usando Maven com a imagem do Temurin para Java 21
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Estágio 2: Execução da aplicação usando a JRE oficial e estável do Temurin
-FROM eclipse-temurin:17-jre-jammy
+# Estágio 2: Execução da aplicação usando a JRE oficial do Temurin para Java 21
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080

@@ -1,0 +1,74 @@
+<nav class="top-nav">
+    <a routerLink="/dashboard" class="nav-link" routerLinkActive="active">📊 Meu Dashboard</a>
+    <a routerLink="/checklist" class="nav-link" routerLinkActive="active">✅ Minhas Tarefas</a>
+    <a routerLink="/agenda" class="nav-link" routerLinkActive="active">📅 Agenda</a>
+    <a routerLink="/notes" class="nav-link" routerLinkActive="active">📝 Notas</a>
+    <a routerLink="/perfil" class="nav-link" routerLinkActive="active">👤 Meu Perfil</a>
+</nav>
+
+<div class="notes-container">
+
+    <aside class="editor-panel">
+        <div class="glass-card">
+            <div class="card-header container-space">
+                <div class="header-left">
+          <span class="icon-wrapper" [class.editing]="isEditing">
+            {{ isEditing ? '✍️' : '💡' }}
+          </span>
+                    <h3>{{ isEditing ? 'Editar Anotação' : 'Nova Anotação' }}</h3>
+                </div>
+                <button *ngIf="isEditing" class="btn-cancel" (click)="clearForm()">Cancelar</button>
+            </div>
+
+            <div class="form-flex">
+                <div class="input-block">
+                    <label>Título</label>
+                    <input type="text" [(ngModel)]="formNote.title" placeholder="Ex: Insights da aula de Arquitetura">
+                </div>
+
+                <div class="input-block">
+                    <label>Data de Referência</label>
+                    <input type="date" [(ngModel)]="formNote.referenceDate">
+                </div>
+
+                <div class="input-block">
+                    <label>Conteúdo da Nota</label>
+                    <textarea [(ngModel)]="formNote.content" placeholder="Comece a digitar suas anotações aqui..." rows="10"></textarea>
+                </div>
+            </div>
+
+            <button class="btn-submit" [class.btn-update]="isEditing" (click)="saveNote()">
+                <span>{{ isEditing ? 'Atualizar Nota' : 'Salvar Nota' }}</span>
+                <span class="btn-arrow">→</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="grid-panel">
+        <div class="section-title-area">
+            <h3>📚 Minhas Memórias & Insights ({{ allNotes.length }})</h3>
+            <p>Clique em qualquer card para carregar o conteúdo no editor e realizar alterações.</p>
+        </div>
+
+        <div class="notes-grid">
+            <div *ngFor="let note of allNotes" class="note-card" (click)="prepareEdit(note)">
+                <div class="note-card-header">
+                    <span class="note-date">📅 {{ note.referenceDate | date:'dd/MM/yyyy' }}</span>
+                    <button class="btn-card-delete" title="Excluir Nota" (click)="deleteNote(note.id, $event)">🗑️</button>
+                </div>
+                <h4 class="note-title">{{ note.title }}</h4>
+                <p class="note-snippet">{{ note.content }}</p>
+                <div class="note-card-footer">
+                    <span class="edit-indicator">Clique para editar ✎</span>
+                </div>
+            </div>
+
+            <div *ngIf="allNotes.length === 0" class="premium-empty-state-full">
+                <div class="empty-icon">📂</div>
+                <h4>Nenhuma nota encontrada</h4>
+                <p>Use o painel ao lado para registrar seus primeiros pensamentos, códigos ou resumos.</p>
+            </div>
+        </div>
+    </main>
+
+</div>

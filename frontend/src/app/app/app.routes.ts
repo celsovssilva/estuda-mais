@@ -5,6 +5,7 @@ import {DashboardComponent} from "../pages/dashboard/dashboard.component";
 import {ChecklistComponent} from "../pages/checklist/checklist.component";
 import {PerfilComponent}   from "../pages/profile/profile.component"
 import {AgendaComponent} from "../pages/schedule/schedule.component";
+import {NotesComponent} from "../pages/note/notes.component";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -14,5 +15,6 @@ export const routes: Routes = [
     { path: 'checklist', component: ChecklistComponent },
     {path: 'perfil', component: PerfilComponent},
     {path: 'schedule', component: AgendaComponent},
+    {path: 'notes', component: NotesComponent},
     { path: '**', redirectTo: '/dashboard' }
 ];

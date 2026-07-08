@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {Note} from "../../models/note.models";
+import {environment} from "../../../../environments/environments";
 
 
 @Injectable({
     providedIn: 'root'
 })
 export class NoteService {
-     private apiUrl: string=  'http://localhost:8080/api/note';
+     private apiUrl =  '${environment.apiUrl}/api/note';
 
     constructor(private http: HttpClient) {}
 

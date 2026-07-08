@@ -13,7 +13,7 @@ export class ChecklistService {
     private http = inject(HttpClient);
 
     // URL base do seu Spring Boot para o checklist
-    private apiUrl =  '${environment.apiUrl}/api/checklist';
+    private apiUrl =  `${environment.apiUrl}/api/checklist`;
 
     // 1. Criar tarefa (POST)
     createTask(task: ChecklistTaskRequest): Observable<ChecklistTaskResponse> {

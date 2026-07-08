@@ -9,7 +9,7 @@ import {environment} from "../../../../environments/environments";
 })
 export class ScheduleService {
     private http = inject(HttpClient);
-    private apiUrl =  '${environment.apiUrl}/api/schedule';
+    private apiUrl =  `${environment.apiUrl}/api/schedule`;
 
     createSchedule(schedule: ScheduleRequest): Observable<ScheduleResponse> {
         return this.http.post<ScheduleResponse>(`${this.apiUrl}/create`, schedule);

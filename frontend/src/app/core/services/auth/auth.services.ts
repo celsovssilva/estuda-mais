@@ -9,7 +9,7 @@ import {environment} from "../../../../environments/environments";
 })
 export class AuthService {
 
-    private apiUrl =  '${environment.apiUrl}/api/auth';
+    private apiUrl =  `${environment.apiUrl}/api/auth`;
 
 
     private http = inject(HttpClient);

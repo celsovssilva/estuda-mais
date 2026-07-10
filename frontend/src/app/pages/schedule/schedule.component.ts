@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
 import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
+import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-agenda',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule,NavbarComponent],
     templateUrl: './schedule.component.html',
     styleUrls: ['./schedule.component.css']
 })
@@ -54,7 +55,9 @@ export class AgendaComponent implements OnInit {
     loadSchedules(): void {
         this.scheduleService.getSchedulesByUser().subscribe({
             next: (res: ScheduleResponse[]) => {
-                this.allSchedules = res || [];
+                const all = res || [];
+                const todayStr = new Date().toISOString().split('T')[0];
+                this.allSchedules = all.filter(s => !s.targetDate || s.targetDate >= todayStr);
                 this.buildMonthlyCalendar();
                 this.filterSchedules();
             },

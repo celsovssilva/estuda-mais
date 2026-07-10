@@ -15,26 +15,7 @@
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* NAVEGAÇÃO */
-.top-nav {
-    display: flex;
-    gap: 12px;
-    padding: 16px 24px;
-    background-color: var(--surface);
-    border-bottom: 1px solid var(--border-color);
-    justify-content: center;
-}
-.nav-link {
-    text-decoration: none;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: var(--transition);
-}
-.nav-link:hover { color: var(--primary); background-color: var(--bg-main); }
-.nav-link.active { color: var(--primary); background-color: var(--primary-light); }
+
 
 /* CONTAINER EM DUAS COLUNAS */
 .notes-container {

@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NoteService } from '../../core/services/note/note.service'; // Ajuste o caminho se necessário
 import { Note } from '../../core/models/note.models';
+import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-notes',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule,NavbarComponent],
     templateUrl: './notes.component.html',
     styleUrls: ['./notes.component.css']
 })

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth/auth.services'; // Ajuste o caminho do seu AuthService
 import { Router } from '@angular/router';
+import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-perfil',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule,NavbarComponent],
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.css']
 })

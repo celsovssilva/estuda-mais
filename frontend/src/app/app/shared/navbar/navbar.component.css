@@ -1,0 +1,19 @@
+.top-nav {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    justify-content: center;
+}
+.nav-link {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link:hover { color: #4f46e5; background-color: #f8fafc; }
+.nav-link.active { color: #4f46e5; background-color: #eef2ff; }

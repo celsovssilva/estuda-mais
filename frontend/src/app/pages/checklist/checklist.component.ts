@@ -27,8 +27,7 @@ export class ChecklistComponent implements OnInit {
         this.checklistService.getTasksByUser().subscribe({
             next: (res: ChecklistTaskResponse[]) => {
                 const all = Array.isArray(res) ? res : [];
-                const todayStr = new Date().toISOString().split('T')[0];
-                this.tasks = all.filter(t => !t.executionDate || t.executionDate >= todayStr);
+                this.tasks = all.filter(t => !t.completed);
             },
             error: (err) => console.error('Erro ao carregar tarefas:', err)
         });
@@ -53,15 +52,11 @@ export class ChecklistComponent implements OnInit {
     }
 
     toggleTask(task: ChecklistTaskResponse): void {
-        const originalState = task.completed;
-        task.completed = !task.completed; // feedback visual imediato
-
         this.checklistService.toggleTask(task.id).subscribe({
-            next: () => console.log('Estado atualizado no servidor.'),
-            error: (err) => {
-                console.error(err);
-                task.completed = originalState; // reverte se der erro
-            }
+            next: () => {
+                this.tasks = this.tasks.filter(t => t.id !== task.id);
+            },
+            error: (err) => console.error('Erro ao atualizar tarefa:', err)
         });
     }
 

@@ -37,11 +37,6 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST,"api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST,"api/auth/register").permitAll();
                     req.requestMatchers(HttpMethod.PUT,"api/auth/update").authenticated();
-                    //checklist
-                    req.requestMatchers(HttpMethod.POST,"api/checklist/create").authenticated();
-                    req.requestMatchers(HttpMethod.GET,"api/checklist/getTasksByUser").authenticated();
-                    req.requestMatchers(HttpMethod.PATCH,"api/checklist/{taskId}/toggle").authenticated();
-                    req.requestMatchers(HttpMethod.DELETE,"api/checklist/delete/{taskId}").authenticated();
                     //Note
                     req.requestMatchers(HttpMethod.POST,"api/note/create").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/note/getByDateNote").authenticated();
@@ -54,6 +49,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.GET,"api/schedule/getByTypeSchedule").authenticated();
                     req.requestMatchers(HttpMethod.PUT,"api/schedule/update/{scheduleId}").authenticated();
                     req.requestMatchers(HttpMethod.DELETE,"api/schedule/delete/{scheduleId}").authenticated();
+                    req.requestMatchers(HttpMethod.PATCH,"api/schedule/toggle/{scheduleId}").authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -52,4 +52,10 @@ public class ScheduleController {
         scheduleService.deleteSchedule(user.getId(), scheduleId);
         return ResponseEntity.noContent().build();
     }
+    @PatchMapping("/toggle/{scheduleId}")
+    public ResponseEntity<ScheduleResponse> toggleCompletion(@PathVariable Long scheduleId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        ScheduleResponse response = scheduleService.toggleScheduleCompletion(user.getId(), scheduleId);
+        return ResponseEntity.ok(response);
+    }
 }

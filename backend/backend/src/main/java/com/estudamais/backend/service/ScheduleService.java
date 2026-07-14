@@ -13,4 +13,5 @@ public interface ScheduleService {
     List<ScheduleResponse> getSchedulesByUserAndType(Long userId, ScheduleType type);
     ScheduleResponse updateSchedule(Long userId, Long scheduleId, ScheduleRequest request);
     void deleteSchedule(Long userId, Long scheduleId);
+    ScheduleResponse toggleScheduleCompletion(Long userId, Long scheduleId);
 }

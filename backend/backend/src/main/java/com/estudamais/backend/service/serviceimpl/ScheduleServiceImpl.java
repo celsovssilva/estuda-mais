@@ -66,4 +66,18 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
         scheduleRepository.delete(schedule);
     }
+
+    @Override
+    public ScheduleResponse toggleScheduleCompletion(Long userId, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Compromisso não encontrado"));
+
+        if (!schedule.getUserId().equals(userId)) {
+            throw new RuntimeException("Acesso negado: este compromisso não pertence a este usuário.");
+        }
+
+        schedule.setCompleted(!schedule.isCompleted());
+        Schedule updated = scheduleRepository.save(schedule);
+        return new ScheduleResponse(updated);
+    }
 }

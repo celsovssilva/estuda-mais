@@ -34,4 +34,7 @@ public class Schedule {
     private LocalTime startTime;
 
     private LocalTime endTime;
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean completed = false;
 }

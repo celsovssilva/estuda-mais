@@ -4,45 +4,46 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
 import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
-import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
+import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
+
+type DayStatus = 'none' | 'red' | 'orange' | 'green';
 
 @Component({
     selector: 'app-agenda',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule,NavbarComponent],
+    imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
     templateUrl: './schedule.component.html',
     styleUrls: ['./schedule.component.css']
 })
 export class AgendaComponent implements OnInit {
     private scheduleService = inject(ScheduleService);
 
-    // Armazenamento de dados tipados
     allSchedules: ScheduleResponse[] = [];
     filteredSchedules: ScheduleResponse[] = [];
 
-    // Objeto reativo do formulário baseado em ScheduleRequest
     formSchedule = {
         title: '',
         description: '',
         targetDate: '',
-        type: 'DAY', // Padrão inicial
+        type: 'DAY',
         startTime: '',
         endTime: ''
     };
 
-    // Controle de estados do Calendário Visual
-    currentYear: number = 2026; // Alinhado com o ano corrente do sistema
-    currentMonth: number = new Date().getMonth(); // 0 a 11
-    selectedDateStr: string = ''; // Data ativa selecionada no formato YYYY-MM-DD
+    currentYear: number = 2026;
+    currentMonth: number = new Date().getMonth();
+    selectedDateStr: string = '';
     viewMode: 'MONTH' | 'DAY' = 'MONTH';
 
-    // Auxiliares estruturais
     calendarWeeks: any[][] = [];
     weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     monthNames: string[] = [
         'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
+
+    // Status calculado do dia atualmente selecionado (usado pra mensagem de aviso)
+    selectedDayStatus: DayStatus = 'none';
 
     ngOnInit(): void {
         const today = new Date();
@@ -57,6 +58,8 @@ export class AgendaComponent implements OnInit {
             next: (res: ScheduleResponse[]) => {
                 const all = res || [];
                 const todayStr = new Date().toISOString().split('T')[0];
+                // Mantém concluídos aqui (preciso deles pra calcular a cor do dia),
+                // só remove os que já venceram de vez.
                 this.allSchedules = all.filter(s => !s.targetDate || s.targetDate >= todayStr);
                 this.buildMonthlyCalendar();
                 this.filterSchedules();
@@ -65,36 +68,42 @@ export class AgendaComponent implements OnInit {
         });
     }
 
-    // Monta a matriz de dias (grade do calendário tradicional)
+    // Calcula o status (cor) de um conjunto de compromissos de um dia
+    private computeDayStatus(daySchedules: ScheduleResponse[]): DayStatus {
+        if (daySchedules.length === 0) return 'none';
+        const completedCount = daySchedules.filter(s => s.completed).length;
+        if (completedCount === daySchedules.length) return 'green';
+        if (completedCount > 0) return 'orange';
+        return 'red';
+    }
+
     buildMonthlyCalendar(): void {
         const firstDayIndex = new Date(this.currentYear, this.currentMonth, 1).getDay();
         const totalDays = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
 
         const daysArray: any[] = [];
 
-        // Preenche lacunas do mês anterior
         for (let i = 0; i < firstDayIndex; i++) {
             daysArray.push(null);
         }
 
-        // Preenche os dias reais do mês correspondente
         for (let day = 1; day <= totalDays; day++) {
             const dayString = String(day).padStart(2, '0');
             const monthString = String(this.currentMonth + 1).padStart(2, '0');
             const dateStr = `${this.currentYear}-${monthString}-${dayString}`;
 
-            // Vincula compromissos específicos deste dia para renderizar indicadores visuais
             const daySchedules = this.allSchedules.filter(s => s.targetDate === dateStr);
+            const status = this.computeDayStatus(daySchedules);
 
             daysArray.push({
                 day,
                 dateStr,
                 hasEvents: daySchedules.length > 0,
-                eventsCount: daySchedules.length
+                eventsCount: daySchedules.length,
+                status
             });
         }
 
-        // Fatia o array plano em blocos semanais de 7 dias
         this.calendarWeeks = [];
         while (daysArray.length > 0) {
             this.calendarWeeks.push(daysArray.splice(0, 7));
@@ -102,15 +111,28 @@ export class AgendaComponent implements OnInit {
     }
 
     filterSchedules(): void {
+        let dayItems: ScheduleResponse[];
+
         if (this.viewMode === 'MONTH') {
-            this.filteredSchedules = this.allSchedules.filter(s => {
+            dayItems = this.allSchedules.filter(s => {
                 if (!s.targetDate) return false;
                 const d = new Date(s.targetDate + 'T00:00:00');
                 return d.getFullYear() === this.currentYear && d.getMonth() === this.currentMonth;
             });
         } else {
-            this.filteredSchedules = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
+            dayItems = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
         }
+
+        // Calcula o status do dia selecionado ANTES de esconder os concluídos da lista
+        if (this.viewMode === 'DAY') {
+            const dayOnlyItems = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
+            this.selectedDayStatus = this.computeDayStatus(dayOnlyItems);
+        } else {
+            this.selectedDayStatus = 'none';
+        }
+
+        // Concluídos somem da lista visível
+        this.filteredSchedules = dayItems.filter(s => !s.completed);
     }
 
     selectDay(dateStr: string): void {
@@ -140,20 +162,17 @@ export class AgendaComponent implements OnInit {
             return;
         }
 
-        // Montando o payload mapeado estritamente com a ScheduleRequest
         const payload: ScheduleRequest = {
             title: this.formSchedule.title.trim(),
             description: this.formSchedule.description.trim() || 'Sem descrição cadastrada.',
             targetDate: this.formSchedule.targetDate,
             type: this.formSchedule.type,
-            // Passando nulo ou string limpa respeitando o tipo string | null do seu model
             startTime: this.formSchedule.startTime ? this.formSchedule.startTime : null,
             endTime: this.formSchedule.endTime ? this.formSchedule.endTime : null
         };
 
         this.scheduleService.createSchedule(payload).subscribe({
             next: () => {
-                // Reseta os campos mantendo apenas a data selecionada
                 this.formSchedule.title = '';
                 this.formSchedule.description = '';
                 this.formSchedule.startTime = '';
@@ -164,6 +183,21 @@ export class AgendaComponent implements OnInit {
                 console.error('Erro na criação:', err);
                 alert('Ocorreu uma falha ao registrar o compromisso.');
             }
+        });
+    }
+
+    toggleSchedule(schedule: ScheduleResponse): void {
+        this.scheduleService.toggleSchedule(schedule.id).subscribe({
+            next: (updated: ScheduleResponse) => {
+                // Atualiza o item dentro de allSchedules (precisa continuar lá pra colorir o dia)
+                const idx = this.allSchedules.findIndex(s => s.id === updated.id);
+                if (idx !== -1) {
+                    this.allSchedules[idx] = updated;
+                }
+                this.buildMonthlyCalendar();
+                this.filterSchedules();
+            },
+            error: (err) => console.error('Erro ao atualizar compromisso:', err)
         });
     }
 

@@ -15,4 +15,5 @@ export interface ScheduleResponse {
     type: string;
     startTime: string | null;
     endTime: string | null;
+    completed: boolean;
 }

@@ -72,7 +72,9 @@
                      class="calendar-day-cell"
                      [class.empty]="!cell"
                      [class.selected]="cell?.dateStr === selectedDateStr"
-                     [class.has-events]="cell?.hasEvents"
+                     [class.status-green]="cell?.status === 'green'"
+                     [class.status-orange]="cell?.status === 'orange'"
+                     [class.status-red]="cell?.status === 'red'"
                      (click)="cell && selectDay(cell.dateStr)">
                     <span class="day-number" *ngIf="cell">{{ cell.day }}</span>
                     <span class="event-badge" *ngIf="cell?.hasEvents">{{ cell.eventsCount }}</span>
@@ -83,8 +85,17 @@
 
     <div class="agenda-card">
         <h3>📋 Atividades Filtradas (Modo: {{ viewMode === 'MONTH' ? 'Mensal' : 'Diário' }})</h3>
+
+        <p class="warn-message" *ngIf="viewMode === 'DAY' && selectedDayStatus === 'red'">
+            ⚠️ Nenhuma tarefa foi concluída neste dia.
+        </p>
+
         <ul class="schedule-list">
             <li *ngFor="let item of filteredSchedules" class="schedule-item">
+                <input type="checkbox"
+                       class="schedule-checkbox"
+                       [checked]="item.completed"
+                       (change)="toggleSchedule(item)">
                 <div class="schedule-details">
                     <span class="badge-type">{{ item.type }}</span>
                     <h4>{{ item.title }}</h4>

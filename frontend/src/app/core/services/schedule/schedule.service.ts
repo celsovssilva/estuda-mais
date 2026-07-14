@@ -30,4 +30,7 @@ export class ScheduleService {
     deleteSchedule(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
     }
+    toggleSchedule(id: number): Observable<ScheduleResponse> {
+        return this.http.patch<ScheduleResponse>(`${this.apiUrl}/toggle/${id}`, {});
+    }
 }

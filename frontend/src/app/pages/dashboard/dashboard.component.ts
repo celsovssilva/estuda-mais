@@ -1,33 +1,30 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChecklistService } from '../../core/services/checklist/checklist.service';
-import { ScheduleService } from '../../core/services/schedule/schedule.service'; // Ajuste o caminho se necessário
-import { AuthService } from '../../core/services/auth/auth.services';       // Ajuste o caminho se necessário
-import { RouterModule, Router} from '@angular/router';
-
+import { ScheduleService } from '../../core/services/schedule/schedule.service';
+import { ScheduleResponse } from '../../core/models/schedule.models';
+import { AuthService } from '../../core/services/auth/auth.services';
+import { RouterModule, Router } from '@angular/router';
+import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-    private checklistService = inject(ChecklistService);
     private scheduleService = inject(ScheduleService);
     private authService = inject(AuthService);
     private router = inject(Router);
 
-    // Mantemos o objeto de métricas para alimentar os cards do topo
     metrics = {
         completedTasks: 0,
         pendingTasks: 0,
         totalSchedules: 0
     };
 
-    // Mantemos os dados do perfil
     profileData = {
         name: '',
         email: '',
@@ -38,29 +35,20 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadDashboardMetrics();
-        // Aqui você pode chamar a função que carrega os dados iniciais do perfil se tiver, ex: this.loadUserProfile();
     }
 
-    // Mantemos essa função porque ela calcula os números dos cards lendo o banco de dados
     loadDashboardMetrics(): void {
-        this.checklistService.getTasksByUser().subscribe({
-            next: (res: any) => {
-                const list = Array.isArray(res) ? res : [];
-                this.metrics.completedTasks = list.filter((t: any) => t.completed).length;
-                this.metrics.pendingTasks = list.filter((t: any) => !t.completed).length;
-            },
-            error: (err) => console.error('Erro ao carregar métricas de tarefas:', err)
-        });
-
         this.scheduleService.getSchedulesByUser().subscribe({
-            next: (res: any) => {
-                this.metrics.totalSchedules = Array.isArray(res) ? res.length : 0;
+            next: (res: ScheduleResponse[]) => {
+                const all = Array.isArray(res) ? res : [];
+                this.metrics.totalSchedules = all.length;
+                this.metrics.completedTasks = all.filter(s => s.completed).length;
+                this.metrics.pendingTasks = all.filter(s => !s.completed).length;
             },
             error: (err) => console.error('Erro ao carregar métricas da agenda:', err)
         });
     }
 
-    // Mantemos a função de atualizar o perfil que estruturamos antes
     submitProfileUpdate(): void {
         const nameTrimmed = this.profileData.name?.trim();
         const emailTrimmed = this.profileData.email?.trim();

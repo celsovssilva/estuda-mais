@@ -1,3 +1,128 @@
+/* Container Geral */
+.dashboard-wrapper {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Títulos das Seções */
+h2 {
+    color: #1e293b;
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+}
+
+/* Grid de Cards de Métricas */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* Design dos Cards */
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card-icon {
+    font-size: 2rem;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Variações de Cores dos Cards baseado no status */
+.metric-card.completed .card-icon { background-color: #dcfce7; }
+.metric-card.pending .card-icon { background-color: #fef3c7; }
+.metric-card.schedule .card-icon { background-color: #e0e7ff; }
+
+.card-info h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-value {
+    margin: 4px 0 0 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Área de Perfil */
+.profile-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.form-group input {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #4f46e5;
+}
+
+/* Botão de Salvar */
+.btn-save {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+
+.btn-save:hover {
+    background-color: #4338ca;
+}
+
+.btn-save:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* ===== Horário Líquido ===== */
 .time-section {
     margin-top: 10px;
 }

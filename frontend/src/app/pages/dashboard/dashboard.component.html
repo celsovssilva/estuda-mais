@@ -32,4 +32,26 @@
         </div>
     </section>
 
+    <section class="time-section">
+        <h2>⏱️ Horário Líquido</h2>
+
+        <div class="time-grid">
+            <div class="time-square today-square">
+                <h3>Hoje</h3>
+                <p class="time-value">{{ todayFormatted }}</p>
+                <span class="time-caption">Soma dos compromissos concluídos hoje</span>
+            </div>
+
+            <div class="time-square week-square">
+                <h3>Semana</h3>
+                <ul class="week-breakdown">
+                    <li *ngFor="let day of weekSummary" [class.is-today]="day.isToday">
+                        <span class="week-day-label">{{ day.label }}</span>
+                        <span class="week-day-value">{{ day.formatted }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
 </div>

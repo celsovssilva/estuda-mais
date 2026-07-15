@@ -7,6 +7,14 @@ import { AuthService } from '../../core/services/auth/auth.services';
 import { RouterModule, Router } from '@angular/router';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
+interface DaySummary {
+    label: string;
+    dateStr: string;
+    totalMinutes: number;
+    formatted: string;
+    isToday: boolean;
+}
+
 @Component({
     selector: 'app-dashboard',
     standalone: true,
@@ -24,6 +32,13 @@ export class DashboardComponent implements OnInit {
         pendingTasks: 0,
         totalSchedules: 0
     };
+
+    // Resumo do dia atual
+    todayFormatted: string = '0h 0min';
+
+    // Resumo da semana (Dom a Sáb), um item por dia
+    weekSummary: DaySummary[] = [];
+    weekDayLabels: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
     profileData = {
         name: '',
@@ -44,9 +59,70 @@ export class DashboardComponent implements OnInit {
                 this.metrics.totalSchedules = all.length;
                 this.metrics.completedTasks = all.filter(s => s.completed).length;
                 this.metrics.pendingTasks = all.filter(s => !s.completed).length;
+
+                this.computeTimeSummaries(all);
             },
             error: (err) => console.error('Erro ao carregar métricas da agenda:', err)
         });
+    }
+
+    // Converte "HH:mm" ou "HH:mm:ss" em minutos desde a meia-noite
+    private timeToMinutes(time: string): number {
+        const [h, m] = time.split(':').map(Number);
+        return (h * 60) + m;
+    }
+
+    // Duração em minutos entre startTime e endTime. Retorna 0 se inválido.
+    private durationMinutes(schedule: ScheduleResponse): number {
+        if (!schedule.startTime || !schedule.endTime) return 0;
+        const start = this.timeToMinutes(schedule.startTime);
+        const end = this.timeToMinutes(schedule.endTime);
+        const diff = end - start;
+        return diff > 0 ? diff : 0;
+    }
+
+    private formatMinutes(totalMinutes: number): string {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return `${hours}h ${minutes}min`;
+    }
+
+    private computeTimeSummaries(all: ScheduleResponse[]): void {
+        const completedWithTime = all.filter(s => s.completed && s.startTime && s.endTime);
+
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        // --- Resumo do dia ---
+        const todayMinutes = completedWithTime
+            .filter(s => s.targetDate === todayStr)
+            .reduce((sum, s) => sum + this.durationMinutes(s), 0);
+        this.todayFormatted = this.formatMinutes(todayMinutes);
+
+        // --- Resumo da semana (domingo a sábado da semana atual) ---
+        const dayOfWeek = today.getDay(); // 0 = domingo
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() - dayOfWeek);
+
+        const days: DaySummary[] = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(sunday);
+            d.setDate(sunday.getDate() + i);
+            const dateStr = d.toISOString().split('T')[0];
+
+            const dayMinutes = completedWithTime
+                .filter(s => s.targetDate === dateStr)
+                .reduce((sum, s) => sum + this.durationMinutes(s), 0);
+
+            days.push({
+                label: this.weekDayLabels[i],
+                dateStr,
+                totalMinutes: dayMinutes,
+                formatted: this.formatMinutes(dayMinutes),
+                isToday: dateStr === todayStr
+            });
+        }
+        this.weekSummary = days;
     }
 
     submitProfileUpdate(): void {

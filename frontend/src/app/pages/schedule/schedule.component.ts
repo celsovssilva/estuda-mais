@@ -52,22 +52,16 @@ export class AgendaComponent implements OnInit {
         this.formSchedule.targetDate = this.selectedDateStr;
         this.loadSchedules();
     }
-
     loadSchedules(): void {
         this.scheduleService.getSchedulesByUser().subscribe({
             next: (res: ScheduleResponse[]) => {
-                const all = res || [];
-                const todayStr = new Date().toISOString().split('T')[0];
-                // Mantém concluídos aqui (preciso deles pra calcular a cor do dia),
-                // só remove os que já venceram de vez.
-                this.allSchedules = all.filter(s => !s.targetDate || s.targetDate >= todayStr);
+                this.allSchedules = res || [];
                 this.buildMonthlyCalendar();
                 this.filterSchedules();
             },
             error: (err) => console.error('Erro ao buscar compromissos:', err)
         });
     }
-
     // Calcula o status (cor) de um conjunto de compromissos de um dia
     private computeDayStatus(daySchedules: ScheduleResponse[]): DayStatus {
         if (daySchedules.length === 0) return 'none';
@@ -123,7 +117,6 @@ export class AgendaComponent implements OnInit {
             dayItems = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
         }
 
-        // Calcula o status do dia selecionado ANTES de esconder os concluídos da lista
         if (this.viewMode === 'DAY') {
             const dayOnlyItems = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
             this.selectedDayStatus = this.computeDayStatus(dayOnlyItems);
@@ -131,7 +124,6 @@ export class AgendaComponent implements OnInit {
             this.selectedDayStatus = 'none';
         }
 
-        // Concluídos somem da lista visível
         this.filteredSchedules = dayItems.filter(s => !s.completed);
     }
 

@@ -2,31 +2,31 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NoteService } from '../../core/services/note/note.service'; // Ajuste o caminho se necessário
+import { NoteService } from '../../core/services/note/note.service';
 import { Note } from '../../core/models/note.models';
-import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
+import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-notes',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule,NavbarComponent],
+    imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
     templateUrl: './notes.component.html',
     styleUrls: ['./notes.component.css']
 })
 export class NotesComponent implements OnInit {
     private noteService = inject(NoteService);
 
-    // Listagem de notas vindas do backend
     allNotes: Note[] = [];
 
-    // Objeto reativo para o formulário (Editor)
     formNote: Note = {
         title: '',
         content: '',
-        referenceDate: new Date().toISOString().split('T')[0] // Data de hoje como padrão
+        referenceDate: new Date().toISOString().split('T')[0]
     };
 
-    // Controle de estado de edição
+    selectedFile: File | null = null;
+    removeCurrentAttachment: boolean = false;
+
     isEditing: boolean = false;
 
     ngOnInit(): void {
@@ -42,7 +42,25 @@ export class NotesComponent implements OnInit {
         });
     }
 
-    // Salva ou atualiza a nota dependendo do estado atual
+    onFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                alert('O arquivo deve ter no máximo 5MB.');
+                input.value = '';
+                return;
+            }
+            this.selectedFile = file;
+            this.removeCurrentAttachment = false;
+        }
+    }
+
+    removeAttachment(): void {
+        this.selectedFile = null;
+        this.removeCurrentAttachment = true;
+    }
+
     saveNote(): void {
         if (!this.formNote.title.trim() || !this.formNote.content.trim()) {
             alert('Por favor, preencha o título e o conteúdo da anotação.');
@@ -50,8 +68,7 @@ export class NotesComponent implements OnInit {
         }
 
         if (this.isEditing && this.formNote.id) {
-            // Modo Atualização
-            this.noteService.updateNote(this.formNote.id, this.formNote).subscribe({
+            this.noteService.updateNote(this.formNote.id, this.formNote, this.selectedFile, this.removeCurrentAttachment).subscribe({
                 next: () => {
                     this.clearForm();
                     this.loadNotes();
@@ -59,8 +76,7 @@ export class NotesComponent implements OnInit {
                 error: (err) => console.error('Erro ao atualizar nota:', err)
             });
         } else {
-            // Modo Criação
-            this.noteService.createNote(this.formNote).subscribe({
+            this.noteService.createNote(this.formNote, this.selectedFile).subscribe({
                 next: () => {
                     this.clearForm();
                     this.loadNotes();
@@ -70,20 +86,20 @@ export class NotesComponent implements OnInit {
         }
     }
 
-    // Prepara o formulário para edição ao clicar em uma nota da lista
     prepareEdit(note: Note): void {
         this.isEditing = true;
-        this.formNote = { ...note }; // Clona o objeto para não alterar a lista antes de salvar
+        this.formNote = { ...note };
+        this.selectedFile = null;
+        this.removeCurrentAttachment = false;
     }
 
     deleteNote(id: number | undefined, event: Event): void {
-        event.stopPropagation(); // Evita que o clique abra o modo de edição do card
+        event.stopPropagation();
         if (!id) return;
 
         if (confirm('Deseja excluir permanentemente esta anotação?')) {
             this.noteService.deleteNote(id).subscribe({
                 next: () => {
-                    // Se a nota excluída estava sendo editada no momento, limpa o formulário
                     if (this.formNote.id === id) {
                         this.clearForm();
                     }
@@ -94,6 +110,11 @@ export class NotesComponent implements OnInit {
         }
     }
 
+    getAttachmentUrl(noteId: number | undefined): string {
+        if (!noteId) return '';
+        return this.noteService.getAttachmentUrl(noteId);
+    }
+
     clearForm(): void {
         this.isEditing = false;
         this.formNote = {
@@ -101,5 +122,7 @@ export class NotesComponent implements OnInit {
             content: '',
             referenceDate: new Date().toISOString().split('T')[0]
         };
+        this.selectedFile = null;
+        this.removeCurrentAttachment = false;
     }
 }

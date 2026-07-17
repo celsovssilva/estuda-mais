@@ -233,3 +233,24 @@
         grid-template-columns: 1fr;
     }
 }
+
+.current-attachment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-main);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
+.attachment-badge {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+.attachment-badge:hover { text-decoration: underline; }

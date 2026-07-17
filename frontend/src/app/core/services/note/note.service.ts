@@ -1,35 +1,43 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Note} from "../../models/note.models";
-import {environment} from "../../../../environments/environment.prod";
-
+import { Note } from '../../models/note.models';
+import { environment } from "../../../../environments/environment.prod";
 
 @Injectable({
     providedIn: 'root'
 })
 export class NoteService {
-     private apiUrl =  `${environment.apiUrl}/api/note`;
+    private http = inject(HttpClient);
+    private apiUrl = `${environment.apiUrl}/api/note`;
 
-    constructor(private http: HttpClient) {}
+    createNote(note: Note, file?: File | null): Observable<Note> {
+        const formData = new FormData();
+        formData.append('note', new Blob([JSON.stringify(note)], { type: 'application/json' }));
+        if (file) {
+            formData.append('file', file);
+        }
+        return this.http.post<Note>(`${this.apiUrl}/create`, formData);
+    }
 
-    // Busca as notas do usuário logado
     getNotesByUser(): Observable<Note[]> {
         return this.http.get<Note[]>(`${this.apiUrl}/getByUserNote`);
     }
 
-    // Cria uma nova nota
-    createNote(note: Note): Observable<Note> {
-        return this.http.post<Note>(`${this.apiUrl}/create`, note);
+    updateNote(id: number, note: Note, file?: File | null, removeAttachment: boolean = false): Observable<Note> {
+        const formData = new FormData();
+        formData.append('note', new Blob([JSON.stringify(note)], { type: 'application/json' }));
+        if (file) {
+            formData.append('file', file);
+        }
+        return this.http.put<Note>(`${this.apiUrl}/update/${id}?removeAttachment=${removeAttachment}`, formData);
     }
 
-    // Atualiza uma nota existente
-    updateNote(noteId: number, note: Note): Observable<Note> {
-        return this.http.put<Note>(`${this.apiUrl}/update/${noteId}`, note);
+    deleteNote(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
     }
 
-    // Deleta uma nota
-    deleteNote(noteId: number): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/delete/${noteId}`);
+    getAttachmentUrl(noteId: number): string {
+        return `${this.apiUrl}/${noteId}/attachment`;
     }
 }

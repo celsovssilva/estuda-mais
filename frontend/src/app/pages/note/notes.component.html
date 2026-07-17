@@ -29,6 +29,22 @@
                     <textarea [(ngModel)]="formNote.content" placeholder="Comece a digitar suas anotações aqui..." rows="10"></textarea>
                 </div>
             </div>
+            <div class="input-block">
+                <label>Anexo </label>
+                <input type="file" (change)="onFileSelected($event)">
+
+                <div class="current-attachment" *ngIf="isEditing && formNote.hasAttachment && !removeCurrentAttachment && !selectedFile">
+                    <span>📎 {{ formNote.attachmentFileName }}</span>
+                    <button type="button" class="btn-cancel" (click)="removeAttachment()">Remover</button>
+                </div>
+
+                <div class="current-attachment" *ngIf="selectedFile">
+                    <span>📎 {{ selectedFile.name }} (novo, será salvo ao confirmar)</span>
+                </div>
+
+            </div>
+
+
 
             <button class="btn-submit" [class.btn-update]="isEditing" (click)="saveNote()">
                 <span>{{ isEditing ? 'Atualizar Nota' : 'Salvar Nota' }}</span>
@@ -53,6 +69,13 @@
                 <p class="note-snippet">{{ note.content }}</p>
                 <div class="note-card-footer">
                     <span class="edit-indicator">Clique para editar ✎</span>
+                    <a *ngIf="note.hasAttachment"
+                       class="attachment-badge"
+                       [href]="getAttachmentUrl(note.id)"
+                       target="_blank"
+                       (click)="$event.stopPropagation()">
+                        📎 {{ note.attachmentFileName }}
+                    </a>
                 </div>
             </div>
 

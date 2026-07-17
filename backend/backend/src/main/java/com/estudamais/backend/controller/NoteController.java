@@ -7,11 +7,15 @@ import com.estudamais.backend.response.NoteResponse;
 import com.estudamais.backend.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,31 +25,42 @@ public class NoteController {
     @Autowired
     private NoteService noteService;
 
-    @PostMapping("/create")
-    public ResponseEntity<NoteResponse> create(@RequestBody @Valid NoteRequest request, Authentication authentication) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<NoteResponse> create(
+            @RequestPart("note") @Valid NoteRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            Authentication authentication) throws IOException {
         User user = (User) authentication.getPrincipal();
-        NoteResponse response = noteService.createNote(user, request);
+        NoteResponse response = noteService.createNote(user, request, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     @GetMapping("/getByDateNote")
-    public ResponseEntity<List<NoteResponse>> byUser(Authentication authentication, LocalDate date){
+    public ResponseEntity<List<NoteResponse>> byUser(Authentication authentication, LocalDate date) {
         User user = (User) authentication.getPrincipal();
-        List<NoteResponse> response = noteService.getNotesByDate(user.getId(),date);
+        List<NoteResponse> response = noteService.getNotesByDate(user.getId(), date);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/getByUserNote")
-    public ResponseEntity<List<NoteResponse>> byUser(Authentication authentication){
+    public ResponseEntity<List<NoteResponse>> byUser(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         List<NoteResponse> response = noteService.getNotesByUser(user.getId());
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update/{noteId}")
-    public ResponseEntity<NoteResponse> updateNotes(@PathVariable Long noteId,@RequestBody @Valid NoteRequest request, Authentication authentication){
+    @PutMapping(value = "/update/{noteId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<NoteResponse> updateNotes(
+            @PathVariable Long noteId,
+            @RequestPart("note") @Valid NoteRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeAttachment", defaultValue = "false") boolean removeAttachment,
+            Authentication authentication) throws IOException {
         User user = (User) authentication.getPrincipal();
-        NoteResponse response = noteService.updateNote(user.getId(),noteId ,request);
-        return  ResponseEntity.ok(response);
+        NoteResponse response = noteService.updateNote(user.getId(), noteId, request, file, removeAttachment);
+        return ResponseEntity.ok(response);
     }
+
     @DeleteMapping("/delete/{noteId}")
     public ResponseEntity<Void> delete(@PathVariable Long noteId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -53,4 +68,18 @@ public class NoteController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{noteId}/attachment")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long noteId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Note note = noteService.getNoteEntity(user.getId(), noteId);
+
+        if (note.getAttachmentData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(note.getAttachmentContentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + note.getAttachmentFileName() + "\"")
+                .body(note.getAttachmentData());
+    }
 }

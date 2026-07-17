@@ -3,6 +3,9 @@ package com.estudamais.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDate;
 
 @Entity
@@ -27,4 +30,13 @@ public class Note {
     private String content;
 
     private LocalDate referenceDate;
+
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    @Column(name = "attachment_data")
+    private byte[] attachmentData;
+    private String attachmentFileName;
+
+    private String attachmentContentType;
+
+    private Long attachmentSize;
 }

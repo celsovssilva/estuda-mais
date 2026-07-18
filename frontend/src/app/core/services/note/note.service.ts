@@ -40,4 +40,7 @@ export class NoteService {
     getAttachmentUrl(noteId: number): string {
         return `${this.apiUrl}/${noteId}/attachment`;
     }
+    downloadAttachment(noteId: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/${noteId}/attachment`, { responseType: 'blob' });
+    }
 }

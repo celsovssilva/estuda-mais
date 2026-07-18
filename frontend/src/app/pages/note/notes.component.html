@@ -69,13 +69,11 @@
                 <p class="note-snippet">{{ note.content }}</p>
                 <div class="note-card-footer">
                     <span class="edit-indicator">Clique para editar ✎</span>
-                    <a *ngIf="note.hasAttachment"
-                       class="attachment-badge"
-                       [href]="getAttachmentUrl(note.id)"
-                       target="_blank"
-                       (click)="$event.stopPropagation()">
-                        📎 {{ note.attachmentFileName }}
-                    </a>
+                    <span *ngIf="note.hasAttachment"
+                          class="attachment-badge"
+                          (click)="$event.stopPropagation(); openAttachment(note)">
+                📎 {{ note.attachmentFileName }}
+</span>
                 </div>
             </div>
 

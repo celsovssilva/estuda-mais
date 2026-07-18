@@ -114,6 +114,22 @@ export class NotesComponent implements OnInit {
         if (!noteId) return '';
         return this.noteService.getAttachmentUrl(noteId);
     }
+    openAttachment(note: Note): void {
+        if (!note.id) return;
+
+        this.noteService.downloadAttachment(note.id).subscribe({
+            next: (blob: Blob) => {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                // Libera a memória depois de um tempo, já que a aba já abriu com o conteúdo
+                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+            },
+            error: (err) => {
+                console.error('Erro ao abrir anexo:', err);
+                alert('Não foi possível abrir o anexo.');
+            }
+        });
+    }
 
     clearForm(): void {
         this.isEditing = false;

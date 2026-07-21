@@ -51,6 +51,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.PUT,"api/schedule/update/{scheduleId}").authenticated();
                     req.requestMatchers(HttpMethod.DELETE,"api/schedule/delete/{scheduleId}").authenticated();
                     req.requestMatchers(HttpMethod.PATCH,"api/schedule/toggle/{scheduleId}").authenticated();
+                    req.requestMatchers(HttpMethod.GET,"api/schedule/metrics").authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

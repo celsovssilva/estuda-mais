@@ -1,15 +1,21 @@
 package com.estudamais.backend.service.serviceimpl;
 
 import com.estudamais.backend.entity.Schedule;
+import com.estudamais.backend.entity.ScheduleCategory;
 import com.estudamais.backend.entity.ScheduleType;
 import com.estudamais.backend.repository.SheduleRepository;
 import com.estudamais.backend.request.ScheduleRequest;
+import com.estudamais.backend.response.CategoryMetricResponse;
 import com.estudamais.backend.response.ScheduleResponse;
 import com.estudamais.backend.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -26,6 +32,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .type(request.type())
                 .startTime(request.startTime())
                 .endTime(request.endTime())
+                .category(request.category())
                 .build();
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }
@@ -55,6 +62,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setType(request.type());
         schedule.getStartTime();
         schedule.getEndTime();
+        schedule.setCategory(request.category());
 
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }
@@ -79,5 +87,44 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setCompleted(!schedule.isCompleted());
         Schedule updated = scheduleRepository.save(schedule);
         return new ScheduleResponse(updated);
+    }
+
+    @Override
+    public List<CategoryMetricResponse> getMonthlyMetricsByCategory(Long userId, Integer year, Integer month) {
+        LocalDate now = LocalDate.now();
+        int y = (year != null) ? year : now.getYear();
+        int m = (month != null) ? month : now.getMonthValue();
+
+        List<Schedule> all = scheduleRepository.findByUserId(userId);
+
+        List<Schedule> monthSchedules = all.stream()
+                .filter(s -> s.getTargetDate() != null
+                        && s.getTargetDate().getYear() == y
+                        && s.getTargetDate().getMonthValue() == m)
+                .toList();
+
+
+        Map<ScheduleCategory, List<Schedule>> grouped = monthSchedules.stream()
+                .collect(Collectors.groupingBy(s ->
+                        s.getCategory() != null ? s.getCategory() : ScheduleCategory.OUTROS
+                ));
+
+        List<CategoryMetricResponse> result = new ArrayList<>();
+
+        for (Map.Entry<ScheduleCategory, List<Schedule>> entry : grouped.entrySet()) {
+            List<Schedule> items = entry.getValue();
+            long total = items.size();
+            long completed = items.stream().filter(Schedule::isCompleted).count();
+            int percentage = (total == 0) ? 0 : (int) Math.round((completed * 100.0) / total);
+
+            result.add(new CategoryMetricResponse(
+                    entry.getKey().name(),
+                    total,
+                    completed,
+                    percentage
+            ));
+        }
+
+        return result;
     }
 }

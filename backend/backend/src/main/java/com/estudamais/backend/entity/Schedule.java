@@ -37,4 +37,9 @@ public class Schedule {
     @Builder.Default
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean completed = false;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "varchar(30) default 'OUTROS'")
+    private ScheduleCategory category = ScheduleCategory.OUTROS;
 }

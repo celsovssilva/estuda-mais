@@ -3,6 +3,7 @@ package com.estudamais.backend.controller;
 import com.estudamais.backend.entity.ScheduleType;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.request.ScheduleRequest;
+import com.estudamais.backend.response.CategoryMetricResponse;
 import com.estudamais.backend.response.ScheduleResponse;
 import com.estudamais.backend.service.ScheduleService;
 import jakarta.validation.Valid;
@@ -57,5 +58,11 @@ public class ScheduleController {
         User user = (User) authentication.getPrincipal();
         ScheduleResponse response = scheduleService.toggleScheduleCompletion(user.getId(), scheduleId);
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/metrics")
+    public ResponseEntity<List<CategoryMetricResponse>> getMetrics(@RequestParam(required = false) Integer year,@RequestParam(required = false) Integer month, Authentication authentication  ){
+        User user = (User) authentication.getPrincipal();
+        List<CategoryMetricResponse> responses = scheduleService.getMonthlyMetricsByCategory(user.getId(),year,month );
+        return ResponseEntity.ok(responses);
     }
 }

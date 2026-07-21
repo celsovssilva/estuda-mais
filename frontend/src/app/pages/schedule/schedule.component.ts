@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
-import { ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
+import {CategoryMetric, ScheduleRequest, ScheduleResponse} from '../../core/models/schedule.models';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 type DayStatus = 'none' | 'red' | 'orange' | 'green';
@@ -21,13 +21,15 @@ export class AgendaComponent implements OnInit {
     allSchedules: ScheduleResponse[] = [];
     filteredSchedules: ScheduleResponse[] = [];
 
+
     formSchedule = {
         title: '',
         description: '',
         targetDate: '',
         type: 'DAY',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        category: 'OUTROS'
     };
 
     currentYear: number = 2026;
@@ -160,7 +162,8 @@ export class AgendaComponent implements OnInit {
             targetDate: this.formSchedule.targetDate,
             type: this.formSchedule.type,
             startTime: this.formSchedule.startTime ? this.formSchedule.startTime : null,
-            endTime: this.formSchedule.endTime ? this.formSchedule.endTime : null
+            endTime: this.formSchedule.endTime ? this.formSchedule.endTime : null,
+            category: this.formSchedule.category
         };
 
         this.scheduleService.createSchedule(payload).subscribe({

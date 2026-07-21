@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ScheduleRequest, ScheduleResponse } from '../../models/schedule.models';
-import {environment} from "../../../../environments/environment.prod";
+import {CategoryMetric, ScheduleRequest, ScheduleResponse} from '../../models/schedule.models';
+import {environment} from "../../../../environments/environment.development";
 
 @Injectable({
     providedIn: 'root'
@@ -32,5 +32,10 @@ export class ScheduleService {
     }
     toggleSchedule(id: number): Observable<ScheduleResponse> {
         return this.http.patch<ScheduleResponse>(`${this.apiUrl}/toggle/${id}`, {});
+    }
+    getMetrics(year?: number, month?: number): Observable<CategoryMetric[]> {
+        let params = '';
+        if (year && month) params = `?year=${year}&month=${month}`;
+        return this.http.get<CategoryMetric[]>(`${this.apiUrl}/metrics${params}`);
     }
 }

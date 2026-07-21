@@ -1,4 +1,45 @@
 /* Container Geral */
+.category-section { margin-top: 10px; }
+
+.category-list { display: flex; flex-direction: column; gap: 16px; }
+
+.category-row {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.category-percent { color: #4f46e5; }
+
+.progress-track {
+    background: #f1f5f9;
+    border-radius: 8px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: #4f46e5;
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.4s ease;
+}
+
+.category-detail {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
 .dashboard-wrapper {
     max-width: 1000px;
     margin: 2rem auto;

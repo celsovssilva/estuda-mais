@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
-import { ScheduleResponse } from '../../core/models/schedule.models';
+import {CategoryMetric, ScheduleResponse} from '../../core/models/schedule.models';
 import { AuthService } from '../../core/services/auth/auth.services';
 import { RouterModule, Router } from '@angular/router';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
@@ -47,9 +47,37 @@ export class DashboardComponent implements OnInit {
     };
 
     isSavingProfile = false;
+    categoryMetrics: CategoryMetric[] = [];
+    categoryLabels: Record<string, string> = {
+        ACADEMIA: '🏋️ Academia',
+        ESTUDOS: '📚 Estudos',
+        CUIDADO_PESSOAL: '🧘 Cuidado Pessoal',
+        OUTROS: '📌 Outros'
+    };
 
     ngOnInit(): void {
         this.loadDashboardMetrics();
+        this.loadCategoryMetrics();
+    }
+    loadCategoryMetrics(): void {
+        this.scheduleService.getMetrics().subscribe({
+            next: (res: any[]) => {
+                const rawMetrics = res || [];
+
+                this.categoryMetrics = rawMetrics.map(item => {
+
+                    const catKey = (item.category || item.categoryName || item.name || 'OUTROS').toString().toUpperCase();
+
+                    return {
+                        category: catKey,
+                        total: item.total || 0,
+                        completed: item.completed || 0,
+                        percentage: item.percentage || 0
+                    };
+                });
+            },
+            error: (err) => console.error('Erro ao carregar métricas por categoria:', err)
+        });
     }
 
     loadDashboardMetrics(): void {

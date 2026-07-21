@@ -5,6 +5,7 @@ export interface ScheduleRequest {
     type: 'DAY' | 'WEEK' | 'MONTH' | 'YEAR' | string;
     startTime: string | null;
     endTime: string | null;
+    category: 'ACADEMIA' | 'ESTUDOS' | 'CUIDADO_PESSOAL' | 'OUTROS' | string;
 }
 
 export interface ScheduleResponse {
@@ -16,4 +17,12 @@ export interface ScheduleResponse {
     startTime: string | null;
     endTime: string | null;
     completed: boolean;
+    category: string;
+}
+
+export interface CategoryMetric {
+    category: string;
+    total: number;
+    completed: number;
+    percentage: number;
 }

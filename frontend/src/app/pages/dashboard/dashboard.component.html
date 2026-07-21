@@ -54,4 +54,20 @@
         </div>
     </section>
 
+    <section class="category-section" *ngIf="categoryMetrics && categoryMetrics.length > 0">
+        <h2>🎯 Cumprimento por Categoria (Mês Atual)</h2>
+        <div class="category-list">
+            <div class="category-row" *ngFor="let m of categoryMetrics">
+                <div class="category-header">
+                    <span>{{ categoryLabels[m.category] || m.category }}</span>
+                    <span class="category-percent">{{ m.percentage }}%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="m.percentage"></div>
+                </div>
+                <span class="category-detail">{{ m.completed }} de {{ m.total }} cumpridos</span>
+            </div>
+        </div>
+    </section>
+
 </div>

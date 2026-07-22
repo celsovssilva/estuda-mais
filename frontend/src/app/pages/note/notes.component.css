@@ -254,3 +254,65 @@
     font-weight: 600;
 }
 .attachment-badge:hover { text-decoration: underline; }
+
+/* TOAST DINÂMICO */
+.toast-dynamic {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-dynamic.error { border-left: 5px solid #ef4444; }
+.toast-dynamic.success { border-left: 5px solid #10b981; }
+.toast-dynamic.warning { border-left: 5px solid var(--warning); }
+
+.toast-text { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+.btn-toast-close { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+
+/* MODAL DE CONFIRMAÇÃO DE DELEÇÃO */
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    background: var(--surface);
+}
+
+.modal-card h4 { margin: 0 0 8px 0; color: var(--text-main); font-size: 1.1rem; }
+.modal-card p { margin: 0 0 20px 0; font-size: 0.85rem; color: var(--text-muted); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+.btn-delete-confirm {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-delete-confirm:hover { background: #dc2626; }
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

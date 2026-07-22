@@ -122,3 +122,22 @@
     </div>
 
 </div>
+
+<div *ngIf="toast" class="toast-dynamic" [ngClass]="toast.type">
+  <span class="toast-icon">
+    {{ toast.type === 'error' ? '⚠️' : toast.type === 'success' ? '✅' : '💡' }}
+  </span>
+    <span class="toast-text">{{ toast.message }}</span>
+    <button class="btn-toast-close" (click)="closeToast()">×</button>
+</div>
+
+<div *ngIf="pendingDeleteId" class="modal-backdrop">
+    <div class="modal-card">
+        <h4>Confirmar Exclusão</h4>
+        <p>Remover definitivamente este compromisso de sua grade?</p>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" (click)="cancelDelete()">Cancelar</button>
+            <button class="btn-modal-delete" (click)="confirmDelete()">Excluir</button>
+        </div>
+    </div>
+</div>

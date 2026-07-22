@@ -1,11 +1,11 @@
 /* Container Geral da Tela de Perfil */
 .profile-wrapper {
     max-width: 1000px;
-    margin: 4rem auto; /* Aumentado o espaçamento superior para desgrudar do topo */
+    margin: 4rem auto;
     padding: 0 20px;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex;
-    justify-content: center; /* Centraliza horizontalmente tudo que estiver dentro */
+    justify-content: center;
     align-items: center;
     width: 100%;
     box-sizing: border-box;
@@ -17,7 +17,7 @@
     flex-direction: column;
     gap: 15px;
     width: 100%;
-    max-width: 500px; /* Garante que o título acompanhe exatamente o tamanho do card */
+    max-width: 500px;
 }
 
 /* Título Principal */
@@ -45,7 +45,7 @@
     box-sizing: border-box;
 }
 
-/* Grupos de Formulário (Corrige o desalinhamento da imagem ec8623.png) */
+/* Grupos de Formulário */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -107,19 +107,45 @@
     align-items: center;
 }
 
-/* Efeito Hover do Botão */
 .btn-save:hover {
     background-color: #4338ca;
 }
 
-/* Efeito de Clique do Botão */
 .btn-save:active {
     transform: scale(0.98);
 }
 
-/* Estado Desabilitado (Quando está salvando) */
 .btn-save:disabled {
     background-color: #94a3b8;
     cursor: not-allowed;
     transform: none;
+}
+
+/* TOAST DINÂMICO DE EXCEÇÕES */
+.toast-dynamic {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-dynamic.error { border-left: 5px solid #ef4444; }
+.toast-dynamic.success { border-left: 5px solid #10b981; }
+.toast-dynamic.warning { border-left: 5px solid #f97316; }
+
+.toast-text { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+.btn-toast-close { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; }
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }

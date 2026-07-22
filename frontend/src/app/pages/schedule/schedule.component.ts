@@ -3,10 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ScheduleService } from '../../core/services/schedule/schedule.service';
-import {CategoryMetric, ScheduleRequest, ScheduleResponse} from '../../core/models/schedule.models';
+import { CategoryMetric, ScheduleRequest, ScheduleResponse } from '../../core/models/schedule.models';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 type DayStatus = 'none' | 'red' | 'orange' | 'green';
+
+export interface ToastNotification {
+    message: string;
+    type: 'error' | 'success' | 'warning';
+}
 
 @Component({
     selector: 'app-agenda',
@@ -20,7 +25,6 @@ export class AgendaComponent implements OnInit {
 
     allSchedules: ScheduleResponse[] = [];
     filteredSchedules: ScheduleResponse[] = [];
-
 
     formSchedule = {
         title: '',
@@ -44,8 +48,13 @@ export class AgendaComponent implements OnInit {
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
 
-    // Status calculado do dia atualmente selecionado (usado pra mensagem de aviso)
     selectedDayStatus: DayStatus = 'none';
+
+
+    toast: ToastNotification | null = null;
+    private toastTimeout: any;
+
+    pendingDeleteId: number | null = null;
 
     ngOnInit(): void {
         const today = new Date();
@@ -54,6 +63,27 @@ export class AgendaComponent implements OnInit {
         this.formSchedule.targetDate = this.selectedDateStr;
         this.loadSchedules();
     }
+
+
+
+    private extractErrorMessage(err: any, fallbackMessage: string): string {
+        if (typeof err?.error === 'string') return err.error;
+        return err?.error?.message || err?.error?.error || err?.message || fallbackMessage;
+    }
+
+    showToast(message: string, type: 'error' | 'success' | 'warning' = 'error'): void {
+        this.toast = { message, type };
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+            this.toast = null;
+        }, 4000);
+    }
+
+    closeToast(): void {
+        this.toast = null;
+    }
+
+
     loadSchedules(): void {
         this.scheduleService.getSchedulesByUser().subscribe({
             next: (res: ScheduleResponse[]) => {
@@ -61,10 +91,13 @@ export class AgendaComponent implements OnInit {
                 this.buildMonthlyCalendar();
                 this.filterSchedules();
             },
-            error: (err) => console.error('Erro ao buscar compromissos:', err)
+            error: (err) => {
+                const msg = this.extractErrorMessage(err, 'Erro ao buscar compromissos.');
+                this.showToast(msg, 'error');
+            }
         });
     }
-    // Calcula o status (cor) de um conjunto de compromissos de um dia
+
     private computeDayStatus(daySchedules: ScheduleResponse[]): DayStatus {
         if (daySchedules.length === 0) return 'none';
         const completedCount = daySchedules.filter(s => s.completed).length;
@@ -152,7 +185,7 @@ export class AgendaComponent implements OnInit {
 
     addSchedule(): void {
         if (!this.formSchedule.title.trim() || !this.formSchedule.targetDate) {
-            alert('Por favor, defina um Título e uma Data de Agendamento.');
+            this.showToast('Por favor, defina um Título e uma Data de Agendamento.', 'warning');
             return;
         }
 
@@ -168,6 +201,7 @@ export class AgendaComponent implements OnInit {
 
         this.scheduleService.createSchedule(payload).subscribe({
             next: () => {
+                this.showToast('Compromisso agendado com sucesso!', 'success');
                 this.formSchedule.title = '';
                 this.formSchedule.description = '';
                 this.formSchedule.startTime = '';
@@ -175,8 +209,8 @@ export class AgendaComponent implements OnInit {
                 this.loadSchedules();
             },
             error: (err) => {
-                console.error('Erro na criação:', err);
-                alert('Ocorreu uma falha ao registrar o compromisso.');
+                const msg = this.extractErrorMessage(err, 'Ocorreu uma falha ao registrar o compromisso.');
+                this.showToast(msg, 'error');
             }
         });
     }
@@ -184,7 +218,6 @@ export class AgendaComponent implements OnInit {
     toggleSchedule(schedule: ScheduleResponse): void {
         this.scheduleService.toggleSchedule(schedule.id).subscribe({
             next: (updated: ScheduleResponse) => {
-                // Atualiza o item dentro de allSchedules (precisa continuar lá pra colorir o dia)
                 const idx = this.allSchedules.findIndex(s => s.id === updated.id);
                 if (idx !== -1) {
                     this.allSchedules[idx] = updated;
@@ -192,17 +225,37 @@ export class AgendaComponent implements OnInit {
                 this.buildMonthlyCalendar();
                 this.filterSchedules();
             },
-            error: (err) => console.error('Erro ao atualizar compromisso:', err)
+            error: (err) => {
+                const msg = this.extractErrorMessage(err, 'Erro ao atualizar compromisso.');
+                this.showToast(msg, 'error');
+            }
         });
     }
 
+
     deleteSchedule(id: number): void {
-        if (confirm('Remover definitivamente este compromisso de sua grade?')) {
-            this.scheduleService.deleteSchedule(id).subscribe({
-                next: () => this.loadSchedules(),
-                error: (err) => console.error(err)
-            });
-        }
+        this.pendingDeleteId = id;
+    }
+
+    confirmDelete(): void {
+        if (!this.pendingDeleteId) return;
+        const idToDelete = this.pendingDeleteId;
+        this.pendingDeleteId = null;
+
+        this.scheduleService.deleteSchedule(idToDelete).subscribe({
+            next: () => {
+                this.showToast('Compromisso removido com sucesso!', 'success');
+                this.loadSchedules();
+            },
+            error: (err) => {
+                const msg = this.extractErrorMessage(err, 'Erro ao remover compromisso.');
+                this.showToast(msg, 'error');
+            }
+        });
+    }
+
+    cancelDelete(): void {
+        this.pendingDeleteId = null;
     }
 
     setMode(mode: 'MONTH' | 'DAY'): void {

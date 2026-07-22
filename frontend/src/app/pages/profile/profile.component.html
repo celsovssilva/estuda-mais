@@ -25,3 +25,11 @@
         </div>
     </section>
 </div>
+
+<div *ngIf="toast" class="toast-dynamic" [ngClass]="toast.type">
+  <span class="toast-icon">
+    {{ toast.type === 'error' ? '⚠️' : toast.type === 'success' ? '✅' : '💡' }}
+  </span>
+    <span class="toast-text">{{ toast.message }}</span>
+    <button class="btn-toast-close" (click)="closeToast()">×</button>
+</div>

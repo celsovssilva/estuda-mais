@@ -13,6 +13,7 @@ interface DaySummary {
     totalMinutes: number;
     formatted: string;
     isToday: boolean;
+    byCategory: Record<string, number>;
 }
 
 @Component({
@@ -39,6 +40,8 @@ export class DashboardComponent implements OnInit {
     // Resumo da semana (Dom a Sáb), um item por dia
     weekSummary: DaySummary[] = [];
     weekDayLabels: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    weekTotalsByCategory: Record<string, number> = {};
+
 
     profileData = {
         name: '',
@@ -54,7 +57,7 @@ export class DashboardComponent implements OnInit {
         CUIDADO_PESSOAL: '🧘 Cuidado Pessoal',
         OUTROS: '📌 Outros'
     };
-
+    categoryKeys: string[] = Object.keys(this.categoryLabels);
     ngOnInit(): void {
         this.loadDashboardMetrics();
         this.loadCategoryMetrics();
@@ -109,7 +112,7 @@ export class DashboardComponent implements OnInit {
         return diff > 0 ? diff : 0;
     }
 
-    private formatMinutes(totalMinutes: number): string {
+    formatMinutes(totalMinutes: number): string {
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         return `${hours}h ${minutes}min`;
@@ -142,15 +145,35 @@ export class DashboardComponent implements OnInit {
                 .filter(s => s.targetDate === dateStr)
                 .reduce((sum, s) => sum + this.durationMinutes(s), 0);
 
+            const byCategory = completedWithTime
+                .filter(s => s.targetDate === dateStr)
+                .reduce((acc, item) => {
+                    const cat = item.category;
+                    const minutos = this.durationMinutes(item);
+                    acc[cat] = (acc[cat] ?? 0) + minutos; // preencha aqui
+                    return acc;
+                }, {} as Record<string, number>);
+
             days.push({
                 label: this.weekDayLabels[i],
                 dateStr,
                 totalMinutes: dayMinutes,
                 formatted: this.formatMinutes(dayMinutes),
-                isToday: dateStr === todayStr
+                isToday: dateStr === todayStr,
+                byCategory: byCategory
             });
         }
         this.weekSummary = days;
+        const weekTotalsByCategory:Record<string, number>={};
+
+        for(const day of days){
+            for(const cat in day.byCategory){
+                weekTotalsByCategory[cat] = (weekTotalsByCategory[cat]  ?? 0) +  day.byCategory[cat];
+
+              }
+
+        }
+        this.weekTotalsByCategory= weekTotalsByCategory;
     }
 
     submitProfileUpdate(): void {

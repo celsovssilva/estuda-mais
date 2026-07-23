@@ -33,27 +33,31 @@
     </section>
 
     <section class="time-section">
-        <h2>⏱️ Horário Líquido</h2>
+        <h2>⏱️ Horário por Categoria (Semana)</h2>
 
-        <div class="time-grid">
-            <div class="time-square today-square">
-                <h3>Hoje</h3>
-                <p class="time-value">{{ todayFormatted }}</p>
-                <span class="time-caption">Soma dos compromissos concluídos hoje</span>
-            </div>
-
-            <div class="time-square week-square">
-                <h3>Semana</h3>
-                <ul class="week-breakdown">
-                    <li *ngFor="let day of weekSummary" [class.is-today]="day.isToday">
-                        <span class="week-day-label">{{ day.label }}</span>
-                        <span class="week-day-value">{{ day.formatted }}</span>
-                    </li>
-                </ul>
-            </div>
+        <div class="time-square week-table-wrapper">
+            <table class="week-category-table">
+                <thead>
+                <tr>
+                    <th class="category-col">Categoria</th>
+                    <th *ngFor="let day of weekSummary" [class.is-today-col]="day.isToday">
+                        {{ day.label }}
+                    </th>
+                    <th class="total-col">Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let cat of categoryKeys">
+                    <td class="category-col">{{ categoryLabels[cat] || cat }}</td>
+                    <td *ngFor="let day of weekSummary" [class.is-today-col]="day.isToday">
+                        {{ formatMinutes(day.byCategory[cat] || 0) }}
+                    </td>
+                    <td class="total-col">{{ formatMinutes(weekTotalsByCategory[cat] || 0) }}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </section>
-
     <section class="category-section" *ngIf="categoryMetrics && categoryMetrics.length > 0">
         <h2>🎯 Cumprimento por Categoria (Mês Atual)</h2>
         <div class="category-list">

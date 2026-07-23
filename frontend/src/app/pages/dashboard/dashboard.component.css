@@ -237,3 +237,41 @@ h2 {
     font-weight: 700;
     color: #0f172a;
 }
+.week-table-wrapper {
+    overflow-x: auto;
+}
+
+.week-category-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.week-category-table th,
+.week-category-table td {
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.week-category-table .category-col {
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+}
+
+.week-category-table thead th {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.week-category-table .total-col {
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+.is-today-col {
+    background-color: #eef2ff;
+}

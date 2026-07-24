@@ -1,10 +1,13 @@
 package com.estudamais.backend.request;
 
+import com.estudamais.backend.entity.Role;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 public record RegisterRequest(
         @NotBlank String name,
         @NotBlank @Email String email,
-        @NotBlank @Size(min = 6) String password
+        @NotBlank @Size(min = 6) String password,
+        Role role
+
 ) {}

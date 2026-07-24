@@ -37,6 +37,8 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST,"api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST,"api/auth/register").permitAll();
                     req.requestMatchers(HttpMethod.PUT,"api/auth/update").authenticated();
+                    //admin
+                    req.requestMatchers("api/admin/**").hasRole("ADMIN");
                     //Note
                     req.requestMatchers(HttpMethod.POST,"api/note/create").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/note/getByDateNote").authenticated();

@@ -57,7 +57,7 @@
 
     <section class="time-section">
         <div class="section-header">
-            <h2>⏱️ Horário por Categoria (Semana)</h2>
+            <h2>⏱️ Horários</h2>
         </div>
 
         <div class="time-square week-table-wrapper">
@@ -96,42 +96,40 @@
 
     <section class="category-section" *ngIf="categoryMetrics && categoryMetrics.length > 0">
         <div class="section-header">
-            <h2>🎯 Cumprimento por Categoria (Mês Atual)</h2>
+            <h2>🎯 Realização dos Compromissos</h2>
         </div>
 
-        <div class="category-list">
-            <div class="category-card-futuristic" *ngFor="let m of categoryMetrics">
-                <div class="category-glow-bg"></div>
+        <div class="category-grid">
+            <div class="category-card-circular" *ngFor="let m of categoryMetrics">
 
-                <div class="category-header">
-                    <div class="category-title">
-                        <span class="category-icon-indicator"></span>
-                        <span class="cat-name">{{ categoryLabels[m.category] || m.category }}</span>
-                    </div>
-                    <div class="category-percent-badge">
-                        <span class="percent-val">{{ m.percentage }}</span>
-                        <span class="percent-symbol">%</span>
-                    </div>
-                </div>
-
-                <div class="progress-track-wrapper">
-                    <div class="progress-track">
-                        <div class="progress-fill"
-                             [style.width.%]="m.percentage"
-                             [class.complete-fill]="m.percentage >= 100">
-                            <span class="progress-light-head"></span>
-                        </div>
+                <div class="ring-container">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="40" />
+                        <circle class="ring-fill"
+                                cx="50"
+                                cy="50"
+                                r="40"
+                                [style.strokeDashoffset]="251.32 - (251.32 * m.percentage / 100)"
+                                [class.complete]="m.percentage >= 100" />
+                    </svg>
+                    <div class="ring-inner">
+                        <span class="ring-percent">{{ m.percentage }}<small>%</small></span>
                     </div>
                 </div>
 
-                <div class="category-footer">
-                    <span class="category-detail">
-                        <strong>{{ m.completed }}</strong> de <strong>{{ m.total }}</strong> tarefas concluídas
-                    </span>
-                    <span class="status-indicator" [class.status-high]="m.percentage >= 75" [class.status-med]="m.percentage >= 40 && m.percentage < 75" [class.status-low]="m.percentage < 40">
+                <div class="category-info">
+                    <h3 class="cat-title">{{ categoryLabels[m.category] || m.category }}</h3>
+                    <p class="category-detail">
+                        <strong>{{ m.completed }}</strong> de <strong>{{ m.total }}</strong> cumpridos
+                    </p>
+                    <span class="status-pill"
+                          [class.status-high]="m.percentage >= 75"
+                          [class.status-med]="m.percentage >= 40 && m.percentage < 75"
+                          [class.status-low]="m.percentage < 40">
                         {{ m.percentage >= 100 ? '✨ Concluído' : m.percentage >= 50 ? '🚀 Em Progresso' : '📌 Atenção' }}
                     </span>
                 </div>
+
             </div>
         </div>
     </section>

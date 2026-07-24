@@ -41,6 +41,7 @@ public class JwtTokenServiceImpl implements JwtService {
             return JWT.create()
                     .withIssuer("estuda-mais-monorepo")
                     .withSubject(user.getEmail())
+                    .withClaim("role",user.getRole().name())
                     .withClaim("id",user.getId())
                     .withExpiresAt(dataExpiracao)
                     .sign(algorithm);

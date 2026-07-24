@@ -1,5 +1,6 @@
 package com.estudamais.backend.service.serviceimpl;
 
+import com.estudamais.backend.entity.Role;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.UserRepository;
 import com.estudamais.backend.request.LoginRequest;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(data.name())
                 .email(data.email())
                 .password(senhaHash)
+                .role(Role.USER)
                 .build();
         this.userRepository.save(newUser);
     }

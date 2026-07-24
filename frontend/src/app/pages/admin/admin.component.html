@@ -1,0 +1,93 @@
+<app-navbar></app-navbar>
+
+<div class="admin-wrapper">
+
+    <h2>🛡️ Painel de Administração</h2>
+
+    <p class="alert-banner" [class.alert-error]="formMessageType === 'error'" [class.alert-success]="formMessageType === 'success'" *ngIf="formMessage">
+        {{ formMessage }}
+    </p>
+
+    <div class="admin-card">
+        <table class="users-table">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Papel</th>
+                <th>Status</th>
+                <th class="actions-col">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of users" [class.disabled-row]="!user.enabled">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td><span class="role-badge">{{ user.role }}</span></td>
+                <td>
+                        <span class="status-badge" [class.status-active]="user.enabled" [class.status-inactive]="!user.enabled">
+                            {{ user.enabled ? 'Ativo' : 'Desativado' }}
+                        </span>
+                </td>
+                <td class="actions-col">
+                    <button class="btn-action" (click)="startEdit(user)">✏️ Editar</button>
+                    <button class="btn-action" (click)="viewSchedules(user)">📅 Compromissos</button>
+                    <button class="btn-action" [class.btn-danger]="user.enabled" [class.btn-success]="!user.enabled" (click)="toggleUser(user)">
+                        {{ user.enabled ? '🚫 Desativar' : '✅ Ativar' }}
+                    </button>
+                </td>
+            </tr>
+            <tr *ngIf="users.length === 0">
+                <td colspan="5" class="empty-state">Nenhum usuário cadastrado.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-card edit-panel" *ngIf="editingUser">
+        <h3>Editando: {{ editingUser.name }}</h3>
+        <div class="form-flex">
+            <div class="input-block">
+                <label>Nome</label>
+                <input type="text" [(ngModel)]="editForm.name">
+            </div>
+            <div class="input-block">
+                <label>E-mail</label>
+                <input type="email" [(ngModel)]="editForm.email">
+            </div>
+            <div class="input-block">
+                <label>Nova senha (deixe em branco para não alterar)</label>
+                <input type="password" [(ngModel)]="editForm.password" placeholder="••••••••">
+            </div>
+        </div>
+        <div class="edit-actions">
+            <button class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
+            <button class="btn-primary" (click)="saveEdit()">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div class="admin-card schedules-panel" *ngIf="viewingUserId">
+        <div class="card-header container-space">
+            <h3>Compromissos do usuário</h3>
+            <button class="btn-cancel" (click)="closeSchedules()">Fechar</button>
+        </div>
+
+        <ul class="schedule-list">
+            <li *ngFor="let item of viewingSchedules" class="schedule-item">
+                <div class="schedule-details">
+                    <span class="badge-type">{{ item.category }}</span>
+                    <h4>{{ item.title }}</h4>
+                    <p class="time-info">
+                        📅 {{ item.targetDate | date:'dd/MM/yyyy' }}
+                        <span *ngIf="item.startTime"> ⏰ das {{ item.startTime }} até {{ item.endTime }}</span>
+                    </p>
+                </div>
+                <span class="status-badge" [class.status-active]="item.completed" [class.status-inactive]="!item.completed">
+                    {{ item.completed ? 'Concluído' : 'Pendente' }}
+                </span>
+            </li>
+            <li *ngIf="viewingSchedules.length === 0" class="empty-state">Nenhum compromisso encontrado.</li>
+        </ul>
+    </div>
+
+</div>

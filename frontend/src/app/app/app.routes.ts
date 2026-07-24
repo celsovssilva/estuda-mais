@@ -5,6 +5,8 @@ import {DashboardComponent} from "../pages/dashboard/dashboard.component";
 import {PerfilComponent}   from "../pages/profile/profile.component"
 import {AgendaComponent} from "../pages/schedule/schedule.component";
 import {NotesComponent} from "../pages/note/notes.component";
+import {adminGuard} from "../core/guards/admin.guard";
+import {AdminComponent} from "../pages/admin/admin.component";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -14,5 +16,6 @@ export const routes: Routes = [
     {path: 'perfil', component: PerfilComponent},
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
-    { path: '**', redirectTo: '/dashboard' }
+    { path: '**', redirectTo: '/dashboard' },
+    { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
 ];

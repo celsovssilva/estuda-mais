@@ -4,7 +4,7 @@
         <a routerLink="/schedule" class="nav-link" routerLinkActive="active">📅 Agenda</a>
         <a routerLink="/notes" class="nav-link" routerLinkActive="active">📝 Notas</a>
         <a routerLink="/perfil" class="nav-link" routerLinkActive="active">👤 Meu Perfil</a>
-        <a *ngIf="isAdmin()" routerLink="/admin" class="nav-link admin-link" routerLinkActive="active">🛡️ Admin</a>
+        <a *ngIf="isAdmin()" routerLink="/adm" class="nav-link admin-link" routerLinkActive="active">🛡️ Admin</a>
     </div>
     <button class="btn-logout" (click)="logout()" title="Sair da conta">
         Sair <span class="logout-icon">↪</span>

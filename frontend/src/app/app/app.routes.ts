@@ -17,5 +17,5 @@ export const routes: Routes = [
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
     { path: '**', redirectTo: '/dashboard' },
-    { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
+    { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
 ];

@@ -16,6 +16,7 @@ export const routes: Routes = [
     {path: 'perfil', component: PerfilComponent},
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
-    { path: '**', redirectTo: '/dashboard' },
     { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
+    { path: '**', redirectTo: '/dashboard' }
+
 ];

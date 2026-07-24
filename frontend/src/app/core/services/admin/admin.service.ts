@@ -13,7 +13,7 @@ export class AdminService {
     private apiUrl = `${environment.apiUrl}/api/admin`;
 
     getAllUsers(): Observable<AdminUser[]> {
-        return this.http.get<AdminUser[]>(`${this.apiUrl}/users`);
+        return this.http.get<AdminUser[]>(`${this.apiUrl}/getAll`);
     }
 
     updateUser(userId: number, data: AdminUpdateUserRequest): Observable<AdminUser> {

@@ -36,6 +36,9 @@ export class AgendaComponent implements OnInit {
         category: 'OUTROS'
     };
 
+    // Controle do ID para Edição
+    editingScheduleId: number | null = null;
+
     currentYear: number = 2026;
     currentMonth: number = new Date().getMonth();
     selectedDateStr: string = '';
@@ -50,7 +53,6 @@ export class AgendaComponent implements OnInit {
 
     selectedDayStatus: DayStatus = 'none';
 
-
     toast: ToastNotification | null = null;
     private toastTimeout: any;
 
@@ -63,8 +65,6 @@ export class AgendaComponent implements OnInit {
         this.formSchedule.targetDate = this.selectedDateStr;
         this.loadSchedules();
     }
-
-
 
     private extractErrorMessage(err: any, fallbackMessage: string): string {
         if (typeof err?.error === 'string') return err.error;
@@ -82,7 +82,6 @@ export class AgendaComponent implements OnInit {
     closeToast(): void {
         this.toast = null;
     }
-
 
     loadSchedules(): void {
         this.scheduleService.getSchedulesByUser().subscribe({
@@ -155,11 +154,13 @@ export class AgendaComponent implements OnInit {
         if (this.viewMode === 'DAY') {
             const dayOnlyItems = this.allSchedules.filter(s => s.targetDate === this.selectedDateStr);
             this.selectedDayStatus = this.computeDayStatus(dayOnlyItems);
+            // No modo DIA ESPECÍFICO, mostra TODOS (inclusive os concluídos)
+            this.filteredSchedules = dayItems;
         } else {
             this.selectedDayStatus = 'none';
+            // No modo MÊS, mostra apenas os que estão a fazer (!completed)
+            this.filteredSchedules = dayItems.filter(s => !s.completed);
         }
-
-        this.filteredSchedules = dayItems.filter(s => !s.completed);
     }
 
     selectDay(dateStr: string): void {
@@ -183,7 +184,8 @@ export class AgendaComponent implements OnInit {
         this.filterSchedules();
     }
 
-    addSchedule(): void {
+    // Salva um NOVO agendamento ou ATUALIZA o existente
+    saveSchedule(): void {
         if (!this.formSchedule.title.trim() || !this.formSchedule.targetDate) {
             this.showToast('Por favor, defina um Título e uma Data de Agendamento.', 'warning');
             return;
@@ -199,20 +201,62 @@ export class AgendaComponent implements OnInit {
             category: this.formSchedule.category
         };
 
-        this.scheduleService.createSchedule(payload).subscribe({
-            next: () => {
-                this.showToast('Compromisso agendado com sucesso!', 'success');
-                this.formSchedule.title = '';
-                this.formSchedule.description = '';
-                this.formSchedule.startTime = '';
-                this.formSchedule.endTime = '';
-                this.loadSchedules();
-            },
-            error: (err) => {
-                const msg = this.extractErrorMessage(err, 'Ocorreu uma falha ao registrar o compromisso.');
-                this.showToast(msg, 'error');
-            }
-        });
+        if (this.editingScheduleId) {
+            this.scheduleService.updateSchedule(this.editingScheduleId, payload).subscribe({
+                next: () => {
+                    this.showToast('Compromisso atualizado com sucesso!', 'success');
+                    this.resetForm();
+                    this.loadSchedules();
+                },
+                error: (err) => {
+                    const msg = this.extractErrorMessage(err, 'Erro ao atualizar compromisso.');
+                    this.showToast(msg, 'error');
+                }
+            });
+        } else {
+            this.scheduleService.createSchedule(payload).subscribe({
+                next: () => {
+                    this.showToast('Compromisso agendado com sucesso!', 'success');
+                    this.resetForm();
+                    this.loadSchedules();
+                },
+                error: (err) => {
+                    const msg = this.extractErrorMessage(err, 'Ocorreu uma falha ao registrar o compromisso.');
+                    this.showToast(msg, 'error');
+                }
+            });
+        }
+    }
+
+    editSchedule(schedule: ScheduleResponse): void {
+        this.editingScheduleId = schedule.id;
+        this.formSchedule = {
+            title: schedule.title,
+            description: schedule.description === 'Sem descrição cadastrada.' ? '' : schedule.description,
+            targetDate: schedule.targetDate,
+            type: schedule.type,
+            startTime: schedule.startTime || '',
+            endTime: schedule.endTime || '',
+            category: schedule.category || 'OUTROS'
+        };
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    cancelEdit(): void {
+        this.resetForm();
+    }
+
+    private resetForm(): void {
+        this.editingScheduleId = null;
+        this.formSchedule = {
+            title: '',
+            description: '',
+            targetDate: this.selectedDateStr || new Date().toISOString().split('T')[0],
+            type: 'DAY',
+            startTime: '',
+            endTime: '',
+            category: 'OUTROS'
+        };
     }
 
     toggleSchedule(schedule: ScheduleResponse): void {
@@ -231,7 +275,6 @@ export class AgendaComponent implements OnInit {
             }
         });
     }
-
 
     deleteSchedule(id: number): void {
         this.pendingDeleteId = id;

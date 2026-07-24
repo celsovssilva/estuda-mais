@@ -3,7 +3,7 @@
 <div class="agenda-wrapper">
 
     <div class="agenda-card">
-        <h3>📝 Agendar Novo Compromisso</h3>
+        <h3>{{ editingScheduleId ? '✏️ Editar Compromisso' : '📝 Agendar Novo Compromisso' }}</h3>
         <div class="form-grid">
             <div class="input-group">
                 <label>Título</label>
@@ -48,7 +48,15 @@
                 <input type="text" [(ngModel)]="formSchedule.description" placeholder="Anotações extras sobre a atividade...">
             </div>
         </div>
-        <button class="btn-primary" (click)="addSchedule()">Salvar na Agenda</button>
+
+        <div class="form-actions">
+            <button class="btn-primary" (click)="saveSchedule()">
+                {{ editingScheduleId ? 'Atualizar Compromisso' : 'Salvar na Agenda' }}
+            </button>
+            <button *ngIf="editingScheduleId" class="btn-secondary" (click)="cancelEdit()">
+                Cancelar Edição
+            </button>
+        </div>
     </div>
 
     <div class="view-controls">
@@ -98,7 +106,7 @@
         </p>
 
         <ul class="schedule-list">
-            <li *ngFor="let item of filteredSchedules" class="schedule-item">
+            <li *ngFor="let item of filteredSchedules" class="schedule-item" [class.completed]="item.completed">
                 <input type="checkbox"
                        class="schedule-checkbox"
                        [checked]="item.completed"
@@ -113,7 +121,10 @@
                         <span *ngIf="item.endTime"> até às {{ item.endTime }}</span>
                     </p>
                 </div>
-                <button class="btn-delete" (click)="deleteSchedule(item.id)">🗑️</button>
+                <div class="item-actions">
+                    <button class="btn-edit" (click)="editSchedule(item)" title="Editar">✏️</button>
+                    <button class="btn-delete" (click)="deleteSchedule(item.id)" title="Excluir">🗑️</button>
+                </div>
             </li>
             <li *ngIf="filteredSchedules.length === 0" class="empty-state">
                 Nenhum compromisso agendado para o período selecionado.

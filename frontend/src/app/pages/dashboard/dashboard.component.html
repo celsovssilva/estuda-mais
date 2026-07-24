@@ -3,37 +3,62 @@
 <div class="dashboard-wrapper">
 
     <section class="metrics-section">
-        <h2>📊 Painel de Desempenho Integrado</h2>
+        <div class="section-header">
+            <h2>📊 Painel de Desempenho Integrado</h2>
+            <span class="live-status-pill">
+                <span class="pulse-dot"></span> Módulo Ativo
+            </span>
+        </div>
 
         <div class="metrics-grid">
             <div class="metric-card completed">
-                <div class="card-icon">✅</div>
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <span>✅</span>
+                </div>
                 <div class="card-info">
                     <h3>Concluídas</h3>
-                    <p class="card-value">{{ metrics.completedTasks }}</p>
+                    <div class="card-value-group">
+                        <p class="card-value">{{ metrics.completedTasks }}</p>
+                        <span class="card-trend positive">↑ Meta</span>
+                    </div>
                 </div>
             </div>
 
             <div class="metric-card pending">
-                <div class="card-icon">⏳</div>
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <span>⏳</span>
+                </div>
                 <div class="card-info">
                     <h3>Pendentes</h3>
-                    <p class="card-value">{{ metrics.pendingTasks }}</p>
+                    <div class="card-value-group">
+                        <p class="card-value">{{ metrics.pendingTasks }}</p>
+                        <span class="card-trend warning">Em Foco</span>
+                    </div>
                 </div>
             </div>
 
             <div class="metric-card schedule">
-                <div class="card-icon">📅</div>
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <span>📅</span>
+                </div>
                 <div class="card-info">
                     <h3>Compromissos</h3>
-                    <p class="card-value">{{ metrics.totalSchedules }}</p>
+                    <div class="card-value-group">
+                        <p class="card-value">{{ metrics.totalSchedules }}</p>
+                        <span class="card-trend info">Agenda</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="time-section">
-        <h2>⏱️ Horário por Categoria (Semana)</h2>
+        <div class="section-header">
+            <h2>⏱️ Horário por Categoria (Semana)</h2>
+        </div>
 
         <div class="time-square week-table-wrapper">
             <table class="week-category-table">
@@ -41,35 +66,72 @@
                 <tr>
                     <th class="category-col">Categoria</th>
                     <th *ngFor="let day of weekSummary" [class.is-today-col]="day.isToday">
-                        {{ day.label }}
+                        <span class="day-label">{{ day.label }}</span>
+                        <span *ngIf="day.isToday" class="today-badge">Hoje</span>
                     </th>
                     <th class="total-col">Total</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let cat of categoryKeys">
-                    <td class="category-col">{{ categoryLabels[cat] || cat }}</td>
-                    <td *ngFor="let day of weekSummary" [class.is-today-col]="day.isToday">
-                        {{ formatMinutes(day.byCategory[cat] || 0) }}
+                    <td class="category-col">
+                        <span class="cat-bullet"></span>
+                        {{ categoryLabels[cat] || cat }}
                     </td>
-                    <td class="total-col">{{ formatMinutes(weekTotalsByCategory[cat] || 0) }}</td>
+                    <td *ngFor="let day of weekSummary" [class.is-today-col]="day.isToday">
+                        <span class="time-pill" [class.has-time]="(day.byCategory[cat] || 0) > 0">
+                            {{ formatMinutes(day.byCategory[cat] || 0) }}
+                        </span>
+                    </td>
+                    <td class="total-col">
+                        <span class="total-pill">
+                            {{ formatMinutes(weekTotalsByCategory[cat] || 0) }}
+                        </span>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </section>
+
     <section class="category-section" *ngIf="categoryMetrics && categoryMetrics.length > 0">
-        <h2>🎯 Cumprimento por Categoria (Mês Atual)</h2>
+        <div class="section-header">
+            <h2>🎯 Cumprimento por Categoria (Mês Atual)</h2>
+        </div>
+
         <div class="category-list">
-            <div class="category-row" *ngFor="let m of categoryMetrics">
+            <div class="category-card-futuristic" *ngFor="let m of categoryMetrics">
+                <div class="category-glow-bg"></div>
+
                 <div class="category-header">
-                    <span>{{ categoryLabels[m.category] || m.category }}</span>
-                    <span class="category-percent">{{ m.percentage }}%</span>
+                    <div class="category-title">
+                        <span class="category-icon-indicator"></span>
+                        <span class="cat-name">{{ categoryLabels[m.category] || m.category }}</span>
+                    </div>
+                    <div class="category-percent-badge">
+                        <span class="percent-val">{{ m.percentage }}</span>
+                        <span class="percent-symbol">%</span>
+                    </div>
                 </div>
-                <div class="progress-track">
-                    <div class="progress-fill" [style.width.%]="m.percentage"></div>
+
+                <div class="progress-track-wrapper">
+                    <div class="progress-track">
+                        <div class="progress-fill"
+                             [style.width.%]="m.percentage"
+                             [class.complete-fill]="m.percentage >= 100">
+                            <span class="progress-light-head"></span>
+                        </div>
+                    </div>
                 </div>
-                <span class="category-detail">{{ m.completed }} de {{ m.total }} cumpridos</span>
+
+                <div class="category-footer">
+                    <span class="category-detail">
+                        <strong>{{ m.completed }}</strong> de <strong>{{ m.total }}</strong> tarefas concluídas
+                    </span>
+                    <span class="status-indicator" [class.status-high]="m.percentage >= 75" [class.status-med]="m.percentage >= 40 && m.percentage < 75" [class.status-low]="m.percentage < 40">
+                        {{ m.percentage >= 100 ? '✨ Concluído' : m.percentage >= 50 ? '🚀 Em Progresso' : '📌 Atenção' }}
+                    </span>
+                </div>
             </div>
         </div>
     </section>

@@ -55,7 +55,11 @@ export class DashboardComponent implements OnInit {
         ACADEMIA: '🏋️ Academia',
         ESTUDOS: '📚 Estudos',
         CUIDADO_PESSOAL: '🧘 Cuidado Pessoal',
-        OUTROS: '📌 Outros'
+        OUTROS: '📌 Outros',
+        SIMULADO: '🎯 Simulado',
+        AULAS: '🎓 Aulas',
+        LEITURA: '📖 Leitura',
+        REDACAO: '✍️ Redação',
     };
     categoryKeys: string[] = Object.keys(this.categoryLabels);
     ngOnInit(): void {

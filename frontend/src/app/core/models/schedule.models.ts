@@ -5,7 +5,8 @@ export interface ScheduleRequest {
     type: 'DAY' | 'WEEK' | 'MONTH' | 'YEAR' | string;
     startTime: string | null;
     endTime: string | null;
-    category: 'ACADEMIA' | 'ESTUDOS' | 'CUIDADO_PESSOAL' | 'OUTROS' | string;
+    category: 'ACADEMIA' | 'ESTUDOS' | 'CUIDADO_PESSOAL' | 'OUTROS' | 'SIMULADO'| 'AULAS'| 'LEITURA'|
+    'REDACAO'| string;
 }
 
 export interface ScheduleResponse {

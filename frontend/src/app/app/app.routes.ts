@@ -7,10 +7,13 @@ import {AgendaComponent} from "../pages/schedule/schedule.component";
 import {NotesComponent} from "../pages/note/notes.component";
 import {adminGuard} from "../core/guards/admin.guard";
 import {AdminComponent} from "../pages/admin/admin.component";
-import {LandingComponent} from "../pages/landing/landingComponent";
+import {LandingComponent} from "../pages/landing/landing.component";
+
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', redirectTo: 'landing', pathMatch: 'full' },
+    { path: 'landing', component: LandingComponent },
+    { path: 'login', component: LoginComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     {path: 'dashboard', component:DashboardComponent},
@@ -18,7 +21,6 @@ export const routes: Routes = [
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
     { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
-    {path:'lading', component:LandingComponent},
     { path: '**', redirectTo: '/dashboard' }
 
 ];

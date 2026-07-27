@@ -7,7 +7,7 @@ import {AgendaComponent} from "../pages/schedule/schedule.component";
 import {NotesComponent} from "../pages/note/notes.component";
 import {adminGuard} from "../core/guards/admin.guard";
 import {AdminComponent} from "../pages/admin/admin.component";
-import {LandingComponent} from "../pages/landing/LandingComponent";
+import {LandingComponent} from "../pages/landing/landingComponent";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },

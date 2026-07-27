@@ -7,6 +7,7 @@ import {AgendaComponent} from "../pages/schedule/schedule.component";
 import {NotesComponent} from "../pages/note/notes.component";
 import {adminGuard} from "../core/guards/admin.guard";
 import {AdminComponent} from "../pages/admin/admin.component";
+import {LandingComponent} from "../pages/landing/LandingComponent";
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,6 +18,7 @@ export const routes: Routes = [
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
     { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
+    {path:'lading', component:LandingComponent},
     { path: '**', redirectTo: '/dashboard' }
 
 ];

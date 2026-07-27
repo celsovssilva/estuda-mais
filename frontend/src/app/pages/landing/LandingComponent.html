@@ -1,0 +1,123 @@
+<div class="landing">
+
+    <header class="landing-header">
+        <span class="wordmark">Estuda<strong>Mais</strong></span>
+        <div class="header-actions">
+            <a routerLink="/login" class="btn-ghost">Entrar</a>
+            <a routerLink="/register" class="btn-primary-sm">Criar conta grátis</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">pra quem estuda todo santo dia</span>
+            <h1>Sua rotina de estudos, <em>visível</em> antes de virar bagunça.</h1>
+            <p class="hero-sub">
+                Agenda, anotações e progresso num só lugar. Cumpriu o compromisso, o dia fica verde.
+                Não cumpriu, fica ali te encarando até você resolver.
+            </p>
+            <div class="hero-actions">
+                <a routerLink="/register" class="btn-primary">Começar agora — grátis</a>
+                <a href="#precos" class="btn-ghost-lg">Ver planos</a>
+            </div>
+            <span class="hero-note">Sem cartão de crédito. Leva menos de 1 minuto.</span>
+        </div>
+
+        <div class="hero-signature" aria-hidden="true">
+            <div class="signature-card">
+                <span class="signature-label">Sua semana</span>
+                <div class="week-strip">
+                    <div class="day-cell" style="--i:0;"><span>D</span></div>
+                    <div class="day-cell" style="--i:1;"><span>S</span></div>
+                    <div class="day-cell" style="--i:2;"><span>T</span></div>
+                    <div class="day-cell" style="--i:3;"><span>Q</span></div>
+                    <div class="day-cell" style="--i:4;"><span>Q</span></div>
+                    <div class="day-cell" style="--i:5;"><span>S</span></div>
+                    <div class="day-cell" style="--i:6;"><span>S</span></div>
+                </div>
+                <span class="signature-caption">Verde quando você cumpre. Simples assim.</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-heading">
+            <h2>Tudo que você precisa, nada que você não usa</h2>
+            <p>Sem menu gigante, sem funcionalidade que ninguém pediu.</p>
+        </div>
+
+        <div class="features-grid">
+            <article class="feature-card" *ngFor="let f of features">
+                <span class="feature-icon">{{ f.icon }}</span>
+                <h3>{{ f.title }}</h3>
+                <p>{{ f.text }}</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="social-proof">
+        <div class="proof-item">
+            <strong>100%</strong>
+            <span>dos compromissos concluídos ficam registrados, sem depender da sua memória</span>
+        </div>
+        <div class="proof-item">
+            <strong>1 lugar só</strong>
+            <span>pra agenda, anotações e anexos — sem espalhar em 4 apps diferentes</span>
+        </div>
+        <div class="proof-item">
+            <strong>0 planilhas</strong>
+            <span>Chega de tabela do Excel que você abandona na segunda semana</span>
+        </div>
+    </section>
+
+    <section class="pricing" id="precos">
+        <div class="section-heading">
+            <h2>Um plano simples, sem pegadinha</h2>
+            <p>Estamos em acesso antecipado — cadastre-se grátis enquanto isso.</p>
+        </div>
+
+        <div class="pricing-card">
+            <span class="pricing-badge">Acesso antecipado gratuito</span>
+            <div class="pricing-value">
+                <span class="price-currency">R$</span>
+                <span class="price-amount">19,90</span>
+                <span class="price-period">/mês</span>
+            </div>
+            <span class="pricing-sub">preço planejado após o período de acesso antecipado</span>
+
+            <ul class="pricing-features">
+                <li>✅ Agenda com status visual por dia</li>
+                <li>✅ Anotações com anexos (PDF, imagens e mais)</li>
+                <li>✅ Painel de horas por categoria</li>
+                <li>✅ Acesso ilimitado pelo navegador</li>
+            </ul>
+
+            <a routerLink="/register" class="btn-primary btn-full">Começar agora — grátis</a>
+            <span class="pricing-note">Sem cobrança. Cancele quando quiser, é só não voltar 🙂</span>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="section-heading">
+            <h2>Perguntas antes de começar</h2>
+        </div>
+
+        <div class="faq-list">
+            <details class="faq-item" *ngFor="let item of faqs">
+                <summary>{{ item.q }}</summary>
+                <p>{{ item.a }}</p>
+            </details>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <h2>Sua próxima semana pode ficar verde.</h2>
+        <a routerLink="/register" class="btn-primary btn-lg">Criar minha conta grátis</a>
+    </section>
+
+    <footer class="landing-footer">
+        <span>Estuda Mais — feito pra quem precisa terminar o que começa.</span>
+        <a routerLink="/login">Já tenho conta</a>
+    </footer>
+
+</div>

@@ -7,16 +7,16 @@
         <div class="form-grid">
             <div class="input-group">
                 <label>Título</label>
-                <input type="text" [(ngModel)]="formSchedule.title" placeholder="Ex: Estudar Spring Boot">
+                <input type="text" [(ngModel)]="formSchedule.title">
             </div>
 
             <div class="input-group">
                 <label>Tipo de Recorrência/Escopo</label>
                 <select [(ngModel)]="formSchedule.type">
-                    <option value="DAY">Diário (DAY)</option>
-                    <option value="WEEK">Semanal (WEEK)</option>
-                    <option value="MONTH">Mensal (MONTH)</option>
-                    <option value="YEAR">Anual (YEAR)</option>
+                    <option value="DAY">Diário </option>
+                    <option value="WEEK">Semanal </option>
+                    <option value="MONTH">Mensal </option>
+                    <option value="YEAR">Anual </option>
                 </select>
                 <label>Categoria</label>
 
@@ -51,7 +51,7 @@
 
             <div class="input-group full-width">
                 <label>Descrição do Compromisso</label>
-                <input type="text" [(ngModel)]="formSchedule.description" placeholder="Anotações extras sobre a atividade...">
+                <input type="text" [(ngModel)]="formSchedule.description" placeholder="Anotações extras ">
             </div>
         </div>
 

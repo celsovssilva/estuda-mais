@@ -5,10 +5,12 @@ import com.estudamais.backend.entity.ScheduleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface SheduleRepository extends JpaRepository<Schedule,Long> {
     List<Schedule> findByUserId(Long userId);
     List<Schedule> findByUserIdAndType(Long userId, ScheduleType type);
+    List<Schedule> findByUserIdAndTargetDate(Long userId, LocalDate date);
 }

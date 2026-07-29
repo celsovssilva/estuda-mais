@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
@@ -71,5 +73,13 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(userId)
                         .orElseThrow(()-> new RuntimeException("user não existe"));
         userRepository.delete(user);
+    }
+
+    @Override
+    public void updateExamDate(Long userId, LocalDate examDate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RuntimeException("user não encontrado"));
+        user.setExamDate(examDate);
+        userRepository.save(user);
     }
 }

@@ -37,6 +37,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST,"api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST,"api/auth/register").permitAll();
                     req.requestMatchers(HttpMethod.PUT,"api/auth/update").authenticated();
+                    req.requestMatchers(HttpMethod.PUT, "api/auth/exam-date").authenticated();
                     //admin
                     req.requestMatchers("api/admin/**").hasRole("ADMIN");
                     //Note
@@ -54,6 +55,9 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.DELETE,"api/schedule/delete/{scheduleId}").authenticated();
                     req.requestMatchers(HttpMethod.PATCH,"api/schedule/toggle/{scheduleId}").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/schedule/metrics").authenticated();
+                    //categorygoal
+                    req.requestMatchers(HttpMethod.GET,"api/goals").authenticated();
+                    req.requestMatchers(HttpMethod.POST,"api/goals").authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

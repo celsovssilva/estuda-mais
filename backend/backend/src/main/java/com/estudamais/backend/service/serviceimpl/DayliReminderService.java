@@ -25,7 +25,7 @@ public class DayliReminderService implements DailyReminderService {
     private UserRepository userRepository;
 
     @Override
-    @Scheduled(cron = "0 0 7 * * *")
+    @Scheduled(cron = "0 0 7 * * *",zone= "America/Sao_Paulo")
     public void sendMorningDigest() {
         List<User> allUsers = userRepository.findAll();
         LocalDate today = LocalDate.now();
@@ -57,13 +57,13 @@ public class DayliReminderService implements DailyReminderService {
 
 
     @Override
-    @Scheduled(cron = "0 0 12 * * *")
+    @Scheduled(cron = "0 0 12 * * *",zone= "America/Sao_Paulo")
     public void sendNoonReminder() {
         sendReminderIfNothingDone();
     }
 
     @Override
-    @Scheduled(cron = "0 0 18 * * *")
+    @Scheduled(cron = "0 0 18 * * *",zone= "America/Sao_Paulo")
     public void sendEveningReminder() {
     sendReminderIfNothingDone();
     }

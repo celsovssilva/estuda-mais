@@ -40,7 +40,7 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean enabled = true;
 
-    @Builder.Default
+
     @Column(nullable = true)
     private LocalDate examDate;
 

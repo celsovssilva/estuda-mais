@@ -7,6 +7,7 @@ import com.estudamais.backend.repository.UserRepository;
 import com.estudamais.backend.response.ScheduleResponse;
 import com.estudamais.backend.service.DailyReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +24,8 @@ public class DayliReminderService implements DailyReminderService {
     private SheduleRepository sheduleRepository;
     @Autowired
     private UserRepository userRepository;
+    @Value("${estudamais.mail.from}")
+    private String remetente;
 
     @Override
     @Scheduled(cron = "0 0 7 * * *",zone= "America/Sao_Paulo")
@@ -71,6 +74,7 @@ public class DayliReminderService implements DailyReminderService {
     @Override
     public void sendEmail(User user, List<Schedule> schedules, String subject) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(remetente);
         message.setTo(user.getEmail());
         message.setSubject(subject);
 
@@ -88,4 +92,5 @@ public class DayliReminderService implements DailyReminderService {
         message.setText(body.toString());
         javaMailSender.send(message);
     }
+
 }

@@ -35,11 +35,11 @@ public class Schedule {
 
     private LocalTime endTime;
     @Builder.Default
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private boolean completed = false;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    @Column(nullable = false, columnDefinition = "varchar(30) default 'OUTROS'")
+    @Column(nullable = false, length = 30)
     private ScheduleCategory category = ScheduleCategory.OUTROS;
 }

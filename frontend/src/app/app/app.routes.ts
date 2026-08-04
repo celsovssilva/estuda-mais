@@ -8,6 +8,7 @@ import {NotesComponent} from "../pages/note/notes.component";
 import {adminGuard} from "../core/guards/admin.guard";
 import {AdminComponent} from "../pages/admin/admin.component";
 import {LandingComponent} from "../pages/landing/landing.component";
+import {SimuladoExecucaoComponent} from "../pages/simulados/simulado.component";
 
 
 export const routes: Routes = [
@@ -20,6 +21,7 @@ export const routes: Routes = [
     {path: 'perfil', component: PerfilComponent},
     {path: 'schedule', component: AgendaComponent},
     {path: 'notes', component: NotesComponent},
+    {path:'simulado',component:SimuladoExecucaoComponent},
     { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
     { path: '**', redirectTo: '/dashboard' }
 

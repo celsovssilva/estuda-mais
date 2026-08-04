@@ -1,0 +1,39 @@
+<div class="container" *ngIf="!carregando && !resultadoFinal">
+    <header>
+        <h2>Simulado ENEM</h2>
+        <p>Questão {{ indiceAtual + 1 }} de {{ questoes.length }}</p>
+    </header>
+
+    <div class="card-questao">
+        <span class="badge">{{ questaoAtual.disciplina }}</span>
+        <p class="enunciado">{{ questaoAtual.enunciado }}</p>
+
+        <div class="alternativas">
+            <button
+                    *ngFor="let alt of questaoAtual.alternativas; let i = index"
+                    [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
+                    (click)="selecionarResposta(alt)">
+                <strong>{{ alt }})</strong> {{ alt }}
+            </button>
+        </div>
+    </div>
+
+    <div class="acoes">
+        <button (click)="questaoAnterior()" [disabled]="indiceAtual === 0">Anterior</button>
+        <button (click)="proximaQuestao()" *ngIf="indiceAtual < questoes.length - 1">Próxima</button>
+        <button (click)="finalizarSimulado()" class="btn-finalizar" *ngIf="indiceAtual === questoes.length - 1">
+            Finalizar e Ver Nota TRI
+        </button>
+    </div>
+</div>
+
+<div *ngIf="carregando">Carregando simulado...</div>
+
+<div class="resultado-card" *ngIf="resultadoFinal">
+    🎉 <h2>Simulado Concluído!</h2>
+    <div class="nota-tri">
+        <h3>Sua Nota Estimada :</h3>
+        <p class="valor">{{ resultadoFinal.notaTRI | number:'1.0-1' }}</p>
+    </div>
+    <p>Acertos: {{ resultadoFinal.totalAcertos }} de {{ resultadoFinal.totalQuestoes }} ({{ resultadoFinal.porcentagemAcerto }}%)</p>
+</div>

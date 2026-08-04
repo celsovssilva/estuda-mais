@@ -1,7 +1,6 @@
 package com.estudamais.backend.controller;
 
 import com.estudamais.backend.entity.User;
-import com.estudamais.backend.request.ExamDateRequest;
 import com.estudamais.backend.request.LoginRequest;
 import com.estudamais.backend.request.RegisterRequest;
 import com.estudamais.backend.request.UpdateUserRequest;
@@ -46,10 +45,5 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @PutMapping("/exam-date")
-    public ResponseEntity<Void> updateExamDate(@RequestBody ExamDateRequest request, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        authService.updateExamDate(user.getId(), request.examDate());
-        return ResponseEntity.noContent().build();
-    }
+
 }

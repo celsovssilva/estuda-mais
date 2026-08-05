@@ -15,8 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Question {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private Integer ano;
     private String disciplina;
 

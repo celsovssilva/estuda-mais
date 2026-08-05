@@ -33,11 +33,11 @@ public class EnemImportServiceImpl implements EnemImportService {
 
                 for (JsonNode node : questionsArray) {
                     int index = node.path("index").asInt();
-                    long idNumerico = ((long) ano * 1000) + index;
-                    if (!questaoRepository.existsById(idNumerico)) {
+                    long idCalculado = ((long) ano * 1000) + index;
+                    String idString = String.valueOf(idCalculado);
+                    if (!questaoRepository.existsById(Long.valueOf(idString))) {
                         Question q = new Question();
-
-                        q.setId((idNumerico));
+                        q.setId(idString);
                         q.setAno(ano);
                         q.setDisciplina(node.path("discipline").asText("Geral"));
                         q.setEnunciado(node.path("context").asText(""));
@@ -53,7 +53,6 @@ public class EnemImportServiceImpl implements EnemImportService {
                         }
                         q.setAlternativas(alts);
 
-                        // TRI Padrão
                         q.setParametroB(1.0);
                         q.setParametroA(1.5);
                         q.setParametroC(0.20);

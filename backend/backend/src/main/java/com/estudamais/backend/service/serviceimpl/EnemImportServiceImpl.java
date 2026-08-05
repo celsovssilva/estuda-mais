@@ -2,40 +2,70 @@ package com.estudamais.backend.service.serviceimpl;
 
 import com.estudamais.backend.entity.Question;
 import com.estudamais.backend.repository.QuestionRepository;
-import com.estudamais.backend.response.QuestionResponse;
 import com.estudamais.backend.service.EnemImportService;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class EnemImportServiceImpl implements EnemImportService {
+
     private final RestClient restClient = RestClient.create();
+
     @Autowired
     private QuestionRepository questaoRepository;
 
     @Override
     public void importarProvas(int ano) {
-        QuestionResponse[] questoesApi = restClient.get()
-                .uri("https://api.enem.dev/v1/exams/{year}/questions?limit=100", ano)
-                .retrieve()
-                .body(QuestionResponse[].class);
+        try {
+            // Busca o JSON bruto da API enem.dev
+            JsonNode root = restClient.get()
+                    .uri("https://api.enem.dev/v1/exams/{year}/questions", ano)
+                    .retrieve()
+                    .body(JsonNode.class);
 
-        for (QuestionResponse dto : questoesApi) {
-            Question q = new Question();
-            q.setId(dto.id());
-            q.setAno(ano);
-            q.setDisciplina(dto.disciplina());
-            q.setEnunciado(dto.enunciado());
-            q.setAlternativas(dto.alternativas());
-            q.setRespostaCorreta(dto.respostaCorreta());
+            if (root != null && root.has("questions")) {
+                JsonNode questionsArray = root.get("questions");
+                List<Question> listaParaSalvar = new ArrayList<>();
 
-            // Estimativa inicial de dificuldade para TRI (fácil=0, média=1, difícil=2)
-            q.setParametroB(1.0);
-            q.setParametroA(1.5);
-            q.setParametroC(0.20);
+                for (JsonNode node : questionsArray) {
+                    Long idQuestao = Long.valueOf(ano + "-" + node.path("index").asText());
 
-            questaoRepository.save(q);
+
+                    if (!questaoRepository.existsById(idQuestao)) {
+                        Question q = new Question();
+                        q.setId(idQuestao);
+                        q.setAno(ano);
+                        q.setDisciplina(node.path("discipline").asText("Geral"));
+                        q.setEnunciado(node.path("context").asText(""));
+
+                        List<String> alts = new ArrayList<>();
+                        for (JsonNode altNode : node.path("alternatives")) {
+                            String textoAlt = altNode.path("text").asText();
+                            alts.add(textoAlt);
+
+                            if (altNode.path("isCorrect").asBoolean(false)) {
+                                q.setRespostaCorreta(textoAlt);
+                            }
+                        }
+                        q.setAlternativas(alts);
+
+                        // TRI Padrão
+                        q.setParametroB(1.0);
+                        q.setParametroA(1.5);
+                        q.setParametroC(0.20);
+
+                        listaParaSalvar.add(q);
+                    }
+                }
+                questaoRepository.saveAll(listaParaSalvar);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao importar questões da API do ENEM: " + e.getMessage());
         }
     }
 }

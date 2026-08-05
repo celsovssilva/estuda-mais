@@ -13,9 +13,8 @@ export class SimuladoService {
     // Em desenvolvimento usamos localhost; em produção será a URL do Render
     private apiUrl = `${environment.apiUrl}/api/simulados`;
 
-    obterQuestoes(disciplina?: string): Observable<Questao[]> {
-        const url = disciplina ? `${this.apiUrl}/questoes?disciplina=${disciplina}` : `${this.apiUrl}/questoes`;
-        return this.http.get<Questao[]>(url);
+    obterQuestoes(ano: number = 2023): Observable<Questao[]> {
+        return this.http.get<Questao[]>(`${this.apiUrl}/questoes?ano=${ano}`);
     }
 
     finalizarSimulado(payload: EnviarSimuladoRequest): Observable<ResultadoSimulado> {

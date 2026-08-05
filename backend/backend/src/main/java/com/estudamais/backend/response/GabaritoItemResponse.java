@@ -1,7 +1,7 @@
 package com.estudamais.backend.response;
 
 public record GabaritoItemResponse(
-        String questaoId,
+        Long questaoId,
         String enunciado,
         String alternativaEscolhida,
         Boolean acertou

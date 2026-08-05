@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface QuestionRepository  extends JpaRepository<Question,Long> {
     List<Question> findByDisciplina(String disciplina);
+
+    List<Question> findByAno(Integer ano);
 }

@@ -1,39 +1,78 @@
-<div class="container" *ngIf="!carregando && !resultadoFinal">
-    <header>
-        <h2>Simulado ENEM</h2>
-        <p>Questão {{ indiceAtual + 1 }} de {{ questoes.length }}</p>
-    </header>
+<div class="simulado-wrapper">
 
-    <div class="card-questao">
-        <span class="badge">{{ questaoAtual.disciplina }}</span>
-        <p class="enunciado">{{ questaoAtual.enunciado }}</p>
+    <div class="status-card" *ngIf="carregando">
+        <div class="spinner"></div>
+        <p>Carregando questões do simulado...</p>
+    </div>
 
-        <div class="alternativas">
-            <button
-                    *ngFor="let alt of questaoAtual.alternativas; let i = index"
-                    [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
-                    (click)="selecionarResposta(alt)">
-                <strong>{{ alt }})</strong> {{ alt }}
+    <div class="status-card error-card" *ngIf="!carregando && (erroCarregamento || questoes.length === 0)">
+        <span class="status-icon">⚠️</span>
+        <h3>Nenhuma questão encontrada</h3>
+        <p>Não foi possível carregar as questões do simulado no momento. Verifique se o backend está ativo e populado.</p>
+        <button class="btn-retry" (click)="carregarQuestoes(anoSelecionado)">Tentar Novamente</button>
+    </div>
+
+    <div class="container-prova" *ngIf="!carregando && !resultadoFinal && questaoAtual">
+        <header class="prova-header">
+            <div>
+                <h2>Simulado ENEM</h2>
+                <span class="badge-disciplina">{{ questaoAtual.disciplina }}</span>
+            </div>
+            <div class="progresso-pill">
+                Questão <strong>{{ indiceAtual + 1 }}</strong> de <strong>{{ questoes.length }}</strong>
+            </div>
+        </header>
+
+        <div class="card-questao">
+            <p class="enunciado">{{ questaoAtual.enunciado }}</p>
+
+            <div class="alternativas-list">
+                <button
+                        *ngFor="let alt of questaoAtual.alternativas; let i = index"
+                        class="btn-alternativa"
+                        [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
+                        (click)="selecionarResposta(alt)">
+                    <span class="opt-label">{{ alt }}</span>
+                </button>
+            </div>
+        </div>
+
+        <footer class="acoes">
+            <button class="btn-secundario" (click)="questaoAnterior()" [disabled]="indiceAtual === 0">
+                ← Anterior
             </button>
+
+            <button class="btn-primario" (click)="proximaQuestao()" *ngIf="indiceAtual < questoes.length - 1">
+                Próxima →
+            </button>
+
+            <button (click)="finalizarSimulado()" class="btn-finalizar" *ngIf="indiceAtual === questoes.length - 1">
+                Finalizar e Ver Nota TRI 🚀
+            </button>
+        </footer>
+    </div>
+
+    <div class="resultado-card" *ngIf="resultadoFinal">
+        <div class="resultado-header">
+            <span class="badge-sucesso">✨ Simulado Concluído</span>
+            <h2>Seu Desempenho</h2>
+        </div>
+
+        <div class="nota-tri-box">
+            <h3>Nota Estimada (TRI)</h3>
+            <p class="valor-tri">{{ resultadoFinal.notaTRI | number:'1.0-1' }}</p>
+        </div>
+
+        <div class="resumo-stats">
+            <div class="stat-item">
+                <span>Acertos</span>
+                <strong>{{ resultadoFinal.totalAcertos }} / {{ resultadoFinal.totalQuestoes }}</strong>
+            </div>
+            <div class="stat-item">
+                <span>Aproveitamento</span>
+                <strong>{{ resultadoFinal.porcentagemAcerto }}%</strong>
+            </div>
         </div>
     </div>
 
-    <div class="acoes">
-        <button (click)="questaoAnterior()" [disabled]="indiceAtual === 0">Anterior</button>
-        <button (click)="proximaQuestao()" *ngIf="indiceAtual < questoes.length - 1">Próxima</button>
-        <button (click)="finalizarSimulado()" class="btn-finalizar" *ngIf="indiceAtual === questoes.length - 1">
-            Finalizar e Ver Nota TRI
-        </button>
-    </div>
-</div>
-
-<div *ngIf="carregando">Carregando simulado...</div>
-
-<div class="resultado-card" *ngIf="resultadoFinal">
-    🎉 <h2>Simulado Concluído!</h2>
-    <div class="nota-tri">
-        <h3>Sua Nota Estimada :</h3>
-        <p class="valor">{{ resultadoFinal.notaTRI | number:'1.0-1' }}</p>
-    </div>
-    <p>Acertos: {{ resultadoFinal.totalAcertos }} de {{ resultadoFinal.totalQuestoes }} ({{ resultadoFinal.porcentagemAcerto }}%)</p>
 </div>

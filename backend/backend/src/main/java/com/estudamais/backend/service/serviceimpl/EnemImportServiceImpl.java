@@ -22,7 +22,6 @@ public class EnemImportServiceImpl implements EnemImportService {
     @Override
     public void importarProvas(int ano) {
         try {
-            // Busca o JSON bruto da API enem.dev
             JsonNode root = restClient.get()
                     .uri("https://api.enem.dev/v1/exams/{year}/questions", ano)
                     .retrieve()
@@ -33,12 +32,12 @@ public class EnemImportServiceImpl implements EnemImportService {
                 List<Question> listaParaSalvar = new ArrayList<>();
 
                 for (JsonNode node : questionsArray) {
-                    Long idQuestao = Long.valueOf(ano + "-" + node.path("index").asText());
-
-
-                    if (!questaoRepository.existsById(idQuestao)) {
+                    int index = node.path("index").asInt();
+                    long idNumerico = ((long) ano * 1000) + index;
+                    if (!questaoRepository.existsById(idNumerico)) {
                         Question q = new Question();
-                        q.setId(idQuestao);
+
+                        q.setId((idNumerico));
                         q.setAno(ano);
                         q.setDisciplina(node.path("discipline").asText("Geral"));
                         q.setEnunciado(node.path("context").asText(""));
@@ -62,10 +61,12 @@ public class EnemImportServiceImpl implements EnemImportService {
                         listaParaSalvar.add(q);
                     }
                 }
+
                 questaoRepository.saveAll(listaParaSalvar);
             }
         } catch (Exception e) {
             System.err.println("Erro ao importar questões da API do ENEM: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

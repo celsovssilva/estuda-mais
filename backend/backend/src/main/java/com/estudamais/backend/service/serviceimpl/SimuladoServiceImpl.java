@@ -35,7 +35,7 @@ public class SimuladoServiceImpl  implements SimuladoService {
         List<GabaritoItemResponse> detalhesGabarito = new ArrayList<>();
 
         for (RespostaItemRequest r : dto.respostas()) {
-            Question questao = questaoRepository.findById(Long.valueOf(r.questaoId()))
+            Question questao = questaoRepository.findById((r.questaoId()))
                     .orElseThrow(() -> new RuntimeException("Questão não encontrada: " + r.questaoId()));
 
             boolean acertou = questao.getRespostaCorreta().equalsIgnoreCase(r.alternativaEscolhida());

@@ -35,7 +35,7 @@ public class EnemImportServiceImpl implements EnemImportService {
                     int index = node.path("index").asInt();
                     long idCalculado = ((long) ano * 1000) + index;
                     String idString = String.valueOf(idCalculado);
-                    if (!questaoRepository.existsById(Long.valueOf(idString))) {
+                    if (!questaoRepository.existsById(idString)) {
                         Question q = new Question();
                         q.setId(idString);
                         q.setAno(ano);

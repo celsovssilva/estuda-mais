@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,6 @@ public class StudentSimulation {
     private LocalDateTime dataFim;
     private Double notaCalculadaTRI;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<RespostaAluno> respostas;
+    @OneToMany( cascade = CascadeType.ALL)
+    private List<RespostaAluno> respostas = new ArrayList<>();
 }

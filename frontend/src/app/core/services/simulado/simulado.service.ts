@@ -1,23 +1,24 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Questao, EnviarSimuladoRequest, ResultadoSimulado } from '../../models/simulado.models';
-import {environment} from "../../../../environments/environment.prod";
+import { Questao, ResultadoSimulado } from '../../models/simulado.models';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SimuladoService {
     private http = inject(HttpClient);
+    private apiUrl = 'http://localhost:8080/api'; // Ajuste a URL do seu backend se necessário
 
-    // Em desenvolvimento usamos localhost; em produção será a URL do Render
-    private apiUrl = `${environment.apiUrl}/api/simulados`;
+    obterQuestoes(ano?: number | null, disciplina?: string | null): Observable<Questao[]> {
+        let params = new HttpParams();
+        if (ano) params = params.set('ano', ano.toString());
+        if (disciplina) params = params.set('disciplina', disciplina);
 
-    obterQuestoes(ano: number = 2023): Observable<Questao[]> {
-        return this.http.get<Questao[]>(`${this.apiUrl}/questoes?ano=${ano}`);
+        return this.http.get<Questao[]>(`${this.apiUrl}/simulados/questoes`, { params });
     }
 
-    finalizarSimulado(payload: EnviarSimuladoRequest): Observable<ResultadoSimulado> {
-        return this.http.post<ResultadoSimulado>(`${this.apiUrl}/finalizar`, payload);
+    finalizarSimulado(payload: any): Observable<ResultadoSimulado> {
+        return this.http.post<ResultadoSimulado>(`${this.apiUrl}/simulados/finalizar`, payload);
     }
 }

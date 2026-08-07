@@ -22,46 +22,70 @@ public class EnemImportServiceImpl implements EnemImportService {
     @Override
     public void importarProvas(int ano) {
         try {
-            JsonNode root = restClient.get()
-                    .uri("https://api.enem.dev/v1/exams/{year}/questions", ano)
-                    .retrieve()
-                    .body(JsonNode.class);
+            int offset = 0;
+            int limit = 50;
+            boolean temMaisPaginas = true;
 
-            if (root != null && root.has("questions")) {
-                JsonNode questionsArray = root.get("questions");
-                List<Question> listaParaSalvar = new ArrayList<>();
+            while (temMaisPaginas) {
+                JsonNode root = restClient.get()
+                        .uri("https://api.enem.dev/v1/exams/{year}/questions?offset={offset}&limit={limit}", ano, offset, limit)
+                        .retrieve()
+                        .body(JsonNode.class);
 
-                for (JsonNode node : questionsArray) {
-                    int index = node.path("index").asInt();
-                    long idCalculado = ((long) ano * 1000) + index;
-                    String idString = String.valueOf(idCalculado);
-                    if (!questaoRepository.existsById(idString)) {
-                        Question q = new Question();
-                        q.setId(idString);
-                        q.setAno(ano);
-                        q.setDisciplina(node.path("discipline").asText("Geral"));
-                        q.setEnunciado(node.path("context").asText(""));
+                if (root != null && root.has("questions")) {
+                    JsonNode questionsArray = root.get("questions");
 
-                        List<String> alts = new ArrayList<>();
-                        for (JsonNode altNode : node.path("alternatives")) {
-                            String textoAlt = altNode.path("text").asText();
-                            alts.add(textoAlt);
-
-                            if (altNode.path("isCorrect").asBoolean(false)) {
-                                q.setRespostaCorreta(textoAlt);
-                            }
-                        }
-                        q.setAlternativas(alts);
-
-                        q.setParametroB(1.0);
-                        q.setParametroA(1.5);
-                        q.setParametroC(0.20);
-
-                        listaParaSalvar.add(q);
+                    if (questionsArray.isEmpty()) {
+                        temMaisPaginas = false;
+                        break;
                     }
-                }
 
-                questaoRepository.saveAll(listaParaSalvar);
+                    List<Question> listaParaSalvar = new ArrayList<>();
+
+                    for (JsonNode node : questionsArray) {
+                        int index = node.path("index").asInt();
+                        long idCalculado = ((long) ano * 1000) + index;
+                        String idString = String.valueOf(idCalculado);
+
+                        if (!questaoRepository.existsById(idString)) {
+                            Question q = new Question();
+                            q.setId(idString);
+                            q.setAno(ano);
+                            q.setDisciplina(node.path("discipline").asText("Geral"));
+                            q.setEnunciado(node.path("context").asText(""));
+
+                            List<String> alts = new ArrayList<>();
+                            for (JsonNode altNode : node.path("alternatives")) {
+                                String textoAlt = altNode.path("text").asText();
+                                alts.add(textoAlt);
+
+                                if (altNode.path("isCorrect").asBoolean(false)) {
+                                    q.setRespostaCorreta(textoAlt);
+                                }
+                            }
+                            q.setAlternativas(alts);
+
+                            q.setParametroB(1.0);
+                            q.setParametroA(1.5);
+                            q.setParametroC(0.20);
+
+                            listaParaSalvar.add(q);
+                        }
+                    }
+
+                    if (!listaParaSalvar.isEmpty()) {
+                        questaoRepository.saveAll(listaParaSalvar);
+                    }
+
+
+                    if (questionsArray.size() < limit) {
+                        temMaisPaginas = false;
+                    } else {
+                        offset += limit;
+                    }
+                } else {
+                    temMaisPaginas = false;
+                }
             }
         } catch (Exception e) {
             System.err.println("Erro ao importar questões da API do ENEM: " + e.getMessage());

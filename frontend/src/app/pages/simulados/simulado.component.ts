@@ -3,47 +3,64 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
 import { Questao, RespostaItem, ResultadoSimulado } from '../../core/models/simulado.models';
+import { FormsModule } from "@angular/forms";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 @Component({
     selector: 'app-simulado-execucao',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './simulado.component.html',
     styleUrl: './simulado.component.css'
 })
 export class SimuladoExecucaoComponent implements OnInit {
     private simuladoService = inject(SimuladoService);
     private route = inject(ActivatedRoute);
+    private sanitizer = inject(DomSanitizer);
 
-    // Dados da prova
     questoes: Questao[] = [];
     indiceAtual: number = 0;
     respostasAluno: Map<string, string> = new Map();
-    anoSelecionado: number = 2023;
 
-    // Estados da tela
-    carregando: boolean = true;
+    anoSelecionado: number = 2023;
+    disciplinaSelecionada: string | null = null;
+
+    carregando: boolean = false;
     erroCarregamento: boolean = false;
     resultadoFinal: ResultadoSimulado | null = null;
 
-    // Filtro para o gabarito final
     filtroAtual: 'TODAS' | 'ACERTOS' | 'ERROS' = 'TODAS';
 
     ngOnInit(): void {
-        // Captura o ano passado na URL (ex: /simulado?ano=2022). Se não passar nada, assume 2023.
         const paramAno = this.route.snapshot.queryParamMap.get('ano');
         if (paramAno && !isNaN(Number(paramAno))) {
             this.anoSelecionado = Number(paramAno);
         }
-
-        this.carregarQuestoes(this.anoSelecionado);
+        this.carregando = false;
     }
 
-    carregarQuestoes(ano: number): void {
+    formatarEnunciado(texto: string | undefined): SafeHtml {
+        if (!texto) return '';
+
+        let html = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        html = html.replace(
+            /!\[.*?\]\((.*?)\)/g,
+            '<div class="container-imagem-questao"><img src="$1" alt="Imagem de apoio" class="imagem-questao" /></div>'
+        );
+
+        return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+    iniciarSimulado(): void {
+        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada);
+    }
+
+    carregarQuestoes(ano: number, disciplina: string | null = null): void {
         this.carregando = true;
         this.erroCarregamento = false;
 
-        this.simuladoService.obterQuestoes(ano).subscribe({
+        this.simuladoService.obterQuestoes(ano, disciplina).subscribe({
             next: (dados) => {
                 this.questoes = dados || [];
                 this.carregando = false;
@@ -58,6 +75,11 @@ export class SimuladoExecucaoComponent implements OnInit {
 
     get questaoAtual(): Questao | null {
         return this.questoes.length > 0 ? this.questoes[this.indiceAtual] : null;
+    }
+
+    get totalAcertos(): number {
+        if (!this.resultadoFinal?.gabarito) return 0;
+        return this.resultadoFinal.gabarito.filter(item => item.acertou).length;
     }
 
     selecionarResposta(alternativa: string): void {
@@ -84,7 +106,7 @@ export class SimuladoExecucaoComponent implements OnInit {
         );
 
         const payload = {
-            usuarioId: 1, // ID temporário do usuário logado
+            usuarioId: 1,
             respostas: respostasArray
         };
 
@@ -95,8 +117,6 @@ export class SimuladoExecucaoComponent implements OnInit {
             error: (err) => console.error('Erro ao finalizar simulado:', err)
         });
     }
-
-    // ===== LÓGICA DE FILTRAGEM DO GABARITO DETALHADO =====
 
     setFiltro(filtro: 'TODAS' | 'ACERTOS' | 'ERROS'): void {
         this.filtroAtual = filtro;
@@ -112,5 +132,12 @@ export class SimuladoExecucaoComponent implements OnInit {
             return this.resultadoFinal.gabarito.filter(item => !item.acertou);
         }
         return this.resultadoFinal.gabarito;
+    }
+
+    reiniciarSimulado(): void {
+        this.resultadoFinal = null;
+        this.questoes = [];
+        this.indiceAtual = 0;
+        this.respostasAluno.clear();
     }
 }

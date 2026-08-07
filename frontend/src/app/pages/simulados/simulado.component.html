@@ -1,30 +1,62 @@
-<div class="simulado-wrapper">
+<div class="simulado-page">
 
-    <div class="status-card" *ngIf="carregando">
-        <div class="spinner"></div>
-        <p>Carregando questões do simulado...</p>
+    <div class="configuracao-simulado" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
+        <h2>Configurar Simulado</h2>
+
+        <div class="filtros">
+            <div class="campo-filtro">
+                <label>Ano da Prova:</label>
+                <select [(ngModel)]="anoSelecionado">
+                    <option [ngValue]="2023">2023</option>
+                    <option [ngValue]="2022">2022</option>
+                    <option [ngValue]="2021">2021</option>
+                    <option [ngValue]="2020">2020</option>
+                    <option [ngValue]="2019">2019</option>
+                    <option [ngValue]="2018">2018</option>
+                    <option [ngValue]="2017">2017</option>
+                    <option [ngValue]="2016">2016</option>
+                    <option [ngValue]="2015">2015</option>
+                    <option [ngValue]="2014">2014</option>
+                    <option [ngValue]="2013">2013</option>
+                    <option [ngValue]="2012">2012</option>
+                    <option [ngValue]="2011">2011</option>
+                    <option [ngValue]="2010">2010</option>
+                    <option [ngValue]="2009">2009</option>
+                </select>
+            </div>
+
+            <div class="campo-filtro">
+                <label>Disciplina:</label>
+                <select [(ngModel)]="disciplinaSelecionada">
+                    <option [ngValue]="null">Prova Completa</option>
+                    <option value="matematica">Matemática</option>
+                    <option value="linguagens">Linguagens</option>
+                    <option value="ciencias-humanas">Ciências Humanas</option>
+                    <option value="ciencias-natureza">Ciências da Natureza</option>
+                    <option value="ingles">Inglês</option>
+                    <option value="espanhol">Espanhol</option>
+                </select>
+            </div>
+        </div>
+
+        <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
     </div>
 
-    <div class="status-card error-card" *ngIf="!carregando && (erroCarregamento || questoes.length === 0)">
-        <span class="status-icon">⚠️</span>
-        <h3>Nenhuma questão encontrada</h3>
-        <p>Não foi possível carregar as questões do simulado no momento. Verifique se o backend está ativo e populado.</p>
-        <button class="btn-retry" (click)="carregarQuestoes(anoSelecionado)">Tentar Novamente</button>
-    </div>
+    <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
-    <div class="container-prova" *ngIf="!carregando && !resultadoFinal && questaoAtual">
-        <header class="prova-header">
-            <div>
-                <h2>Simulado ENEM</h2>
-                <span class="badge-disciplina">{{ questaoAtual.disciplina }}</span>
+        <div class="simulado-header">
+            <div class="contador-questao">
+                <span>Questão <strong>{{ indiceAtual + 1 }}</strong> de <strong>{{ questoes.length }}</strong></span>
+                <span class="badge-disciplina" *ngIf="questaoAtual.disciplina">{{ questaoAtual.disciplina }}</span>
             </div>
-            <div class="progresso-pill">
-                Questão <strong>{{ indiceAtual + 1 }}</strong> de <strong>{{ questoes.length }}</strong>
+
+            <div class="barra-progresso">
+                <div class="progresso-preenchido" [style.width.%]="((indiceAtual + 1) / questoes.length) * 100"></div>
             </div>
-        </header>
+        </div>
 
         <div class="card-questao">
-            <p class="enunciado">{{ questaoAtual.enunciado }}</p>
+            <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
 
             <div class="alternativas-list">
                 <button
@@ -37,42 +69,60 @@
             </div>
         </div>
 
-        <footer class="acoes">
-            <button class="btn-secundario" (click)="questaoAnterior()" [disabled]="indiceAtual === 0">
+        <div class="simulado-footer">
+            <button
+                    class="btn-secundario"
+                    (click)="questaoAnterior()"
+                    [disabled]="indiceAtual === 0">
                 ← Anterior
             </button>
 
-            <button class="btn-primario" (click)="proximaQuestao()" *ngIf="indiceAtual < questoes.length - 1">
+            <button
+                    class="btn-primario"
+                    *ngIf="indiceAtual < questoes.length - 1"
+                    (click)="proximaQuestao()">
                 Próxima →
             </button>
 
-            <button (click)="finalizarSimulado()" class="btn-finalizar" *ngIf="indiceAtual === questoes.length - 1">
-                Finalizar e Ver Nota TRI 🚀
+            <button
+                    class="btn-sucesso"
+                    *ngIf="indiceAtual === questoes.length - 1"
+                    (click)="finalizarSimulado()">
+                Finalizar Simulado
             </button>
-        </footer>
+        </div>
     </div>
 
-    <div class="resultado-card" *ngIf="resultadoFinal">
-        <div class="resultado-header">
-            <span class="badge-sucesso">✨ Simulado Concluído</span>
-            <h2>Seu Desempenho</h2>
-        </div>
+    <div class="resultado-container" *ngIf="resultadoFinal">
+        <div class="card-resultado">
+            <h2>Simulado Concluído! 🎉</h2>
+            <p class="subtitulo">Confira o seu desempenho:</p>
 
-        <div class="nota-tri-box">
-            <h3>Nota Estimada (TRI)</h3>
-            <p class="valor-tri">{{ resultadoFinal.notaTRI | number:'1.0-1' }}</p>
-        </div>
+            <div class="estatisticas-grid">
+                <div class="stat-card">
+                    <span class="stat-valor">{{ totalAcertos }} / {{ resultadoFinal.totalQuestoes }}</span>
+                    <span class="stat-label">Questões Certas</span>
+                </div>
 
-        <div class="resumo-stats">
-            <div class="stat-item">
-                <span>Acertos</span>
-                <strong>{{ resultadoFinal.totalAcertos }} / {{ resultadoFinal.totalQuestoes }}</strong>
+                <div class="stat-card destaque" *ngIf="resultadoFinal.notaTRI !== undefined && resultadoFinal.notaTRI !== null">
+                    <span class="stat-valor">{{ resultadoFinal.notaTRI | number:'1.0-1' }}</span>
+                    <span class="stat-label">Nota Estimada (TRI)</span>
+                </div>
             </div>
-            <div class="stat-item">
-                <span>Aproveitamento</span>
-                <strong>{{ resultadoFinal.porcentagemAcerto }}%</strong>
+
+            <div class="acoes-resultado">
+                <button class="btn-primario" (click)="reiniciarSimulado()">Fazer Outro Simulado</button>
             </div>
         </div>
+    </div>
+
+    <div class="status-mensagem" *ngIf="carregando">
+        <p>Carregando simulado...</p>
+    </div>
+
+    <div class="status-mensagem erro" *ngIf="erroCarregamento">
+        <p>Ocorreu um erro ao carregar as questões. Tente novamente.</p>
+        <button (click)="iniciarSimulado()" class="btn-primario">Tentar Novamente</button>
     </div>
 
 </div>

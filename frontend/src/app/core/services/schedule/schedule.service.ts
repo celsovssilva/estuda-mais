@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {CategoryMetric, ScheduleRequest, ScheduleResponse} from '../../models/schedule.models';
-import {environment} from "../../../../environments/environment.prod";
+import {environment} from "../../../../environments/environment.development";
 
 @Injectable({
     providedIn: 'root'

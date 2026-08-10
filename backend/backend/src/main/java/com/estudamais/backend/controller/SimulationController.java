@@ -32,7 +32,9 @@ public class SimulationController {
         }
 
         if(disciplina != null && !disciplina.isBlank()){
-            List<Question> filtradas = questions.stream().filter(q-> disciplina.equalsIgnoreCase(q.getDisciplina()))
+            String filtroFormatado = normalizarTexto(disciplina);
+            List<Question> filtradas = questions.stream().filter(q -> q.getDisciplina() != null &&
+                            normalizarTexto(q.getDisciplina()).contains(filtroFormatado))
                     .toList();
             return ResponseEntity.ok(filtradas);
         }
@@ -45,5 +47,15 @@ public class SimulationController {
         ResultadoSimuladoResponse resultadoSimuladoResponse = simuladoService.processarSimulado(request);
         return  ResponseEntity.ok(resultadoSimuladoResponse);
 
+    }
+    private String normalizarTexto(String texto) {
+        return texto.toLowerCase()
+                .replace("-", " ")
+                .replace("ç", "c")
+                .replace("ã", "a")
+                .replace("á", "a")
+                .replace("é", "e")
+                .replace("ê", "e")
+                .trim();
     }
 }

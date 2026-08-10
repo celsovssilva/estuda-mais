@@ -22,7 +22,7 @@ export class SimuladoExecucaoComponent implements OnInit {
     indiceAtual: number = 0;
     respostasAluno: Map<string, string> = new Map();
 
-    anoSelecionado: number = 2023;
+    anoSelecionado: number = 2022;
     disciplinaSelecionada: string | null = null;
 
     carregando: boolean = false;

@@ -8,6 +8,7 @@ COPY . .
 
 # MUITO IMPORTANTE: Move o diretório de trabalho para onde o pom.xml realmente está antes de rodar o Maven
 WORKDIR /app/backend/backend
+# Estágio 1: Build da aplicação
 RUN mvn clean install -DskipTests
 
 # Estágio 2: Imagem de execução leve

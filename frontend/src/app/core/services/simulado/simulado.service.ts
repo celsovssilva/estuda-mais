@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Questao, ResultadoSimulado } from '../../models/simulado.models';
+import {environment} from "../../../../environments/environment.prod";
 
 @Injectable({
     providedIn: 'root'
 })
 export class SimuladoService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/api'; // Ajuste a URL do seu backend se necessário
+    private apiUrl = `${environment.apiUrl}/api/simulados`;
 
     obterQuestoes(ano?: number | null, disciplina?: string | null): Observable<Questao[]> {
         let params = new HttpParams();

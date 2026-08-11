@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment.prod';
 })
 export class SimuladoService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/api`;
+    private apiUrl = `${environment.apiUrl}/api/simulados`;
 
     obterQuestoes(
         ano?: number | null,

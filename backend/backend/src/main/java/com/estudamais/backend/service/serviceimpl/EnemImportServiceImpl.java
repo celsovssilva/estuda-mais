@@ -1,5 +1,6 @@
 package com.estudamais.backend.service.serviceimpl;
 
+import com.estudamais.backend.entity.DiaProva;
 import com.estudamais.backend.entity.Question;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.service.EnemImportService;
@@ -21,75 +22,108 @@ public class EnemImportServiceImpl implements EnemImportService {
 
     @Override
     public void importarProvas(int ano) {
-        try {
-            int offset = 0;
-            int limit = 50;
-            boolean temMaisPaginas = true;
 
-            while (temMaisPaginas) {
-                JsonNode root = restClient.get()
-                        .uri("https://api.enem.dev/v1/exams/{year}/questions?offset={offset}&limit={limit}", ano, offset, limit)
-                        .retrieve()
-                        .body(JsonNode.class);
+        int offset = 0;
+        int limit = 50;
+        boolean temMaisPaginas = true;
 
-                if (root != null && root.has("questions")) {
-                    JsonNode questionsArray = root.get("questions");
+        while (temMaisPaginas) {
+            JsonNode root = restClient.get()
+                    .uri("https://api.enem.dev/v1/exams/{year}/questions?offset={offset}&limit={limit}", ano, offset, limit)
+                    .retrieve()
+                    .body(JsonNode.class);
 
-                    if (questionsArray.isEmpty()) {
-                        temMaisPaginas = false;
-                        break;
+
+            if (root == null || !root.has("questions")) {
+                break;
+            }
+
+            JsonNode questionsArray = root.get("questions");
+
+            if (questionsArray.isEmpty()) {
+                break;
+            }
+
+            List<Question> questoesDaPagina = new ArrayList<>();
+
+            for (JsonNode node : questionsArray) {
+
+                Question q = new Question();
+
+                int index = node.path("index").asInt();
+                String idioma = node.path("language").isNull() ? null : node.path("language").asText();
+                String sufixoIdioma = (idioma != null) ? "-" + idioma : "";
+                String idString = ano + "-" + index + sufixoIdioma;
+
+
+                String disciplina = node.path("discipline").asText("geral");
+
+                DiaProva dataprova;
+
+                if ("linguagens".equals(disciplina) || "ciencias-humanas".equals(disciplina)) {
+                    dataprova = DiaProva.DIA_1;
+                } else {
+                    dataprova = DiaProva.DIA_2;
+                }
+
+
+                StringBuilder enunciado = new StringBuilder();
+                String contexto = node.path("context").asText("");
+                enunciado.append(contexto);
+
+                JsonNode filesNode = node.path("files");
+                if (filesNode.isArray()) {
+                    for (JsonNode fileNode : filesNode) {
+                        String urlImagem = fileNode.asText();
+                        enunciado.append("<br><img src=\"").append(urlImagem).append("\" /><br>");
                     }
+                }
 
-                    List<Question> listaParaSalvar = new ArrayList<>();
 
-                    for (JsonNode node : questionsArray) {
-                        int index = node.path("index").asInt();
-                        long idCalculado = ((long) ano * 1000) + index;
-                        String idString = String.valueOf(idCalculado);
+                JsonNode alternativas = node.path("alternatives");
+                List<String> listaAlternativas = new ArrayList<>();
 
-                        if (!questaoRepository.existsById(idString)) {
-                            Question q = new Question();
-                            q.setId(idString);
-                            q.setAno(ano);
-                            q.setDisciplina(node.path("discipline").asText("Geral"));
-                            q.setEnunciado(node.path("context").asText(""));
+                if (alternativas.isArray()) {
+                    for (JsonNode altNode : alternativas) {
+                        String textoAlt = altNode.path("text").isNull() ? null : altNode.path("text").asText();
+                        String arquivoAlt = altNode.path("file").isNull() ? null : altNode.path("file").asText();
 
-                            List<String> alts = new ArrayList<>();
-                            for (JsonNode altNode : node.path("alternatives")) {
-                                String textoAlt = altNode.path("text").asText();
-                                alts.add(textoAlt);
+                        String valorFinal;
+                        if (textoAlt != null && !textoAlt.isBlank()) {
+                            valorFinal = textoAlt;
+                        } else if (arquivoAlt != null && !arquivoAlt.isBlank()) {
+                            valorFinal = "<img src=\"" + arquivoAlt + "\" />";
+                        } else {
+                            valorFinal = "";
+                        }
 
-                                if (altNode.path("isCorrect").asBoolean(false)) {
-                                    q.setRespostaCorreta(textoAlt);
-                                }
-                            }
-                            q.setAlternativas(alts);
+                        listaAlternativas.add(valorFinal);
 
-                            q.setParametroB(1.0);
-                            q.setParametroA(1.5);
-                            q.setParametroC(0.20);
-
-                            listaParaSalvar.add(q);
+                        Boolean correta = altNode.path("isCorrect").asBoolean(false);
+                        if (correta) {
+                            q.setRespostaCorreta(valorFinal);
                         }
                     }
-
-                    if (!listaParaSalvar.isEmpty()) {
-                        questaoRepository.saveAll(listaParaSalvar);
-                    }
-
-
-                    if (questionsArray.size() < limit) {
-                        temMaisPaginas = false;
-                    } else {
-                        offset += limit;
-                    }
-                } else {
-                    temMaisPaginas = false;
                 }
+
+
+                q.setId(idString);
+                q.setAno(ano);
+                q.setIndex(index);
+                q.setIdioma(idioma);
+                q.setDisciplina(disciplina);
+                q.setDia(dataprova);
+                q.setEnunciado(enunciado.toString());
+                q.setAlternativas(listaAlternativas);
+
+
+                questoesDaPagina.add(q);
             }
-        } catch (Exception e) {
-            System.err.println("Erro ao importar questões da API do ENEM: " + e.getMessage());
-            e.printStackTrace();
+
+
+            questaoRepository.saveAll(questoesDaPagina);
+
+            offset += limit;
         }
     }
-}
+    }

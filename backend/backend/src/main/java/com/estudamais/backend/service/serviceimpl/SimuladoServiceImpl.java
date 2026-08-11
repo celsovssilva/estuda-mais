@@ -1,5 +1,6 @@
 package com.estudamais.backend.service.serviceimpl;
 
+import com.estudamais.backend.entity.DiaProva;
 import com.estudamais.backend.entity.Question;
 import com.estudamais.backend.entity.RespostaAluno;
 import com.estudamais.backend.entity.StudentSimulation;
@@ -9,6 +10,7 @@ import com.estudamais.backend.request.EnviarSimuladoRequest;
 import com.estudamais.backend.request.RespostaItemRequest;
 import com.estudamais.backend.response.GabaritoItemResponse;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
+import com.estudamais.backend.service.EnemImportService;
 import com.estudamais.backend.service.SimuladoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +26,16 @@ public class SimuladoServiceImpl  implements SimuladoService {
 
     @Autowired
     private SimulationRepository simuladoRepository;
+
+    @Autowired
+    private EnemImportService enemImportService;
+
     @Override
     public ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto) {
         StudentSimulation simulado = new StudentSimulation();
         simulado.setUsuarioId(dto.usuarioId());
         simulado.setDataInicio(LocalDateTime.now());
+
 
         int acertos = 0;
         double somaDificuldadeAcertos = 0.0;
@@ -57,6 +64,7 @@ public class SimuladoServiceImpl  implements SimuladoService {
             ));
         }
 
+
         // Cálculo Simplificado da Escala ENEM (Aproximação de TRI para escala 300 - 1000)
         double notaTRI = calcularNotaAproximadaTRI(acertos, dto.respostas().size(), somaDificuldadeAcertos);
 
@@ -72,6 +80,23 @@ public class SimuladoServiceImpl  implements SimuladoService {
                 dto.respostas().size(),
                 detalhesGabarito
         );
+    }
+
+    @Override
+    public List<Question> obterSimulados(Integer ano, DiaProva dia,String disciplina ,String idioma) {
+        if (dia.equals(DiaProva.DIA_2)) {
+            idioma = null;
+        } else if (dia.equals(DiaProva.DIA_1)) {
+           idioma =  idioma.trim().toLowerCase();
+
+        }
+        List<Question> questionList = questaoRepository.buscarSimulado(ano, dia, disciplina, idioma);
+
+        if(questionList.isEmpty()){
+                enemImportService.importarProvas(ano);
+                questionList = questaoRepository.buscarSimulado(ano, dia, disciplina, idioma);
+        }
+     return questionList;
     }
 
     private double calcularNotaAproximadaTRI(int acertos, int total, double somaDificuldade) {

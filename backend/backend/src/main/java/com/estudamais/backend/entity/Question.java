@@ -23,9 +23,13 @@ public class Question {
     private String enunciado;
 
     @ElementCollection
+    @OrderColumn
     private List<String> alternativas;
     private String respostaCorreta;
-
+    private int index;
+    private String idioma;
+    @Column(name = "dia")
+    private DiaProva dia;
 
     private Double parametroB; // Dificuldade da questão
     private Double parametroA; // capacidade de diferenciar quem sabe

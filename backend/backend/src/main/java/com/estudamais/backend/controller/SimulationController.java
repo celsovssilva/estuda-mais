@@ -1,5 +1,6 @@
 package com.estudamais.backend.controller;
 
+import com.estudamais.backend.entity.DiaProva;
 import com.estudamais.backend.entity.Question;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
@@ -23,22 +24,11 @@ public class SimulationController {
     private EnemImportService enemImportService;
 
     @GetMapping("/questoes")
-    public ResponseEntity<List<Question>> obterQuestao(@RequestParam(required = false) String disciplina,@RequestParam(required = false) Integer ano){
-        List<Question> questions = questionRepository.findByAno(ano);
+    public ResponseEntity<List<Question>> obterQuestao(@RequestParam(required = false) String disciplina, @RequestParam(required = false) Integer ano,@RequestParam(required = false) DiaProva dia,@RequestParam(required = false) String idioma){
 
-        if(questions.isEmpty()){
-            enemImportService.importarProvas(ano);
-            questions = questionRepository.findByAno(ano);
-        }
+      List<Question> questionList =  simuladoService.obterSimulados(ano, dia,disciplina,idioma);
 
-        if(disciplina != null && !disciplina.isBlank()){
-            String filtroFormatado = normalizarTexto(disciplina);
-            List<Question> filtradas = questions.stream().filter(q -> q.getDisciplina() != null &&
-                            normalizarTexto(q.getDisciplina()).contains(filtroFormatado))
-                    .toList();
-            return ResponseEntity.ok(filtradas);
-        }
-        return ResponseEntity.ok(questions);
+        return ResponseEntity.ok(questionList);
 
     }
 

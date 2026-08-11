@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
-import { Questao, RespostaItem, ResultadoSimulado } from '../../core/models/simulado.models';
-import { FormsModule } from "@angular/forms";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest } from '../../core/models/simulado.models';
 
 @Component({
     selector: 'app-simulado-execucao',
@@ -36,7 +37,6 @@ export class SimuladoExecucaoComponent implements OnInit {
         if (paramAno && !isNaN(Number(paramAno))) {
             this.anoSelecionado = Number(paramAno);
         }
-        this.carregando = false;
     }
 
     formatarEnunciado(texto: string | undefined): SafeHtml {
@@ -105,7 +105,7 @@ export class SimuladoExecucaoComponent implements OnInit {
             ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
         );
 
-        const payload = {
+        const payload: EnviarSimuladoRequest = {
             usuarioId: 1,
             respostas: respostasArray
         };

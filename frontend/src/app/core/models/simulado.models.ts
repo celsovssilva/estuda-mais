@@ -2,7 +2,7 @@ export interface Questao {
     id: string;
     ano: number;
     disciplina: string;
-    imagem?:string;
+    imagem?: string;
     enunciado: string;
     alternativas: string[];
 }

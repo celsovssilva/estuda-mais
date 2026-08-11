@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment.prod';
 })
 export class SimuladoService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/api`;
+    private apiUrl = `${environment.apiUrl}/api/simulados`;
 
     obterQuestoes(
         ano?: number | null,
@@ -23,11 +23,11 @@ export class SimuladoService {
         if (disciplina) params = params.set('disciplina', disciplina);
         if (dia) params = params.set('dia', dia);
         if (idioma) params = params.set('idioma', idioma);
-
-        return this.http.get<Questao[]>(`${this.apiUrl}/simulados/questoes`, { params });
+        return this.http.get<Questao[]>(`${this.apiUrl}/questoes`, { params });
     }
 
     finalizarSimulado(payload: EnviarSimuladoRequest): Observable<ResultadoSimulado> {
-        return this.http.post<ResultadoSimulado>(`${this.apiUrl}/simulados/finalizar`, payload);
+
+        return this.http.post<ResultadoSimulado>(`${this.apiUrl}/finalizar`, payload);
     }
 }

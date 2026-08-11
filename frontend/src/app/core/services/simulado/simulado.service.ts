@@ -9,7 +9,7 @@ import {environment} from "../../../../environments/environment.prod";
 })
 export class SimuladoService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}`;
+    private apiUrl = `${environment.apiUrl}/api`;
 
     obterQuestoes(ano?: number | null, disciplina?: string | null): Observable<Questao[]> {
         let params = new HttpParams();

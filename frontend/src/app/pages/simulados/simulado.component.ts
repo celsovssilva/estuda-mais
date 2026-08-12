@@ -55,7 +55,7 @@ export class SimuladoExecucaoComponent implements OnInit {
     }
 
     iniciarSimulado(): void {
-        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada, null, null);
+        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada, this.diaSelecionado, this.idiomaSelecionado);
     }
 
     carregarQuestoes(

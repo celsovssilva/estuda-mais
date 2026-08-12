@@ -23,10 +23,9 @@ public class Question {
     private String enunciado;
 
 
-
+    @Column(columnDefinition = "TEXT")
     @ElementCollection
     @OrderColumn
-    @Column(columnDefinition = "TEXT")
     private List<String> alternativas;
     @Column(columnDefinition = "TEXT")
     private String respostaCorreta;

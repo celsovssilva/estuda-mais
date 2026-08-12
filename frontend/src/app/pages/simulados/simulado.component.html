@@ -24,15 +24,24 @@
                 </select>
             </div>
 
-            <div class="campo-filtro">
-                <label>Disciplina:</label>
-                <select [(ngModel)]="disciplinaSelecionada">
-                    <option [ngValue]="null">Prova Completa</option>
-                    <option value="matematica">Matemática</option>
-                    <option value="linguagens">Linguagens</option>
-                    <option value="ciencias-humanas">Ciências Humanas</option>
-                    <option value="ciencias-natureza">Ciências da Natureza</option>
-                </select>
+            <div class="filtros">
+                <div class="campo-filtro">
+                    <label>Dia da Prova:</label>
+                    <select [(ngModel)]="diaSelecionado">
+                        <option [ngValue]="null">Prova Completa (Ambos os Dias)</option>
+                        <option value="DIA_1">1º Dia (Linguagens e Humanas)</option>
+                        <option value="DIA_2">2º Dia (Matemática e Natureza)</option>
+                    </select>
+                </div>
+
+                <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
+                    <label>Idioma Estrangeiro:</label>
+                    <select [(ngModel)]="idiomaSelecionado">
+                        <option [ngValue]="null">Selecione o idioma...</option>
+                        <option value="ingles">Inglês</option>
+                        <option value="espanhol">Espanhol</option>
+                    </select>
+                </div>
             </div>
         </div>
 

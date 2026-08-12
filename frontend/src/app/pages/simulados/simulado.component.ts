@@ -25,6 +25,8 @@ export class SimuladoExecucaoComponent implements OnInit {
 
     anoSelecionado: number = 2022;
     disciplinaSelecionada: string | null = null;
+    diaSelecionado: string | null = null;
+    idiomaSelecionado: string | null = null;
 
     carregando: boolean = false;
     erroCarregamento: boolean = false;
@@ -53,14 +55,19 @@ export class SimuladoExecucaoComponent implements OnInit {
     }
 
     iniciarSimulado(): void {
-        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada);
+        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada, null, null);
     }
 
-    carregarQuestoes(ano: number, disciplina: string | null = null): void {
+    carregarQuestoes(
+        ano: number,
+        disciplina: string | null = null,
+        dia: string | null = null,
+        idioma: string | null = null
+    ): void {
         this.carregando = true;
         this.erroCarregamento = false;
 
-        this.simuladoService.obterQuestoes(ano, disciplina).subscribe({
+        this.simuladoService.obterQuestoes(ano, disciplina, dia, idioma).subscribe({
             next: (dados) => {
                 this.questoes = dados || [];
                 this.carregando = false;

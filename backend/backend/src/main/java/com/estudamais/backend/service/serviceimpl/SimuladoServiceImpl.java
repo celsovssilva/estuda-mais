@@ -84,13 +84,13 @@ public class SimuladoServiceImpl  implements SimuladoService {
 
     @Override
     public List<Question> obterSimulados(Integer ano, DiaProva dia,String disciplina ,String idioma) {
-        if (dia.equals(DiaProva.DIA_2)) {
+        if (dia != null && dia.equals(DiaProva.DIA_2)) {
             idioma = null;
-        } else if (dia.equals(DiaProva.DIA_1)) {
-           idioma =  idioma.trim().toLowerCase();
+        } else if (dia != null && dia.equals(DiaProva.DIA_1)) {
+                idioma = idioma.trim().toLowerCase();
+            }
 
-        }
-        List<Question> questionList = questaoRepository.buscarSimulado(ano, dia, disciplina, idioma);
+                List<Question> questionList = questaoRepository.buscarSimulado(ano, dia, disciplina, idioma);
 
         if(questionList.isEmpty()){
                 enemImportService.importarProvas(ano);

@@ -70,7 +70,7 @@
                         class="btn-alternativa"
                         [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
                         (click)="selecionarResposta(alt)">
-                    <span class="opt-label">{{ alt }}</span>
+                    <span class="opt-label" [innerHTML]="formatarEnunciado(alt)"></span>
                 </button>
             </div>
         </div>

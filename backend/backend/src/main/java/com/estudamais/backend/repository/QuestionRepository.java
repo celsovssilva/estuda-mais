@@ -11,13 +11,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface QuestionRepository  extends JpaRepository<Question,String> {
-    List<Question> findByDisciplina(String disciplina);
+public interface QuestionRepository extends JpaRepository<Question, String> {
 
-    List<Question> findByAno(Integer ano);
     @Query("SELECT q FROM Question q WHERE q.ano = :ano " +
             "AND (:dia IS NULL OR q.dia = :dia) " +
             "AND (:disciplina IS NULL OR q.disciplina = :disciplina) " +
-            "AND (:idioma IS NULL OR q.idioma = :idioma)")
-    List<Question> buscarSimulado(@Param("ano") Integer ano, @Param("dia") DiaProva dia,@Param("disciplina") String disciplina ,@Param("idioma")  String idioma);
+            "AND (:idioma IS NULL OR q.idioma IS NULL OR LOWER(q.idioma) = LOWER(:idioma))")
+    List<Question> buscarSimulado(
+            @Param("ano") Integer ano,
+            @Param("dia") DiaProva dia,
+            @Param("disciplina") String disciplina,
+            @Param("idioma") String idioma
+    );
 }

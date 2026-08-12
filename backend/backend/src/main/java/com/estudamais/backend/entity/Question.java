@@ -22,9 +22,13 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String enunciado;
 
+
+
     @ElementCollection
     @OrderColumn
+    @Column(columnDefinition = "TEXT")
     private List<String> alternativas;
+    @Column(columnDefinition = "TEXT")
     private String respostaCorreta;
     private int numero;
     private String idioma;

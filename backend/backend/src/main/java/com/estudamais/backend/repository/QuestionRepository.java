@@ -15,6 +15,9 @@ public interface QuestionRepository  extends JpaRepository<Question,String> {
     List<Question> findByDisciplina(String disciplina);
 
     List<Question> findByAno(Integer ano);
-    @Query("SELECT q FROM Question q WHERE q.ano = :ano AND q.dia = :dia AND (q.disciplina IS NULL OR q.disciplina = :disciplina) AND (q.idioma IS NULL OR q.idioma = :idioma)")
+    @Query("SELECT q FROM Question q WHERE q.ano = :ano " +
+            "AND (:dia IS NULL OR q.dia = :dia) " +
+            "AND (:disciplina IS NULL OR q.disciplina = :disciplina) " +
+            "AND (:idioma IS NULL OR q.idioma = :idioma)")
     List<Question> buscarSimulado(@Param("ano") Integer ano, @Param("dia") DiaProva dia,@Param("disciplina") String disciplina ,@Param("idioma")  String idioma);
 }

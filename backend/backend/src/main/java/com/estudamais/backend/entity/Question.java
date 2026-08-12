@@ -26,7 +26,7 @@ public class Question {
     @OrderColumn
     private List<String> alternativas;
     private String respostaCorreta;
-    private int index;
+    private int numero;
     private String idioma;
     @Column(name = "dia")
     private DiaProva dia;

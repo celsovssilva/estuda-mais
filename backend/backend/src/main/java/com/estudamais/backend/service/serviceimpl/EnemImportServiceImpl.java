@@ -109,7 +109,7 @@ public class EnemImportServiceImpl implements EnemImportService {
 
                 q.setId(idString);
                 q.setAno(ano);
-                q.setIndex(index);
+                q.setNumero(index);
                 q.setIdioma(idioma);
                 q.setDisciplina(disciplina);
                 q.setDia(dataprova);

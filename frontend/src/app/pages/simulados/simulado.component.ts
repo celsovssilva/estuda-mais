@@ -70,6 +70,9 @@ export class SimuladoExecucaoComponent implements OnInit {
         this.simuladoService.obterQuestoes(ano, disciplina, dia, idioma).subscribe({
             next: (dados) => {
                 this.questoes = dados || [];
+                if (this.questoes.length === 0) {
+                    alert('Nenhuma questão encontrada para estes filtros no banco de dados!');
+                }
                 this.carregando = false;
             },
             error: (err) => {

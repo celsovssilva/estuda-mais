@@ -6,11 +6,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
 import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest } from '../../core/models/simulado.models';
+import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-simulado-execucao',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule,NavbarComponent],
     templateUrl: './simulado.component.html',
     styleUrl: './simulado.component.css'
 })

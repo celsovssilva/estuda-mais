@@ -16,7 +16,6 @@ export class RegisterComponent {
     private authService = inject(AuthService);
     private router = inject(Router);
 
-    // Formulário Reativo capturando Nome, E-mail e Senha
     registerForm: FormGroup = this.fb.group({
         name: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
@@ -24,6 +23,7 @@ export class RegisterComponent {
     });
 
     errorMessage: string | null = null;
+    successMessage: string | null = null;
     isLoading = false;
 
     onSubmit(): void {
@@ -34,18 +34,20 @@ export class RegisterComponent {
 
         this.isLoading = true;
         this.errorMessage = null;
+        this.successMessage = null;
 
-        // Dispara os dados para o endpoint /api/auth/register do Spring
         this.authService.register(this.registerForm.value).subscribe({
             next: () => {
                 this.isLoading = false;
-                // Cadastro feito com sucesso! Redireciona para o login
-                alert('Conta criada com sucesso! Faça seu login.');
-                this.router.navigate(['/login']);
+                this.successMessage = 'Conta criada com sucesso! Redirecionando para o login...';
+
+                // Pequeno delay pra o usuário ver a mensagem antes de sair da tela
+                setTimeout(() => {
+                    this.router.navigate(['/login']);
+                }, 2000);
             },
             error: (err) => {
                 this.isLoading = false;
-                // Captura mensagens do backend (Ex: "Este e-mail já está cadastrado")
                 this.errorMessage = err.error?.message || 'Erro ao realizar o cadastro. Tente novamente.';
             }
         });

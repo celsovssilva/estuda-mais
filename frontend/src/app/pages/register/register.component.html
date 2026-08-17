@@ -4,8 +4,14 @@
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
-            <div *ngIf="errorMessage" class="error-message">
-                {{ errorMessage }}
+            <div *ngIf="errorMessage" class="alert-message alert-error">
+                <span class="alert-icon">⚠</span>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <div *ngIf="successMessage" class="alert-message alert-success">
+                <span class="alert-icon">✓</span>
+                <span>{{ successMessage }}</span>
             </div>
 
             <div class="form-group">
@@ -32,7 +38,7 @@
                 </small>
             </div>
 
-            <button type="submit" [disabled]="isLoading" class="btn-submit">
+            <button type="submit" [disabled]="isLoading || successMessage" class="btn-submit">
                 {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
             </button>
         </form>

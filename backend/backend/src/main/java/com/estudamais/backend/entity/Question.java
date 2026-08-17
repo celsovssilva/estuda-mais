@@ -30,6 +30,7 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String respostaCorreta;
     private int numero;
+    @Column(columnDefinition ="VARCHAR(20)")
     private String idioma;
     @Column(name = "dia")
     private DiaProva dia;

@@ -67,18 +67,16 @@ public class EnemImportServiceImpl implements EnemImportService {
                 }
 
 
-                StringBuilder enunciado = new StringBuilder();
-                String contexto = node.path("context").asText("");
+               StringBuilder enunciado = new StringBuilder();
+                String context = node.path("context").asText("");
+
+                String contexto = context.replaceAll("!\\[.*?\\]\\((.*?)\\)", "<br><img src=\"$1\" style=\"max-width: 100%; border-radius: 8px;\" /><br>");
                 enunciado.append(contexto);
 
-                JsonNode filesNode = node.path("files");
-                if (filesNode.isArray()) {
-                    for (JsonNode fileNode : filesNode) {
-                        String urlImagem = fileNode.asText();
-                        enunciado.append("<br><img src=\"").append(urlImagem).append("\" /><br>");
-                    }
+                String questionamento = node.path("alternativesIntroduction").asText("");
+                if(!questionamento.isBlank()){
+                    enunciado.append("<br><br><strong>").append(questionamento).append("</strong>");
                 }
-
 
                 JsonNode alternativas = node.path("alternatives");
                 List<String> listaAlternativas = new ArrayList<>();
@@ -109,7 +107,7 @@ public class EnemImportServiceImpl implements EnemImportService {
 
                 q.setId(idString);
                 q.setAno(ano);
-                q.setNumero(index);
+                q.setNumero(    index);
                 q.setIdioma(idioma);
                 q.setDisciplina(disciplina);
                 q.setDia(dataprova);

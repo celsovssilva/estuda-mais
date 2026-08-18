@@ -33,7 +33,7 @@ public class SimuladoServiceImpl implements SimuladoService {
     @Override
     public ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto) {
         StudentSimulation simulado = new StudentSimulation();
-        simulado.setUsuarioId(dto.usuarioId());
+        simulado.setUserId(dto.usuarioId());
         simulado.setDataInicio(LocalDateTime.now());
 
         int acertos = 0;

@@ -20,7 +20,7 @@ public class StudentSimulation {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long usuarioId;
+    private Long userId;
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
     private Double notaCalculadaTRI;

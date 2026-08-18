@@ -54,7 +54,11 @@
         <div class="simulado-header">
             <div class="contador-questao">
                 <span>Questão <strong>{{ indiceAtual + 1 }}</strong> de <strong>{{ questoes.length }}</strong></span>
-                <span class="badge-disciplina" *ngIf="questaoAtual.disciplina">{{ questaoAtual.disciplina }}</span>
+
+                <div class="header-status">
+                    <span class="badge-cronometro">⏱️ {{ tempoFormatado }}</span>
+                    <span class="badge-disciplina" *ngIf="questaoAtual.disciplina">{{ questaoAtual.disciplina }}</span>
+                </div>
             </div>
 
             <div class="barra-progresso">
@@ -96,6 +100,10 @@
                     (click)="questaoAnterior()"
                     [disabled]="indiceAtual === 0">
                 ← Anterior
+            </button>
+
+            <button class="btn-alerta" (click)="pausarSimulado()">
+                ⏸️ Pausar
             </button>
 
             <button

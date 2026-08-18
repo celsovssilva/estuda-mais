@@ -1,28 +1,33 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
-import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest } from '../../core/models/simulado.models';
-import {NavbarComponent} from "../../app/shared/navbar/navbar.component";
+import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest, PausarSimuladoRequest } from '../../core/models/simulado.models';
+import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 @Component({
     selector: 'app-simulado-execucao',
     standalone: true,
-    imports: [CommonModule, FormsModule,NavbarComponent],
+    imports: [CommonModule, FormsModule, NavbarComponent],
     templateUrl: './simulado.component.html',
     styleUrl: './simulado.component.css'
 })
-export class SimuladoExecucaoComponent implements OnInit {
+export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     private simuladoService = inject(SimuladoService);
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
     private sanitizer = inject(DomSanitizer);
 
+    simuladoId: number = 1;
     questoes: Questao[] = [];
     indiceAtual: number = 0;
     respostasAluno: Map<string, string> = new Map();
+
+    tempoDecorrido: number = 0;
+    private timerInterval: any = null;
 
     anoSelecionado: number = 2022;
     disciplinaSelecionada: string | null = null;
@@ -34,18 +39,145 @@ export class SimuladoExecucaoComponent implements OnInit {
     resultadoFinal: ResultadoSimulado | null = null;
 
     filtroAtual: 'TODAS' | 'ACERTOS' | 'ERROS' = 'TODAS';
+    alternativasEliminadas: Map<string, Set<number>> = new Map();
 
     ngOnInit(): void {
         const paramAno = this.route.snapshot.queryParamMap.get('ano');
         if (paramAno && !isNaN(Number(paramAno))) {
             this.anoSelecionado = Number(paramAno);
         }
+        this.verificarSimuladoPendente();
     }
-    alternativasEliminadas: Map<string, Set<number>> = new Map();
+
+    ngOnDestroy(): void {
+        this.pararTimer();
+    }
+
+    verificarSimuladoPendente(): void {
+        this.simuladoService.buscarPendentes().subscribe({
+            next: (pendente) => {
+                if (pendente) {
+                    this.simuladoId = pendente.id;
+                    this.indiceAtual = pendente.indiceAtual;
+                    this.tempoDecorrido = pendente.tempoDecorrido;
+
+                    pendente.respostas.forEach(r => {
+                        this.respostasAluno.set(r.questaoId, r.alternativaEscolhida);
+                    });
+
+                    this.iniciarSimulado(true);
+                }
+            },
+            error: () => {}
+        });
+    }
+
+    iniciarTimer(): void {
+        this.pararTimer();
+        this.timerInterval = setInterval(() => {
+            this.tempoDecorrido++;
+        }, 1000);
+    }
+
+    pararTimer(): void {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    get tempoFormatado(): string {
+        const hrs = Math.floor(this.tempoDecorrido / 3600);
+        const mins = Math.floor((this.tempoDecorrido % 3600) / 60);
+        const segs = this.tempoDecorrido % 60;
+
+        const hStr = hrs < 10 ? `0${hrs}` : `${hrs}`;
+        const mStr = mins < 10 ? `0${mins}` : `${mins}`;
+        const sStr = segs < 10 ? `0${segs}` : `${segs}`;
+
+        return hrs > 0 ? `${hStr}:${mStr}:${sStr}` : `${mStr}:${sStr}`;
+    }
+
+    iniciarSimulado(isRetomada: boolean = false): void {
+        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada, this.diaSelecionado, this.idiomaSelecionado, isRetomada);
+    }
+
+    carregarQuestoes(
+        ano: number,
+        disciplina: string | null = null,
+        dia: string | null = null,
+        idioma: string | null = null,
+        isRetomada: boolean = false
+    ): void {
+        this.carregando = true;
+        this.erroCarregamento = false;
+
+        this.simuladoService.obterQuestoes(ano, disciplina, dia, idioma).subscribe({
+            next: (dados) => {
+                this.questoes = dados || [];
+                if (this.questoes.length === 0) {
+                    alert('Nenhuma questão encontrada para estes filtros no banco de dados!');
+                } else {
+                    this.iniciarTimer();
+                }
+                this.carregando = false;
+            },
+            error: (err) => {
+                console.error('Erro ao carregar questões:', err);
+                this.carregando = false;
+                this.erroCarregamento = true;
+            }
+        });
+    }
+
+    pausarSimulado(): void {
+        this.pararTimer();
+
+        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
+            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
+        );
+
+        const payload: PausarSimuladoRequest = {
+            id: this.simuladoId,
+            indiceAtual: this.indiceAtual,
+            tempoDecorrido: this.tempoDecorrido,
+            respostaAlunos: respostasArray
+        };
+
+        this.simuladoService.pausarSimulado(payload).subscribe({
+            next: () => {
+                alert('Simulado pausado com sucesso!');
+                this.reiniciarSimulado();
+            },
+            error: (err) => {
+                console.error('Erro ao pausar simulado:', err);
+                this.iniciarTimer();
+            }
+        });
+    }
+
+    finalizarSimulado(): void {
+        this.pararTimer();
+
+        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
+            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
+        );
+
+        const payload: EnviarSimuladoRequest = {
+            usuarioId: 1,
+            respostas: respostasArray
+        };
+
+        this.simuladoService.finalizarSimulado(payload).subscribe({
+            next: (res) => {
+                this.resultadoFinal = res;
+            },
+            error: (err) => console.error('Erro ao finalizar simulado:', err)
+        });
+    }
 
     toggleEliminada(index: number, event: Event): void {
         event.stopPropagation();
-
         if (!this.questaoAtual) return;
         const id = this.questaoAtual.id;
 
@@ -68,49 +200,17 @@ export class SimuladoExecucaoComponent implements OnInit {
     }
 
     letraAlternativa(index: number): string {
-        return String.fromCharCode(65 + index); // 65 = 'A' na tabela ASCII
+        return String.fromCharCode(65 + index);
     }
 
     formatarEnunciado(texto: string | undefined): SafeHtml {
         if (!texto) return '';
-
         let html = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
         html = html.replace(
             /!\[.*?\]\((.*?)\)/g,
             '<div class="container-imagem-questao"><img src="$1" alt="Imagem de apoio" class="imagem-questao" /></div>'
         );
-
         return this.sanitizer.bypassSecurityTrustHtml(html);
-    }
-
-    iniciarSimulado(): void {
-        this.carregarQuestoes(this.anoSelecionado, this.disciplinaSelecionada, this.diaSelecionado, this.idiomaSelecionado);
-    }
-
-    carregarQuestoes(
-        ano: number,
-        disciplina: string | null = null,
-        dia: string | null = null,
-        idioma: string | null = null
-    ): void {
-        this.carregando = true;
-        this.erroCarregamento = false;
-
-        this.simuladoService.obterQuestoes(ano, disciplina, dia, idioma).subscribe({
-            next: (dados) => {
-                this.questoes = dados || [];
-                if (this.questoes.length === 0) {
-                    alert('Nenhuma questão encontrada para estes filtros no banco de dados!');
-                }
-                this.carregando = false;
-            },
-            error: (err) => {
-                console.error('Erro ao carregar questões:', err);
-                this.carregando = false;
-                this.erroCarregamento = true;
-            }
-        });
     }
 
     get questaoAtual(): Questao | null {
@@ -140,31 +240,12 @@ export class SimuladoExecucaoComponent implements OnInit {
         }
     }
 
-    finalizarSimulado(): void {
-        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
-            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
-        );
-
-        const payload: EnviarSimuladoRequest = {
-            usuarioId: 1,
-            respostas: respostasArray
-        };
-
-        this.simuladoService.finalizarSimulado(payload).subscribe({
-            next: (res) => {
-                this.resultadoFinal = res;
-            },
-            error: (err) => console.error('Erro ao finalizar simulado:', err)
-        });
-    }
-
     setFiltro(filtro: 'TODAS' | 'ACERTOS' | 'ERROS'): void {
         this.filtroAtual = filtro;
     }
 
     get gabaritoFiltrado() {
         if (!this.resultadoFinal?.gabarito) return [];
-
         if (this.filtroAtual === 'ACERTOS') {
             return this.resultadoFinal.gabarito.filter(item => item.acertou);
         }
@@ -175,9 +256,12 @@ export class SimuladoExecucaoComponent implements OnInit {
     }
 
     reiniciarSimulado(): void {
+        this.pararTimer();
         this.resultadoFinal = null;
         this.questoes = [];
         this.indiceAtual = 0;
+        this.tempoDecorrido = 0;
         this.respostasAluno.clear();
+        this.alternativasEliminadas.clear();
     }
 }

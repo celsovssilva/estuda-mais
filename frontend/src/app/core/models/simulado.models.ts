@@ -33,3 +33,16 @@ export interface ResultadoSimulado {
     porcentagemAcerto: number;
     gabarito: GabaritoItem[];
 }
+export interface PausarSimuladoRequest {
+    id: number;
+    indiceAtual: number;
+    tempoDecorrido: number;
+    respostaAlunos: RespostaItem[];
+}
+
+export interface SimuladoPendenteResponse {
+    id: number;
+    indiceAtual: number;
+    tempoDecorrido: number;
+    respostas: RespostaItem[];
+}

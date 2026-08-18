@@ -24,5 +24,13 @@ public class RespostaAluno {
     private Boolean correta;
 
     public RespostaAluno(Question questao, String s, boolean acertou) {
+
+    }
+
+
+    public void setQuestao(String s) {
+    }
+
+    public void setSimulation(StudentSimulation s) {
     }
 }

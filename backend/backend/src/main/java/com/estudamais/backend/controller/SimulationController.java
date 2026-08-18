@@ -2,13 +2,17 @@ package com.estudamais.backend.controller;
 
 import com.estudamais.backend.entity.DiaProva;
 import com.estudamais.backend.entity.Question;
+import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
+import com.estudamais.backend.request.PausarSimuladoRequest;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
+import com.estudamais.backend.response.SimuladoPendenteResponse;
 import com.estudamais.backend.service.EnemImportService;
 import com.estudamais.backend.service.SimuladoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,14 +42,19 @@ public class SimulationController {
         return  ResponseEntity.ok(resultadoSimuladoResponse);
 
     }
-    private String normalizarTexto(String texto) {
-        return texto.toLowerCase()
-                .replace("-", " ")
-                .replace("ç", "c")
-                .replace("ã", "a")
-                .replace("á", "a")
-                .replace("é", "e")
-                .replace("ê", "e")
-                .trim();
+
+    @PostMapping("/pausar")
+    public ResponseEntity<SimuladoPendenteResponse> pausar(@RequestBody PausarSimuladoRequest request){
+         simuladoService.pausarSimulado(request);
+        return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/pendentes")
+    public ResponseEntity<SimuladoPendenteResponse> buscarPendentes(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        SimuladoPendenteResponse response = simuladoService.buscarSimuladoPausado(user.getId());
+        return ResponseEntity.ok(response);
+
+    }
+
 }

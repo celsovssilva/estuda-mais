@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -23,7 +24,10 @@ public class StudentSimulation {
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
     private Double notaCalculadaTRI;
-
+    @Enumerated(EnumType.STRING)
+    private StatusSimulado status;
+    private Integer indiceAtual;
+    private Integer tempoDecorrido;
     @OneToMany( cascade = CascadeType.ALL)
     private List<RespostaAluno> respostas = new ArrayList<>();
 }

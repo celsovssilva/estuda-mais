@@ -1,15 +1,14 @@
 package com.estudamais.backend.service.serviceimpl;
 
-import com.estudamais.backend.entity.DiaProva;
-import com.estudamais.backend.entity.Question;
-import com.estudamais.backend.entity.RespostaAluno;
-import com.estudamais.backend.entity.StudentSimulation;
+import com.estudamais.backend.entity.*;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.repository.SimulationRepository;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
+import com.estudamais.backend.request.PausarSimuladoRequest;
 import com.estudamais.backend.request.RespostaItemRequest;
 import com.estudamais.backend.response.GabaritoItemResponse;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
+import com.estudamais.backend.response.SimuladoPendenteResponse;
 import com.estudamais.backend.service.EnemImportService;
 import com.estudamais.backend.service.SimuladoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +102,36 @@ public class SimuladoServiceImpl implements SimuladoService {
 
         return questionList;
     }
+
+    @Override
+    public SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto) {
+        StudentSimulation s = simuladoRepository.findById(dto.id())
+                .orElseThrow(()-> new RuntimeException("Simulado não encontrado"));
+        s.setStatus(StatusSimulado.PAUSADO);
+        s.setIndiceAtual(dto.indiceAtual());
+        s.setTempoDecorrido(dto.tempoDecorrido());
+        s.getRespostas().clear();
+        for(RespostaItemRequest item : dto.respostaAlunos()){
+            RespostaAluno respostaAluno = new RespostaAluno();
+            respostaAluno.setQuestao(item.questaoId());
+            respostaAluno.setAlternativaEscolhida(item.alternativaEscolhida());
+            s.getRespostas().add(respostaAluno);
+            respostaAluno.setSimulation(s);
+
+        }
+
+        simuladoRepository.save(s);
+
+        return null;
+    }
+
+    @Override
+    public SimuladoPendenteResponse buscarSimuladoPausado(Long userId) {
+           StudentSimulation s = simuladoRepository.findByUserIdAndStatus(userId, StatusSimulado.PAUSADO)
+                .orElseThrow(()-> new RuntimeException("user não encontrado"));
+            return  new SimuladoPendenteResponse(s);
+    }
+
 
     private double calcularNotaAproximadaTRI(int acertos, int total, double somaDificuldade) {
 

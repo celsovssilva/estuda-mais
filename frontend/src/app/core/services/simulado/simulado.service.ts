@@ -1,7 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Questao, ResultadoSimulado, EnviarSimuladoRequest } from '../../models/simulado.models';
+import {
+    Questao,
+    ResultadoSimulado,
+    EnviarSimuladoRequest,
+    PausarSimuladoRequest,
+    SimuladoPendenteResponse
+} from '../../models/simulado.models';
 import { environment } from '../../../../environments/environment.prod';
 
 @Injectable({
@@ -29,5 +35,12 @@ export class SimuladoService {
     finalizarSimulado(payload: EnviarSimuladoRequest): Observable<ResultadoSimulado> {
 
         return this.http.post<ResultadoSimulado>(`${this.apiUrl}/finalizar`, payload);
+    }
+    pausarSimulado(payload: PausarSimuladoRequest): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/pausar`, payload);
+    }
+
+    buscarPendentes(): Observable<SimuladoPendenteResponse> {
+        return this.http.get<SimuladoPendenteResponse>(`${this.apiUrl}/pendentes`);
     }
 }

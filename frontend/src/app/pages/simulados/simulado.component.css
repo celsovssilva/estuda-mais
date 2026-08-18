@@ -340,3 +340,32 @@
 .status-mensagem.erro {
     color: #ef4444;
 }
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-cronometro {
+    background-color: #fef3c7;
+    color: #b45309;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.btn-alerta {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    background-color: #f59e0b;
+    color: #fff;
+}
+
+.btn-alerta:hover {
+    background-color: #d97706;
+}

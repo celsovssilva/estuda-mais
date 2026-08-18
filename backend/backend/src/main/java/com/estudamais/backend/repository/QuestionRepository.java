@@ -13,10 +13,7 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, String> {
 
-    @Query("SELECT q FROM Question q WHERE q.ano = :ano " +
-            "AND (:dia IS NULL OR q.dia = :dia) " +
-            "AND (:disciplina IS NULL OR q.disciplina = :disciplina) " +
-            "AND (:idioma IS NULL OR q.idioma IS NULL OR LOWER(q.idioma) = LOWER(:idioma))")
+    @Query("SELECT q FROM Question q WHERE q.ano = :ano AND (:dia IS NULL OR q.dia = :dia) AND (:disciplina IS NULL OR q.disciplina = :disciplina) AND (:idioma IS NULL OR q.idioma IS NULL OR LOWER(q.idioma) = LOWER(CAST(:idioma AS string)))")
     List<Question> buscarSimulado(
             @Param("ano") Integer ano,
             @Param("dia") DiaProva dia,

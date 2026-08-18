@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -51,46 +51,24 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.pararTimer();
-        // Salva o progresso automaticamente ao sair da rota (ex: ao clicar no Navbar ou Sair)
-        if (this.questoes.length > 0 && !this.resultadoFinal) {
-            this.salvarProgressoSemRedirecionar();
-        }
-    }
-
-    @HostListener('window:beforeunload', ['$event'])
-    salvarAoSair($event: any): void {
-        if (this.questoes.length > 0 && !this.resultadoFinal) {
-            this.salvarProgressoSemRedirecionar();
-        }
     }
 
     verificarSimuladoPendente(): void {
         this.simuladoService.buscarPendentes().subscribe({
-            next: (pendente: any) => {
+            next: (pendente) => {
                 if (pendente) {
-                    this.simuladoId = pendente.id ?? pendente.simuladoId ?? 1;
-                    this.indiceAtual = pendente.indiceAtual ?? 0;
-                    this.tempoDecorrido = pendente.tempoDecorrido ?? 0;
+                    this.simuladoId = pendente.id;
+                    this.indiceAtual = pendente.indiceAtual;
+                    this.tempoDecorrido = pendente.tempoDecorrido;
 
-                    const respostas = pendente.respostas || pendente.respostaAlunos || [];
-                    respostas.forEach((r: any) => {
-                        const qId = r.questaoId || r.questionId;
-                        const alt = r.alternativaEscolhida || r.opcaoSelecionada;
-                        if (qId && alt) {
-                            this.respostasAluno.set(qId, alt);
-                        }
+                    pendente.respostas.forEach(r => {
+                        this.respostasAluno.set(r.questaoId, r.alternativaEscolhida);
                     });
 
                     this.iniciarSimulado(true);
-                } else {
-                    // Se não houver simulado pendente, inicia um novo do zero
-                    this.iniciarSimulado(false);
                 }
             },
-            error: () => {
-                // Em caso de erro na busca, inicia um simulado novo
-                this.iniciarSimulado(false);
-            }
+            error: () => {}
         });
     }
 
@@ -140,10 +118,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
                 if (this.questoes.length === 0) {
                     alert('Nenhuma questão encontrada para estes filtros no banco de dados!');
                 } else {
-                    // Impede estouro de índice se a quantidade de questões mudar
-                    if (this.indiceAtual >= this.questoes.length) {
-                        this.indiceAtual = 0;
-                    }
                     this.iniciarTimer();
                 }
                 this.carregando = false;
@@ -158,40 +132,28 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     pausarSimulado(): void {
         this.pararTimer();
-        const payload = this.montarPayloadPausa();
+
+        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
+            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
+        );
+
+        const payload: PausarSimuladoRequest = {
+            id: this.simuladoId,
+            indiceAtual: this.indiceAtual,
+            tempoDecorrido: this.tempoDecorrido,
+            respostaAlunos: respostasArray
+        };
 
         this.simuladoService.pausarSimulado(payload).subscribe({
             next: () => {
                 alert('Simulado pausado com sucesso!');
-                this.router.navigate(['/dashboard']);
+                this.reiniciarSimulado();
             },
             error: (err) => {
                 console.error('Erro ao pausar simulado:', err);
                 this.iniciarTimer();
             }
         });
-    }
-
-    private salvarProgressoSemRedirecionar(): void {
-        if (this.questoes.length === 0 || this.resultadoFinal) return;
-
-        const payload = this.montarPayloadPausa();
-        this.simuladoService.pausarSimulado(payload).subscribe({
-            error: (err) => console.error('Erro ao auto-salvar simulado:', err)
-        });
-    }
-
-    private montarPayloadPausa(): PausarSimuladoRequest {
-        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
-            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
-        );
-
-        return {
-            id: this.simuladoId,
-            indiceAtual: this.indiceAtual,
-            tempoDecorrido: this.tempoDecorrido,
-            respostaAlunos: respostasArray
-        };
     }
 
     finalizarSimulado(): void {
@@ -210,10 +172,7 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
             next: (res) => {
                 this.resultadoFinal = res;
             },
-            error: (err) => {
-                console.error('Erro ao finalizar simulado:', err);
-                this.iniciarTimer();
-            }
+            error: (err) => console.error('Erro ao finalizar simulado:', err)
         });
     }
 
@@ -267,11 +226,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         if (this.questaoAtual) {
             this.respostasAluno.set(this.questaoAtual.id, alternativa);
         }
-    }
-
-    isRespostaSelecionada(alternativa: string): boolean {
-        if (!this.questaoAtual) return false;
-        return this.respostasAluno.get(this.questaoAtual.id) === alternativa;
     }
 
     proximaQuestao(): void {

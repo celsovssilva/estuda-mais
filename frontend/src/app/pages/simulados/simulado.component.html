@@ -66,13 +66,27 @@
             <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
 
             <div class="alternativas-list">
-                <button
+                <div
                         *ngFor="let alt of questaoAtual.alternativas; let i = index"
-                        class="btn-alternativa"
-                        [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
-                        (click)="selecionarResposta(alt)">
-                    <span class="opt-label" [innerHTML]="formatarEnunciado(alt)"></span>
-                </button>
+                        class="linha-alternativa"
+                        [class.eliminada]="isEliminada(i)">
+
+                    <button
+                            class="btn-alternativa"
+                            [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
+                            (click)="selecionarResposta(alt)">
+                        <span class="opt-letra">{{ letraAlternativa(i) }}</span>
+                        <span class="opt-texto" [innerHTML]="alt"></span>
+                    </button>
+
+                    <button
+                            class="btn-eliminar"
+                            [class.ativo]="isEliminada(i)"
+                            (click)="toggleEliminada(i, $event)"
+                            title="Marcar como errada">
+                        ✂️
+                    </button>
+                </div>
             </div>
         </div>
 

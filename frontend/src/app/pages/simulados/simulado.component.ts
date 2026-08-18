@@ -41,6 +41,35 @@ export class SimuladoExecucaoComponent implements OnInit {
             this.anoSelecionado = Number(paramAno);
         }
     }
+    alternativasEliminadas: Map<string, Set<number>> = new Map();
+
+    toggleEliminada(index: number, event: Event): void {
+        event.stopPropagation();
+
+        if (!this.questaoAtual) return;
+        const id = this.questaoAtual.id;
+
+        if (!this.alternativasEliminadas.has(id)) {
+            this.alternativasEliminadas.set(id, new Set<number>());
+        }
+
+        const eliminadas = this.alternativasEliminadas.get(id)!;
+        if (eliminadas.has(index)) {
+            eliminadas.delete(index);
+        } else {
+            eliminadas.add(index);
+        }
+    }
+
+    isEliminada(index: number): boolean {
+        if (!this.questaoAtual) return false;
+        const eliminadas = this.alternativasEliminadas.get(this.questaoAtual.id);
+        return eliminadas ? eliminadas.has(index) : false;
+    }
+
+    letraAlternativa(index: number): string {
+        return String.fromCharCode(65 + index); // 65 = 'A' na tabela ASCII
+    }
 
     formatarEnunciado(texto: string | undefined): SafeHtml {
         if (!texto) return '';

@@ -42,6 +42,8 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     filtroAtual: 'TODAS' | 'ACERTOS' | 'ERROS' = 'TODAS';
     alternativasEliminadas: Map<string, Set<number>> = new Map();
 
+    painelGabaritoAberto: boolean = false;
+
     ngOnInit(): void {
         const paramAno = this.route.snapshot.queryParamMap.get('ano');
         if (paramAno && !isNaN(Number(paramAno))) {
@@ -105,6 +107,20 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     retomarSimulado(): void {
         this.iniciarTimer();
         this.isPausado = false;
+    }
+
+
+    reiniciarTentativa(): void {
+        if (!confirm('Isso vai apagar suas respostas e reiniciar o cronômetro. Deseja continuar?')) {
+            return;
+        }
+        this.pararTimer();
+        this.tempoDecorrido = 0;
+        this.respostasAluno.clear();
+        this.alternativasEliminadas.clear();
+        this.indiceAtual = 0;
+        this.isPausado = false;
+        this.iniciarTimer();
     }
 
     get tempoFormatado(): string {
@@ -217,6 +233,10 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         return this.resultadoFinal.gabarito.filter(item => item.acertou).length;
     }
 
+    get totalRespondidas(): number {
+        return this.respostasAluno.size;
+    }
+
     selecionarResposta(alternativa: string): void {
         if (this.questaoAtual && !this.isPausado) {
             this.respostasAluno.set(this.questaoAtual.id, alternativa);
@@ -226,6 +246,40 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     isRespostaSelecionada(alternativa: string): boolean {
         if (!this.questaoAtual) return false;
         return this.respostasAluno.get(this.questaoAtual.id) === alternativa;
+    }
+
+
+    letraMarcadaNaQuestao(index: number): string | null {
+        const questao = this.questoes[index];
+        if (!questao) return null;
+
+        const resposta = this.respostasAluno.get(questao.id);
+        if (!resposta) return null;
+
+        const idxAlternativa = questao.alternativas?.indexOf(resposta);
+        if (idxAlternativa === undefined || idxAlternativa < 0) return null;
+
+        return this.letraAlternativa(idxAlternativa);
+    }
+
+
+    respondeuQuestao(index: number): boolean {
+        const questao = this.questoes[index];
+        return !!questao && this.respostasAluno.has(questao.id);
+    }
+
+
+    statusGabarito(index: number): 'atual' | 'respondida' | 'pendente' {
+        if (index === this.indiceAtual) return 'atual';
+        return this.respondeuQuestao(index) ? 'respondida' : 'pendente';
+    }
+
+
+    irParaQuestao(index: number): void {
+        if (this.isPausado) return;
+        if (index >= 0 && index < this.questoes.length) {
+            this.indiceAtual = index;
+        }
     }
 
     proximaQuestao(): void {
@@ -238,6 +292,19 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         if (this.indiceAtual > 0) {
             this.indiceAtual--;
         }
+    }
+
+
+    avancarOuEnviar(): void {
+        if (this.indiceAtual < this.questoes.length - 1) {
+            this.proximaQuestao();
+        } else {
+            this.finalizarSimulado();
+        }
+    }
+
+    toggleGabarito(): void {
+        this.painelGabaritoAberto = !this.painelGabaritoAberto;
     }
 
     setFiltro(filtro: 'TODAS' | 'ACERTOS' | 'ERROS'): void {

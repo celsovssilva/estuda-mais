@@ -2,7 +2,6 @@
 
 <div class="simulado-page">
 
-    <!-- TELA DE CONFIGURAÇÃO DO SIMULADO -->
     <div class="configuracao-simulado" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
         <h2>Configurar Simulado</h2>
 
@@ -51,7 +50,7 @@
         <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
     </div>
 
-    <!-- TELA DE EXECUÇÃO DO SIMULADO -->
+
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
         <div class="simulado-header">
@@ -61,6 +60,20 @@
                 <div class="header-status">
                     <span class="badge-cronometro">⏱️ {{ tempoFormatado }}</span>
                     <span class="badge-disciplina" *ngIf="questaoAtual.disciplina">{{ questaoAtual.disciplina }}</span>
+
+                    <button class="btn-alerta" (click)="pausarSimulado()" *ngIf="!isPausado">
+                        ⏸️ Pausar
+                    </button>
+                    <button class="btn-primario" (click)="retomarSimulado()" *ngIf="isPausado">
+                        ▶️ Retomar
+                    </button>
+                    <button class="btn-secundario" (click)="reiniciarTentativa()" title="Reiniciar cronômetro e respostas">
+                        🔄 Reiniciar
+                    </button>
+
+                    <button class="btn-toggle-gabarito" (click)="toggleGabarito()">
+                        🗂️ Gabarito
+                    </button>
                 </div>
             </div>
 
@@ -69,39 +82,71 @@
             </div>
         </div>
 
-        <!-- CONTEÚDO DA QUESTÃO (ESCONDIDO QUANDO PAUSADO) -->
-        <div class="card-questao" *ngIf="!isPausado">
-            <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
+        <div class="simulado-corpo">
 
-            <div class="alternativas-list">
-                <div
-                        *ngFor="let alt of questaoAtual.alternativas; let i = index"
-                        class="linha-alternativa"
-                        [class.eliminada]="isEliminada(i)">
+            <!-- CONTEÚDO DA QUESTÃO (ESCONDIDO QUANDO PAUSADO) -->
+            <div class="card-questao" *ngIf="!isPausado">
+                <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
 
-                    <button
-                            class="btn-alternativa"
-                            [class.selecionada]="isRespostaSelecionada(alt)"
-                            (click)="selecionarResposta(alt)">
-                        <span class="opt-letra">{{ letraAlternativa(i) }}</span>
-                        <span class="opt-texto" [innerHTML]="alt"></span>
-                    </button>
+                <div class="alternativas-list">
+                    <div
+                            *ngFor="let alt of questaoAtual.alternativas; let i = index"
+                            class="linha-alternativa"
+                            [class.eliminada]="isEliminada(i)">
 
-                    <button
-                            class="btn-eliminar"
-                            [class.ativo]="isEliminada(i)"
-                            (click)="toggleEliminada(i, $event)"
-                            title="Marcar como errada">
-                        ✂️
-                    </button>
+                        <button
+                                class="btn-alternativa"
+                                [class.selecionada]="isRespostaSelecionada(alt)"
+                                (click)="selecionarResposta(alt)">
+                            <span class="opt-letra">{{ letraAlternativa(i) }}</span>
+                            <span class="opt-texto" [innerHTML]="alt"></span>
+                        </button>
+
+                        <button
+                                class="btn-eliminar"
+                                [class.ativo]="isEliminada(i)"
+                                (click)="toggleEliminada(i, $event)"
+                                title="Marcar como errada">
+                            ✂️
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- MENSAGEM EXIBIDA QUANDO PAUSADO -->
-        <div class="card-questao texto-centralizado" *ngIf="isPausado">
-            <h2>⏸️ Simulado Pausado</h2>
-            <p>O tempo está congelado. Clique em "Retomar Simulado" para continuar.</p>
+
+            <div class="card-questao texto-centralizado" *ngIf="isPausado">
+                <h2>⏸️ Simulado Pausado</h2>
+                <p>O tempo está congelado. Clique em "Retomar" para continuar.</p>
+            </div>
+
+            <aside class="painel-gabarito" [class.aberto]="painelGabaritoAberto">
+                <div class="gabarito-cabecalho">
+                    <h3>Gabarito</h3>
+                    <span class="gabarito-contador">{{ totalRespondidas }} / {{ questoes.length }}</span>
+                </div>
+
+                <div class="gabarito-grid">
+                    <button
+                            *ngFor="let q of questoes; let i = index"
+                            type="button"
+                            class="bolha-questao"
+                            [class.atual]="statusGabarito(i) === 'atual'"
+                            [class.respondida]="statusGabarito(i) === 'respondida'"
+                            [class.pendente]="statusGabarito(i) === 'pendente'"
+                            [disabled]="isPausado"
+                            (click)="irParaQuestao(i)"
+                            [title]="'Questão ' + (i + 1) + (respondeuQuestao(i) ? ' — marcada ' + letraMarcadaNaQuestao(i) : ' — não respondida')">
+                        <span class="bolha-numero">{{ i + 1 }}</span>
+                        <span class="bolha-letra" *ngIf="respondeuQuestao(i)">{{ letraMarcadaNaQuestao(i) }}</span>
+                    </button>
+                </div>
+
+                <div class="gabarito-legenda">
+                    <span><i class="ponto ponto-atual"></i> Atual</span>
+                    <span><i class="ponto ponto-respondida"></i> Respondida</span>
+                    <span><i class="ponto ponto-pendente"></i> Pendente</span>
+                </div>
+            </aside>
         </div>
 
         <div class="simulado-footer">
@@ -109,37 +154,19 @@
                     class="btn-secundario"
                     (click)="questaoAnterior()"
                     [disabled]="indiceAtual === 0 || isPausado">
-                ← Anterior
-            </button>
-
-            <!-- CONTROLE DE PAUSA/RETOMADA -->
-            <button class="btn-alerta" (click)="pausarSimulado()" *ngIf="!isPausado">
-                ⏸️ Pausar
-            </button>
-
-            <button class="btn-primario" (click)="retomarSimulado()" *ngIf="isPausado">
-                ▶️ Retomar
-            </button>
-
-            <button
-                    class="btn-primario"
-                    *ngIf="indiceAtual < questoes.length - 1"
-                    (click)="proximaQuestao()"
-                    [disabled]="isPausado">
-                Próxima →
+                ← Voltar
             </button>
 
             <button
                     class="btn-sucesso"
-                    *ngIf="indiceAtual === questoes.length - 1"
-                    (click)="finalizarSimulado()"
+                    (click)="avancarOuEnviar()"
                     [disabled]="isPausado">
-                Finalizar Simulado
+                {{ indiceAtual === questoes.length - 1 ? 'Enviar simulado' : 'Passar/enviar →' }}
             </button>
         </div>
     </div>
 
-    <!-- TELA DE RESULTADO -->
+
     <div class="resultado-container" *ngIf="resultadoFinal">
         <div class="card-resultado">
             <h2>Simulado Concluído! 🎉</h2>
@@ -163,7 +190,7 @@
         </div>
     </div>
 
-    <!-- STATUS DE CARREGAMENTO E ERRO -->
+
     <div class="status-mensagem" *ngIf="carregando">
         <p>Carregando simulado...</p>
     </div>

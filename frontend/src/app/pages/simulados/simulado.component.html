@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+
 <div class="simulado-page">
 
     <div class="configuracao-simulado" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
@@ -49,6 +50,7 @@
         <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
     </div>
 
+
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
         <div class="simulado-header">
@@ -77,7 +79,7 @@
 
                     <button
                             class="btn-alternativa"
-                            [class.selecionada]="respostasAluno.get(questaoAtual.id) === alt"
+                            [class.selecionada]="isRespostaSelecionada(alt)"
                             (click)="selecionarResposta(alt)">
                         <span class="opt-letra">{{ letraAlternativa(i) }}</span>
                         <span class="opt-texto" [innerHTML]="alt"></span>
@@ -144,6 +146,7 @@
             </div>
         </div>
     </div>
+
 
     <div class="status-mensagem" *ngIf="carregando">
         <p>Carregando simulado...</p>

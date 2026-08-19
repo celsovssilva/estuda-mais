@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -51,18 +51,36 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.pararTimer();
+        this.salvarSilenciosamente();
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
+    salvarAoSair($event: any): void {
+        this.salvarSilenciosamente();
     }
 
     verificarSimuladoPendente(): void {
         this.simuladoService.buscarPendentes().subscribe({
-            next: (pendente) => {
+            next: (pendente: any) => {
                 if (pendente) {
-                    this.simuladoId = pendente.id;
-                    this.indiceAtual = pendente.indiceAtual;
-                    this.tempoDecorrido = pendente.tempoDecorrido;
+                    this.simuladoId = pendente.id ?? 1;
+                    this.indiceAtual = pendente.indiceAtual ?? 0;
+                    this.tempoDecorrido = pendente.tempoDecorrido ?? 0;
 
-                    pendente.respostas.forEach(r => {
-                        this.respostasAluno.set(r.questaoId, r.alternativaEscolhida);
+                    // Restaura filtros da prova pendente
+                    if (pendente.ano) this.anoSelecionado = pendente.ano;
+                    if (pendente.disciplina) this.disciplinaSelecionada = pendente.disciplina;
+                    if (pendente.dia) this.diaSelecionado = pendente.dia;
+                    if (pendente.idioma) this.idiomaSelecionado = pendente.idioma;
+
+                    // Restaura as respostas anteriores
+                    const respostas = pendente.respostas || pendente.respostaAlunos || [];
+                    respostas.forEach((r: any) => {
+                        const qId = String(r.questaoId || r.questionId);
+                        const alt = r.alternativaEscolhida || r.opcaoSelecionada;
+                        if (qId && alt) {
+                            this.respostasAluno.set(qId, alt);
+                        }
                     });
 
                     this.iniciarSimulado(true);
@@ -133,27 +151,40 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     pausarSimulado(): void {
         this.pararTimer();
 
-        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
-            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
-        );
-
-        const payload: PausarSimuladoRequest = {
-            id: this.simuladoId,
-            indiceAtual: this.indiceAtual,
-            tempoDecorrido: this.tempoDecorrido,
-            respostaAlunos: respostasArray
-        };
+        const payload = this.montarPayloadPausa();
 
         this.simuladoService.pausarSimulado(payload).subscribe({
             next: () => {
                 alert('Simulado pausado com sucesso!');
-                this.reiniciarSimulado();
+                this.router.navigate(['/dashboard']);
             },
             error: (err) => {
                 console.error('Erro ao pausar simulado:', err);
                 this.iniciarTimer();
             }
         });
+    }
+
+    private salvarSilenciosamente(): void {
+        if (this.questoes.length > 0 && !this.resultadoFinal) {
+            const payload = this.montarPayloadPausa();
+            this.simuladoService.pausarSimulado(payload).subscribe({
+                error: (err) => console.error('Erro ao auto-salvar simulado:', err)
+            });
+        }
+    }
+
+    private montarPayloadPausa(): PausarSimuladoRequest {
+        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
+            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
+        );
+
+        return {
+            id: this.simuladoId,
+            indiceAtual: this.indiceAtual,
+            tempoDecorrido: this.tempoDecorrido,
+            respostaAlunos: respostasArray
+        };
     }
 
     finalizarSimulado(): void {
@@ -226,6 +257,11 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         if (this.questaoAtual) {
             this.respostasAluno.set(this.questaoAtual.id, alternativa);
         }
+    }
+
+    isRespostaSelecionada(alternativa: string): boolean {
+        if (!this.questaoAtual) return false;
+        return this.respostasAluno.get(this.questaoAtual.id) === alternativa;
     }
 
     proximaQuestao(): void {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface SimuladoService {
     ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto);
-    List<Question> obterSimulados(Integer ano, DiaProva dia,String disciplina,String idioma);
+    List<Question> obterSimulados(Integer ano, DiaProva dia, String disciplina, String idioma);
     SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto);
      SimuladoPendenteResponse buscarSimuladoPausado(Long userId);
 }

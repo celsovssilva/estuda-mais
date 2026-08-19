@@ -6,6 +6,7 @@ import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
 import com.estudamais.backend.request.PausarSimuladoRequest;
+import com.estudamais.backend.request.SimuladoRequest;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
 import com.estudamais.backend.response.SimuladoPendenteResponse;
 import com.estudamais.backend.service.EnemImportService;
@@ -42,11 +43,10 @@ public class SimulationController {
         return  ResponseEntity.ok(resultadoSimuladoResponse);
 
     }
-
     @PostMapping("/pausar")
     public ResponseEntity<SimuladoPendenteResponse> pausar(@RequestBody PausarSimuladoRequest request){
-         simuladoService.pausarSimulado(request);
-        return ResponseEntity.ok().build();
+        SimuladoPendenteResponse response = simuladoService.pausarSimulado(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/pendentes")
@@ -56,5 +56,6 @@ public class SimulationController {
         return ResponseEntity.ok(response);
 
     }
+
 
 }

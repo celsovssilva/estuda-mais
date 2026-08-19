@@ -29,12 +29,12 @@ public class SimuladoServiceImpl implements SimuladoService {
 
     @Autowired
     private EnemImportService enemImportService;
-
     @Override
     public ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto) {
         StudentSimulation simulado = new StudentSimulation();
         simulado.setUserId(dto.usuarioId());
         simulado.setDataInicio(LocalDateTime.now());
+        simulado.setStatus(StatusSimulado.FINALIZADO);
 
         int acertos = 0;
         double somaDificuldadeAcertos = 0.0;
@@ -55,6 +55,7 @@ public class SimuladoServiceImpl implements SimuladoService {
             }
 
             RespostaAluno respostaAluno = new RespostaAluno(questao, r.alternativaEscolhida(), acertou);
+            respostaAluno.setSimulation(simulado);
             simulado.getRespostas().add(respostaAluno);
 
             detalhesGabarito.add(new GabaritoItemResponse(
@@ -106,30 +107,35 @@ public class SimuladoServiceImpl implements SimuladoService {
     @Override
     public SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto) {
         StudentSimulation s = simuladoRepository.findById(dto.id())
-                .orElseThrow(()-> new RuntimeException("Simulado não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Simulado não encontrado"));
+
         s.setStatus(StatusSimulado.PAUSADO);
         s.setIndiceAtual(dto.indiceAtual());
         s.setTempoDecorrido(dto.tempoDecorrido());
         s.getRespostas().clear();
-        for(RespostaItemRequest item : dto.respostaAlunos()){
+
+        for (RespostaItemRequest item : dto.respostaAlunos()) {
+            Question questao = questaoRepository.findById(item.questaoId())
+                    .orElseThrow(() -> new RuntimeException("Questão não encontrada: " + item.questaoId()));
+
             RespostaAluno respostaAluno = new RespostaAluno();
-            respostaAluno.setQuestao(item.questaoId());
+            respostaAluno.setQuestao(questao.getId());
             respostaAluno.setAlternativaEscolhida(item.alternativaEscolhida());
-            s.getRespostas().add(respostaAluno);
             respostaAluno.setSimulation(s);
 
+            s.getRespostas().add(respostaAluno);
         }
 
         simuladoRepository.save(s);
 
-        return null;
+        return new SimuladoPendenteResponse(s);
     }
 
     @Override
     public SimuladoPendenteResponse buscarSimuladoPausado(Long userId) {
-           StudentSimulation s = simuladoRepository.findByUserIdAndStatus(userId, StatusSimulado.PAUSADO)
-                .orElseThrow(()-> new RuntimeException("user não encontrado"));
-            return  new SimuladoPendenteResponse(s);
+
+            return  simuladoRepository.findByUserIdAndStatus(userId,StatusSimulado.PAUSADO)
+                    .map(SimuladoPendenteResponse::new).orElse(null);
     }
 
 

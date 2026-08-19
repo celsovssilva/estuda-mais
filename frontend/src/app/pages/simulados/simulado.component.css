@@ -101,7 +101,6 @@
     margin-bottom: 20px;
 }
 
-/* Pergunta (comando da questão), exibida entre o enunciado e as alternativas */
 .pergunta-texto {
     font-size: 1rem;
     line-height: 1.6;
@@ -112,7 +111,6 @@
     border-top: 1px dashed #e2e8f0;
 }
 
-/* Imagens inseridas dinamicamente */
 ::ng-deep .container-imagem-questao {
     display: flex;
     justify-content: center;
@@ -216,13 +214,27 @@
     opacity: 1;
 }
 
-/* Alternativa eliminada: opaca e riscada */
 .linha-alternativa.eliminada .btn-alternativa {
     opacity: 0.45;
 }
 
 .linha-alternativa.eliminada .opt-texto {
     text-decoration: line-through;
+}
+
+/* Estado de Pausa */
+.texto-centralizado {
+    text-align: center;
+    padding: 40px;
+}
+
+.texto-centralizado h2 {
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.texto-centralizado p {
+    color: #64748b;
 }
 
 /* Rodapé */
@@ -259,7 +271,7 @@
     background-color: #94a3b8;
     color: #fff;
 }
-.btn-secundario:disabled {
+.btn-secundario:disabled, .btn-primario:disabled, .btn-sucesso:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -270,6 +282,36 @@
 }
 .btn-sucesso:hover {
     background-color: #059669;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-cronometro {
+    background-color: #fef3c7;
+    color: #b45309;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.btn-alerta {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    background-color: #f59e0b;
+    color: #fff;
+}
+
+.btn-alerta:hover {
+    background-color: #d97706;
 }
 
 /* Resultado */
@@ -339,33 +381,4 @@
 
 .status-mensagem.erro {
     color: #ef4444;
-}
-.header-status {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.badge-cronometro {
-    background-color: #fef3c7;
-    color: #b45309;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.btn-alerta {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-    background-color: #f59e0b;
-    color: #fff;
-}
-
-.btn-alerta:hover {
-    background-color: #d97706;
 }

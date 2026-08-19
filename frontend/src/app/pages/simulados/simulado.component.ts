@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
-import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest, PausarSimuladoRequest } from '../../core/models/simulado.models';
+import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest } from '../../core/models/simulado.models';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 @Component({
@@ -28,6 +28,7 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     tempoDecorrido: number = 0;
     private timerInterval: any = null;
+    isPausado: boolean = false;
 
     anoSelecionado: number = 2022;
     disciplinaSelecionada: string | null = null;
@@ -51,12 +52,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.pararTimer();
-        this.salvarSilenciosamente();
-    }
-
-    @HostListener('window:beforeunload', ['$event'])
-    salvarAoSair($event: any): void {
-        this.salvarSilenciosamente();
     }
 
     verificarSimuladoPendente(): void {
@@ -67,13 +62,11 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
                     this.indiceAtual = pendente.indiceAtual ?? 0;
                     this.tempoDecorrido = pendente.tempoDecorrido ?? 0;
 
-                    // Restaura filtros da prova pendente
                     if (pendente.ano) this.anoSelecionado = pendente.ano;
                     if (pendente.disciplina) this.disciplinaSelecionada = pendente.disciplina;
                     if (pendente.dia) this.diaSelecionado = pendente.dia;
                     if (pendente.idioma) this.idiomaSelecionado = pendente.idioma;
 
-                    // Restaura as respostas anteriores
                     const respostas = pendente.respostas || pendente.respostaAlunos || [];
                     respostas.forEach((r: any) => {
                         const qId = String(r.questaoId || r.questionId);
@@ -102,6 +95,16 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
         }
+    }
+
+    pausarSimulado(): void {
+        this.pararTimer();
+        this.isPausado = true;
+    }
+
+    retomarSimulado(): void {
+        this.iniciarTimer();
+        this.isPausado = false;
     }
 
     get tempoFormatado(): string {
@@ -146,45 +149,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
                 this.erroCarregamento = true;
             }
         });
-    }
-
-    pausarSimulado(): void {
-        this.pararTimer();
-
-        const payload = this.montarPayloadPausa();
-
-        this.simuladoService.pausarSimulado(payload).subscribe({
-            next: () => {
-                alert('Simulado pausado com sucesso!');
-                this.router.navigate(['/dashboard']);
-            },
-            error: (err) => {
-                console.error('Erro ao pausar simulado:', err);
-                this.iniciarTimer();
-            }
-        });
-    }
-
-    private salvarSilenciosamente(): void {
-        if (this.questoes.length > 0 && !this.resultadoFinal) {
-            const payload = this.montarPayloadPausa();
-            this.simuladoService.pausarSimulado(payload).subscribe({
-                error: (err) => console.error('Erro ao auto-salvar simulado:', err)
-            });
-        }
-    }
-
-    private montarPayloadPausa(): PausarSimuladoRequest {
-        const respostasArray: RespostaItem[] = Array.from(this.respostasAluno.entries()).map(
-            ([questaoId, alternativaEscolhida]) => ({ questaoId, alternativaEscolhida })
-        );
-
-        return {
-            id: this.simuladoId,
-            indiceAtual: this.indiceAtual,
-            tempoDecorrido: this.tempoDecorrido,
-            respostaAlunos: respostasArray
-        };
     }
 
     finalizarSimulado(): void {
@@ -254,7 +218,7 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     }
 
     selecionarResposta(alternativa: string): void {
-        if (this.questaoAtual) {
+        if (this.questaoAtual && !this.isPausado) {
             this.respostasAluno.set(this.questaoAtual.id, alternativa);
         }
     }
@@ -293,6 +257,7 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     reiniciarSimulado(): void {
         this.pararTimer();
+        this.isPausado = false;
         this.resultadoFinal = null;
         this.questoes = [];
         this.indiceAtual = 0;

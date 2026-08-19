@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface SimulationRepository  extends JpaRepository<StudentSimulation,Long> {
+    List<StudentSimulation> findAllByUserIdAndStatus(Long userId, StatusSimulado statusSimulado);
+
 
     @Query("SELECT s FROM StudentSimulation s WHERE s.userId = :userId AND s.status = :status")
     Optional<StudentSimulation> findByUserIdAndStatus(

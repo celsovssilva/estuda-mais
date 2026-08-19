@@ -4,6 +4,7 @@ public record GabaritoItemResponse(
         String questaoId,
         String enunciado,
         String alternativaEscolhida,
-        Boolean acertou
+        Boolean acertou,
+        String disciplina
 ) {
 }

@@ -59,6 +59,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST,"api/simulados/finalizar").authenticated();
                     req.requestMatchers(HttpMethod.POST,"api/simulados/pausar").authenticated();
                     req.requestMatchers(HttpMethod.GET,"api/simulados/pendentes").authenticated();
+                    req.requestMatchers(HttpMethod.GET,"api/simulados/historico").authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

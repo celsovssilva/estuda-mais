@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SimuladoServiceImpl implements SimuladoService {
@@ -62,7 +63,8 @@ public class SimuladoServiceImpl implements SimuladoService {
                     questao.getId(),
                     questao.getRespostaCorreta(),
                     r.alternativaEscolhida(),
-                    acertou
+                    acertou,
+                    questao.getDisciplina()
             ));
         }
 
@@ -136,6 +138,35 @@ public class SimuladoServiceImpl implements SimuladoService {
 
             return  simuladoRepository.findByUserIdAndStatus(userId,StatusSimulado.PAUSADO)
                     .map(SimuladoPendenteResponse::new).orElse(null);
+    }
+
+    @Override
+    public List<ResultadoSimuladoResponse> historico(Long userId) {
+        List<StudentSimulation> simulations = simuladoRepository.findAllByUserIdAndStatus(userId, StatusSimulado.FINALIZADO);
+        List<ResultadoSimuladoResponse> historico = new ArrayList<>();
+        for (StudentSimulation p : simulations) {
+            List<RespostaAluno> respostas = p.getRespostas();
+            List<GabaritoItemResponse> gabaritoDaProva = new ArrayList<>();
+            int acertos = 0;
+            for (RespostaAluno r : respostas) {
+                if (r.getCorreta()) {
+                    acertos++;
+                }
+                gabaritoDaProva.add(new GabaritoItemResponse(
+                        r.getQuestao().getId(),
+                        r.getQuestao().getEnunciado(),
+                        r.getAlternativaEscolhida(),
+                        r.getCorreta(),
+                        r.getQuestao().getDisciplina()
+                        ));
+
+            }
+            ResultadoSimuladoResponse resultado = new ResultadoSimuladoResponse(p.getId(), p.getNotaCalculadaTRI(), acertos, respostas.size(), gabaritoDaProva);
+            historico.add(resultado);
+        }
+
+            return historico;
+
     }
 
 

@@ -38,4 +38,5 @@ public class Question {
     private Double parametroB; // Dificuldade da questão
     private Double parametroA; // capacidade de diferenciar quem sabe
     private Double parametroC; // probabilidade de acerto
+
 }

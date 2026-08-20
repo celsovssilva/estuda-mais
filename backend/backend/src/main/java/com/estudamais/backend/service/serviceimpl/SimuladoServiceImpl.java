@@ -108,29 +108,39 @@ public class SimuladoServiceImpl implements SimuladoService {
 
     @Override
     public SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto) {
-        StudentSimulation s = simuladoRepository.findById(dto.id())
-                .orElseThrow(() -> new RuntimeException("Simulado não encontrado"));
+        StudentSimulation simulado = simuladoRepository.findByUserIdAndStatus(dto.userId(), StatusSimulado.PAUSADO)
+                .orElseGet(() -> {
+                    StudentSimulation s = new StudentSimulation();
+                    s.setUserId(dto.userId());
+                    s.setDataInicio(LocalDateTime.now());
+                    return s;
+                });
 
-        s.setStatus(StatusSimulado.PAUSADO);
-        s.setIndiceAtual(dto.indiceAtual());
-        s.setTempoDecorrido(dto.tempoDecorrido());
-        s.getRespostas().clear();
 
-        for (RespostaItemRequest item : dto.respostaAlunos()) {
-            Question questao = questaoRepository.findById(item.questaoId())
-                    .orElseThrow(() -> new RuntimeException("Questão não encontrada: " + item.questaoId()));
+        simulado.setStatus(StatusSimulado.FINALIZADO);
+        simulado.setDataFim(LocalDateTime.now());
+
+        int acertos = 0;
+        double somaDificuldadeAcertos = 0.0;
+        List<GabaritoItemResponse> detalhesGabarito = new ArrayList<>();
+
+        simulado.getRespostas().clear();
+
+        for (RespostaItemRequest r : dto.respostaAlunos()) {
+            Question questao = questaoRepository.findById(r.questaoId())
+                    .orElseThrow(() -> new RuntimeException("Questão não encontrada: " + r.questaoId()));
 
             RespostaAluno respostaAluno = new RespostaAluno();
             respostaAluno.setQuestao(questao.getId());
-            respostaAluno.setAlternativaEscolhida(item.alternativaEscolhida());
-            respostaAluno.setSimulation(s);
+            respostaAluno.setAlternativaEscolhida(r.alternativaEscolhida());
+            respostaAluno.setSimulation(simulado);
 
-            s.getRespostas().add(respostaAluno);
+            simulado.getRespostas().add(respostaAluno);
         }
 
-        simuladoRepository.save(s);
+        simuladoRepository.save(simulado);
 
-        return new SimuladoPendenteResponse(s);
+        return new SimuladoPendenteResponse(simulado);
     }
 
     @Override

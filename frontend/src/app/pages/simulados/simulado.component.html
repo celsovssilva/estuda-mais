@@ -61,7 +61,7 @@
         <div class="historico-grid" *ngIf="historicoSimulados.length > 0">
             <div class="card-historico" *ngFor="let item of historicoSimulados">
                 <div class="card-historico-header">
-                    <span class="simulado-id">Simulado #{{ item.id }}</span>
+                    <span class="simulado-id">Simulado #{{ item.simuladoid }}</span>
                     <span class="badge-tri" *ngIf="item.notaTRI !== null && item.notaTRI !== undefined">
                     TRI: {{ item.notaTRI | number:'1.0-1' }}
                 </span>

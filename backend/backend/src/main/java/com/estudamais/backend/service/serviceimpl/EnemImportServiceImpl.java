@@ -77,6 +77,17 @@ public class EnemImportServiceImpl implements EnemImportService {
                 if(!questionamento.isBlank()){
                     enunciado.append("<br><br><strong>").append(questionamento).append("</strong>");
                 }
+                JsonNode filesNode = node.path("files");
+                if (filesNode.isArray()) {
+                    for (JsonNode fileNode : filesNode) {
+                        String fileUrl = fileNode.asText(null);
+                        if (fileUrl != null && !fileUrl.isBlank()) {
+                            enunciado.append("<br><img src=\"")
+                                    .append(fileUrl)
+                                    .append("\" style=\"max-width: 100%; border-radius: 8px;\" /><br>");
+                        }
+                    }
+                }
 
                 JsonNode alternativas = node.path("alternatives");
                 List<String> listaAlternativas = new ArrayList<>();

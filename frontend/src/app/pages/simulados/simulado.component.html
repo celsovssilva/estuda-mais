@@ -61,7 +61,7 @@
         <div class="historico-grid" *ngIf="historicoSimulados.length > 0">
             <div class="card-historico" *ngFor="let item of historicoSimulados">
                 <div class="card-historico-header">
-                    <span class="simulado-id">Simulado #{{ item.simuladoid }}</span>
+                    <span class="simulado-id">Simulado #{{ item.simuladoId }}</span>
                     <span class="badge-tri" *ngIf="item.notaTRI !== null && item.notaTRI !== undefined">
                     TRI: {{ item.notaTRI | number:'1.0-1' }}
                 </span>
@@ -70,12 +70,12 @@
                 <div class="card-historico-body">
                     <div class="stat-item">
                         <span class="stat-label">Acertos</span>
-                        <span class="stat-value">{{ item.acertos }} / {{ item.totalQuestoes }}</span>
+                        <span class="stat-value">{{ item.totalAcertos }} / {{ item.totalQuestoes }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Aproveitamento</span>
                         <span class="stat-value">
-                        {{ (item.acertos / item.totalQuestoes) * 100 | number:'1.0-0' }}%
+                        {{ (item.totalAcertos / item.totalQuestoes) * 100 | number:'1.0-0' }}%
                     </span>
                     </div>
                 </div>

@@ -43,13 +43,16 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     alternativasEliminadas: Map<string, Set<number>> = new Map();
 
     painelGabaritoAberto: boolean = false;
+    historicoSimulados: ResultadoSimulado[] = [];
 
     ngOnInit(): void {
         const paramAno = this.route.snapshot.queryParamMap.get('ano');
         if (paramAno && !isNaN(Number(paramAno))) {
             this.anoSelecionado = Number(paramAno);
+
         }
         this.verificarSimuladoPendente();
+        this.carregarHistorico();
     }
 
     ngOnDestroy(): void {
@@ -320,6 +323,17 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
             return this.resultadoFinal.gabarito.filter(item => !item.acertou);
         }
         return this.resultadoFinal.gabarito;
+    }
+
+    carregarHistorico(): void {
+        this.simuladoService.buscarHistorico().subscribe({
+            next: (dados) => {
+                this.historicoSimulados = dados;
+            },
+            error: (err) => {
+                console.error('Erro ao carregar histórico:', err);
+            }
+        });
     }
 
     reiniciarSimulado(): void {

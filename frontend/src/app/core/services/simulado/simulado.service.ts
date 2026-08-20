@@ -32,6 +32,7 @@ export class SimuladoService {
         return this.http.get<Questao[]>(`${this.apiUrl}/questoes`, { params });
     }
 
+
     finalizarSimulado(payload: EnviarSimuladoRequest): Observable<ResultadoSimulado> {
 
         return this.http.post<ResultadoSimulado>(`${this.apiUrl}/finalizar`, payload);
@@ -42,5 +43,9 @@ export class SimuladoService {
 
     buscarPendentes(): Observable<SimuladoPendenteResponse> {
         return this.http.get<SimuladoPendenteResponse>(`${this.apiUrl}/pendentes`);
+    }
+    
+    buscarHistorico():Observable<ResultadoSimulado[]>{
+        return this.http.get<ResultadoSimulado[]>(`${this.apiUrl}/historico`);
     }
 }

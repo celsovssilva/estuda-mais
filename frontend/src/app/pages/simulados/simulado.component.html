@@ -50,6 +50,38 @@
         <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
     </div>
 
+    <!-- SEÇÃO DE HISTÓRICO DE SIMULADOS -->
+    <div class="historico-secao" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
+        <h3>📜 Histórico de Simulados Concluídos</h3>
+
+        <div class="historico-vazio" *ngIf="historicoSimulados.length === 0">
+            <p>Nenhum simulado finalizado encontrado.</p>
+        </div>
+
+        <div class="historico-grid" *ngIf="historicoSimulados.length > 0">
+            <div class="card-historico" *ngFor="let item of historicoSimulados">
+                <div class="card-historico-header">
+                    <span class="simulado-id">Simulado #{{ item.id }}</span>
+                    <span class="badge-tri" *ngIf="item.notaTRI !== null && item.notaTRI !== undefined">
+                    TRI: {{ item.notaTRI | number:'1.0-1' }}
+                </span>
+                </div>
+
+                <div class="card-historico-body">
+                    <div class="stat-item">
+                        <span class="stat-label">Acertos</span>
+                        <span class="stat-value">{{ item.acertos }} / {{ item.totalQuestoes }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Aproveitamento</span>
+                        <span class="stat-value">
+                        {{ (item.acertos / item.totalQuestoes) * 100 | number:'1.0-0' }}%
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 

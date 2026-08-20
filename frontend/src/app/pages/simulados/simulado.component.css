@@ -571,4 +571,93 @@
         transform: translateX(0);
         box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
     }
+    /* --- Histórico de Simulados --- */
+    .historico-secao {
+        max-width: 800px;
+        margin: 30px auto 0;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .historico-secao h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #0f172a;
+        font-size: 1.25rem;
+    }
+
+    .historico-vazio {
+        text-align: center;
+        color: #64748b;
+        padding: 20px 0;
+        font-size: 0.95rem;
+    }
+
+    .historico-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .card-historico {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-historico:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-historico-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .simulado-id {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #334155;
+    }
+
+    .badge-tri {
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .card-historico-body {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-item .stat-label {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .stat-item .stat-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
 }

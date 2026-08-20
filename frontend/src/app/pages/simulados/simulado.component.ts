@@ -345,5 +345,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         this.tempoDecorrido = 0;
         this.respostasAluno.clear();
         this.alternativasEliminadas.clear();
+        this.carregarHistorico();
     }
 }

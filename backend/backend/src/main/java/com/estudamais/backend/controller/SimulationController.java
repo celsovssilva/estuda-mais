@@ -13,6 +13,7 @@ import com.estudamais.backend.service.SimuladoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class SimulationController {
     }
 
     @PostMapping("/finalizar")
-    public ResponseEntity<ResultadoSimuladoResponse> resultado(@RequestBody EnviarSimuladoRequest request){
-        ResultadoSimuladoResponse resultadoSimuladoResponse = simuladoService.processarSimulado(request);
+    public ResponseEntity<ResultadoSimuladoResponse> resultado(@RequestBody EnviarSimuladoRequest request, @AuthenticationPrincipal User authentication){
+        ResultadoSimuladoResponse resultadoSimuladoResponse = simuladoService.processarSimulado(request,authentication.getId());
         return  ResponseEntity.ok(resultadoSimuladoResponse);
 
     }

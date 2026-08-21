@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SimuladoServiceImpl implements SimuladoService {
@@ -32,9 +31,9 @@ public class SimuladoServiceImpl implements SimuladoService {
     @Autowired
     private EnemImportService enemImportService;
     @Override
-    public ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto) {
+    public ResultadoSimuladoResponse processarSimulado(EnviarSimuladoRequest dto, Long id) {
         StudentSimulation simulado = new StudentSimulation();
-        simulado.setUserId(dto.usuarioId());
+        simulado.setUserId(id);
         simulado.setDataInicio(LocalDateTime.now());
         simulado.setStatus(StatusSimulado.FINALIZADO);
 

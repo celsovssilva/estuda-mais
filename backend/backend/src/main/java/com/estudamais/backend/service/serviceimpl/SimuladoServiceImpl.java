@@ -13,6 +13,7 @@ import com.estudamais.backend.service.EnemImportService;
 import com.estudamais.backend.service.SimuladoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -151,6 +152,7 @@ public class SimuladoServiceImpl implements SimuladoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResultadoSimuladoResponse> historico(Long userId) {
         List<StudentSimulation> simulations = simuladoRepository.findAllByUserIdAndStatus(userId, StatusSimulado.FINALIZADO);
         List<ResultadoSimuladoResponse> historico = new ArrayList<>();

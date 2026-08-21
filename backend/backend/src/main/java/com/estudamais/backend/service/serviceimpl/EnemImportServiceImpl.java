@@ -67,8 +67,15 @@ public class EnemImportServiceImpl implements EnemImportService {
                 }
 
 
-               StringBuilder enunciado = new StringBuilder();
+                StringBuilder enunciado = new StringBuilder();
                 String context = node.path("context").asText("");
+                java.util.Set<String> urlsJaUsadas = new java.util.HashSet<>();
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("!\\[.*?\\]\\((.*?)\\)")
+                        .matcher(context);
+                while (m.find()) {
+                    urlsJaUsadas.add(m.group(1));
+                }
 
                 String contexto = context.replaceAll("!\\[.*?\\]\\((.*?)\\)", "<br><img src=\"$1\" style=\"max-width: 100%; border-radius: 8px;\" /><br>");
                 enunciado.append(contexto);
@@ -77,18 +84,18 @@ public class EnemImportServiceImpl implements EnemImportService {
                 if(!questionamento.isBlank()){
                     enunciado.append("<br><br><strong>").append(questionamento).append("</strong>");
                 }
+
                 JsonNode filesNode = node.path("files");
                 if (filesNode.isArray()) {
                     for (JsonNode fileNode : filesNode) {
                         String fileUrl = fileNode.asText(null);
-                        if (fileUrl != null && !fileUrl.isBlank()) {
+                        if (fileUrl != null && !fileUrl.isBlank() && !urlsJaUsadas.contains(fileUrl)) {
                             enunciado.append("<br><img src=\"")
                                     .append(fileUrl)
                                     .append("\" style=\"max-width: 100%; border-radius: 8px;\" /><br>");
                         }
                     }
                 }
-
                 JsonNode alternativas = node.path("alternatives");
                 List<String> listaAlternativas = new ArrayList<>();
 

@@ -162,7 +162,7 @@ public class SimuladoServiceImpl implements SimuladoService {
             List<GabaritoItemResponse> gabaritoDaProva = new ArrayList<>();
             int acertos = 0;
             for (RespostaAluno r : respostas) {
-                if (r.getCorreta()) {
+                if (Boolean.TRUE.equals(r.getCorreta())) {
                     acertos++;
                 }
                 gabaritoDaProva.add(new GabaritoItemResponse(

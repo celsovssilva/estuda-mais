@@ -328,6 +328,8 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     carregarHistorico(): void {
         this.simuladoService.buscarHistorico().subscribe({
             next: (dados) => {
+                console.log('📦 Dados recebidos no Angular:', dados);
+
                 this.historicoSimulados = dados;
             },
             error: (err) => {

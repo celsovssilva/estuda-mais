@@ -50,13 +50,41 @@
         <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
     </div>
 
-    <!-- SEÇÃO DE HISTÓRICO DE SIMULADOS -->
-    <div class="historico-secao" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
-        <h3>📜 Histórico de Simulados Concluídos</h3>
 
-        <div class="historico-vazio" *ngIf="historicoSimulados.length === 0">
-            <p>Nenhum simulado finalizado encontrado.</p>
+
+    <div class="lista-historico" *ngIf="historicoSimulados.length > 0">
+
+               <div class="card-simulado" *ngFor="let simulado of historicoSimulados">
+
+            <div class="card-cabecalho">
+                <h4>Simulado #{{ simulado.id }}</h4>
+                <p>TRI: {{ simulado.notaTRI }} | Acertos: {{ simulado.acertos }} / {{ simulado.total }}</p>
+
+            </div>
+
+                   <div class="card-detalhes">
+                       <h5>📊 Detalhes das Questões:</h5>
+                       <ul class="lista-gabarito">
+                           <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito">
+
+                               <div class="info-questao">
+                                   <span class="numero-questao">Q.{{ i + 1 }}</span>
+                                   <span class="texto-marcado">Marcou: <strong>{{ item.alternativaEscolhida }}</strong></span>
+                               </div>
+
+
+                               <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
+
+
+                               <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
+
+                           </li>
+                       </ul>
+                   </div>
         </div>
+
+    </div>
+</div>
 
         <div class="historico-grid" *ngIf="historicoSimulados.length > 0">
             <div class="card-historico" *ngFor="let item of historicoSimulados">

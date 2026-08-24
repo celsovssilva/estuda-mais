@@ -660,4 +660,54 @@
         font-weight: 700;
         color: #0f172a;
     }
+    /* --- Estilos do Gabarito no Histórico --- */
+    .lista-gabarito {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 250px; /* Cria uma barra de rolagem se houver muitas questões */
+        overflow-y: auto;
+    }
+
+    .item-gabarito {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .info-questao {
+        display: flex;
+        gap: 12px;
+        color: #334155;
+    }
+
+    .numero-questao {
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .badge-acerto, .badge-erro {
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .badge-acerto {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-erro {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
 }

@@ -23,7 +23,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private SheduleRepository scheduleRepository;
 
     @Override
-    public ScheduleResponse createSchedule(Long userId, ScheduleRequest request) {
+    public List<Schedule> createSchedule(Long userId, ScheduleRequest request) {
         Schedule schedule = Schedule.builder()
                 .userId(userId)
                 .title(request.title())
@@ -34,7 +34,34 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .endTime(request.endTime())
                 .category(request.category())
                 .build();
-        return new ScheduleResponse(scheduleRepository.save(schedule));
+
+        LocalDate dataInicial = request.targetDate();
+        LocalDate dataFinal = dataInicial;
+
+        if(request.type() == ScheduleType.WEEK){
+            dataFinal = dataInicial.plusDays(6);
+        } else if (request.type() == ScheduleType.MONTH) {
+            dataFinal = dataInicial.plusMonths(1);
+        }
+
+        List<Schedule> compromissos = new ArrayList<>();
+
+        while(!dataInicial.isAfter(dataFinal)){
+            Schedule s = Schedule.builder()
+                    .userId(userId)
+                    .title(request.title())
+                    .description(request.description())
+                    .targetDate(dataInicial)
+                    .type(request.type())
+                    .startTime(request.startTime())
+                    .endTime(request.endTime())
+                    .category(request.category())
+                    .build();
+            compromissos.add(s);
+            dataInicial = dataInicial.plusDays(1);
+        }
+
+        return scheduleRepository.saveAll(compromissos);
     }
 
     @Override
@@ -63,6 +90,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.getStartTime();
         schedule.getEndTime();
         schedule.setCategory(request.category());
+
+
+
 
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }

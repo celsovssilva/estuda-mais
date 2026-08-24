@@ -2,6 +2,7 @@
 
 <div class="simulado-page">
 
+    <!-- 1. CONFIGURAÇÃO E HISTÓRICO -->
     <ng-container *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
 
         <div class="configuracao-simulado">
@@ -53,6 +54,7 @@
         </div>
 
 
+        <!-- SEÇÃO DE HISTÓRICO COM DESIGN NOVO -->
         <div class="historico-secao">
             <h3>📜 Histórico de Simulados Concluídos</h3>
 
@@ -65,25 +67,35 @@
 
                     <div class="card-cabecalho">
                         <h4>Simulado #{{ simulado.simuladoId }}</h4>
-                        <p>TRI: {{ simulado.notaTRI }} | Acertos: {{ simulado.totalAcertos }} / {{ simulado.totalQuestoes }}</p>
+                        <p>TRI: {{ simulado.notaTRI | number:'1.0-1' }} | Acertos: {{ simulado.totalAcertos }} / {{ simulado.totalQuestoes }}</p>
                     </div>
 
                     <div class="card-detalhes">
-                        <h5>📊 Detalhes das Questões:</h5>
-                        <ul class="lista-gabarito">
-                            <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito" [class.acertou]="item.acertou" [class.errou]="!item.acertou">
-                                <div class="info-questao">
-                                    <span class="numero-questao">Questão {{ i + 1 }}</span>
-                                    <span class="texto-marcado">Sua resposta: <strong>{{ item.alternativaEscolhida || 'Não respondida' }}</strong>
-                </span>
+                        <div class="detalhes-header">
+                            <h5>📊 Detalhes das Questões</h5>
+                            <span class="dica-scroll">Role a lista para ver mais ↓</span>
+                        </div>
+
+                        <div class="gabarito-scroll-container">
+                            <div class="gabarito-grid-historico">
+                                <div *ngFor="let item of simulado.gabarito; let i = index"
+                                     class="badge-resposta"
+                                     [class.sucesso]="item.acertou"
+                                     [class.erro]="!item.acertou">
+
+                                    <div class="badge-numero">Q.{{ i + 1 }}</div>
+
+                                    <div class="badge-info">
+                                        <span class="marcou">
+                                            Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
+                                        </span>
+                                        <i class="icone-status">{{ item.acertou ? '✅' : '❌' }}</i>
+                                    </div>
                                 </div>
-                                <div class="status-badge">
-                                    <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
-                                    <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
-                                </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -91,6 +103,7 @@
     </ng-container>
 
 
+    <!-- 2. SIMULADO EM EXECUÇÃO -->
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
         <div class="simulado-header">
@@ -200,6 +213,7 @@
     </div>
 
 
+    <!-- 3. RESULTADO FINAL -->
     <div class="resultado-container" *ngIf="resultadoFinal">
         <div class="card-resultado">
             <h2>Simulado Concluído! 🎉</h2>

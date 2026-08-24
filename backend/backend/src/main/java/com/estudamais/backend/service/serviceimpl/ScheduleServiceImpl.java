@@ -82,10 +82,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponse updateSchedule(Long userId, Long scheduleId, ScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
+        LocalDate dataInicial = request.targetDate();
+        LocalDate dataFinal = dataInicial;
+
+        if(request.type() == ScheduleType.WEEK){
+            dataFinal = dataInicial.plusDays(6);
+        } else if (request.type() == ScheduleType.MONTH) {
+            dataFinal = dataInicial.plusMonths(1);
+        }
 
         schedule.setTitle(request.title());
         schedule.setDescription(request.description());
-        schedule.setTargetDate(request.targetDate());
+        schedule.setTargetDate(dataInicial);
         schedule.setType(request.type());
         schedule.getStartTime();
         schedule.getEndTime();

@@ -71,13 +71,16 @@
                     <div class="card-detalhes">
                         <h5>📊 Detalhes das Questões:</h5>
                         <ul class="lista-gabarito">
-                            <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito">
+                            <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito" [class.acertou]="item.acertou" [class.errou]="!item.acertou">
                                 <div class="info-questao">
-                                    <span class="numero-questao">Q.{{ i + 1 }}</span>
-                                    <span class="texto-marcado">Marcou: <strong>{{ item.alternativaEscolhida }}</strong></span>
+                                    <span class="numero-questao">Questão {{ i + 1 }}</span>
+                                    <span class="texto-marcado">Sua resposta: <strong>{{ item.alternativaEscolhida || 'Não respondida' }}</strong>
+                </span>
                                 </div>
-                                <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
-                                <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
+                                <div class="status-badge">
+                                    <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
+                                    <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
+                                </div>
                             </li>
                         </ul>
                     </div>

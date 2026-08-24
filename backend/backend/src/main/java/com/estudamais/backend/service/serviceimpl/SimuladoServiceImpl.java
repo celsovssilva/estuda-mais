@@ -165,14 +165,16 @@ public class SimuladoServiceImpl implements SimuladoService {
                 if (Boolean.TRUE.equals(r.getCorreta())) {
                     acertos++;
                 }
-                gabaritoDaProva.add(new GabaritoItemResponse(
-                        r.getQuestao().getId(),
-                        r.getQuestao().getEnunciado(),
-                        r.getAlternativaEscolhida(),
-                        r.getCorreta(),
-                        r.getQuestao().getDisciplina()
-                        ));
+                if (r.getQuestao() != null ) {
+                    gabaritoDaProva.add(new GabaritoItemResponse(
+                            r.getQuestao().getId(),
+                            r.getQuestao().getEnunciado(),
+                            r.getAlternativaEscolhida(),
+                            r.getCorreta(),
+                            r.getQuestao().getDisciplina()
+                    ));
 
+                }
             }
             ResultadoSimuladoResponse resultado = new ResultadoSimuladoResponse(p.getId(), p.getNotaCalculadaTRI(), acertos, respostas.size(), gabaritoDaProva);
             historico.add(resultado);

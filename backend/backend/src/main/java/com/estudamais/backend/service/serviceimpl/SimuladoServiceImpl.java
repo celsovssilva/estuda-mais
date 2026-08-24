@@ -157,6 +157,7 @@ public class SimuladoServiceImpl implements SimuladoService {
         List<ResultadoSimuladoResponse> historico = new ArrayList<>();
         for (StudentSimulation p : simulations) {
             List<RespostaAluno> respostas = p.getRespostas();
+            System.out.println("buscando as respostas" + respostas);
             List<GabaritoItemResponse> gabaritoDaProva = new ArrayList<>();
             int acertos = 0;
             for (RespostaAluno r : respostas) {
@@ -175,6 +176,7 @@ public class SimuladoServiceImpl implements SimuladoService {
                 }
             }
             ResultadoSimuladoResponse resultado = new ResultadoSimuladoResponse(p.getId(), p.getNotaCalculadaTRI(), acertos, respostas.size(), gabaritoDaProva);
+            System.out.println("adicionando resultados ao historico" + resultado);
             historico.add(resultado);
         }
 

@@ -2,114 +2,91 @@
 
 <div class="simulado-page">
 
-    <div class="configuracao-simulado" *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
-        <h2>Configurar Simulado</h2>
+    <ng-container *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
 
-        <div class="filtros">
-            <div class="campo-filtro">
-                <label>Ano da Prova:</label>
-                <select [(ngModel)]="anoSelecionado">
-                    <option [ngValue]="2022">2022</option>
-                    <option [ngValue]="2021">2021</option>
-                    <option [ngValue]="2020">2020</option>
-                    <option [ngValue]="2019">2019</option>
-                    <option [ngValue]="2018">2018</option>
-                    <option [ngValue]="2017">2017</option>
-                    <option [ngValue]="2016">2016</option>
-                    <option [ngValue]="2015">2015</option>
-                    <option [ngValue]="2014">2014</option>
-                    <option [ngValue]="2013">2013</option>
-                    <option [ngValue]="2012">2012</option>
-                    <option [ngValue]="2011">2011</option>
-                    <option [ngValue]="2010">2010</option>
-                    <option [ngValue]="2009">2009</option>
-                </select>
-            </div>
+        <div class="configuracao-simulado">
+            <h2>Configurar Simulado</h2>
 
             <div class="filtros">
                 <div class="campo-filtro">
-                    <label>Dia da Prova:</label>
-                    <select [(ngModel)]="diaSelecionado">
-                        <option [ngValue]="null">Prova Completa (Ambos os Dias)</option>
-                        <option value="DIA_1">1º Dia (Linguagens e Humanas)</option>
-                        <option value="DIA_2">2º Dia (Matemática e Natureza)</option>
+                    <label>Ano da Prova:</label>
+                    <select [(ngModel)]="anoSelecionado">
+                        <option [ngValue]="2022">2022</option>
+                        <option [ngValue]="2021">2021</option>
+                        <option [ngValue]="2020">2020</option>
+                        <option [ngValue]="2019">2019</option>
+                        <option [ngValue]="2018">2018</option>
+                        <option [ngValue]="2017">2017</option>
+                        <option [ngValue]="2016">2016</option>
+                        <option [ngValue]="2015">2015</option>
+                        <option [ngValue]="2014">2014</option>
+                        <option [ngValue]="2013">2013</option>
+                        <option [ngValue]="2012">2012</option>
+                        <option [ngValue]="2011">2011</option>
+                        <option [ngValue]="2010">2010</option>
+                        <option [ngValue]="2009">2009</option>
                     </select>
                 </div>
 
-                <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
-                    <label>Idioma Estrangeiro:</label>
-                    <select [(ngModel)]="idiomaSelecionado">
-                        <option [ngValue]="null">Selecione o idioma...</option>
-                        <option value="ingles">Inglês</option>
-                        <option value="espanhol">Espanhol</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
-    </div>
-
-
-
-    <div class="lista-historico" *ngIf="historicoSimulados.length > 0">
-
-               <div class="card-simulado" *ngFor="let simulado of historicoSimulados">
-
-            <div class="card-cabecalho">
-                <h4>Simulado #{{ simulado.id }}</h4>
-                <p>TRI: {{ simulado.notaTRI }} | Acertos: {{ simulado.acertos }} / {{ simulado.total }}</p>
-
-            </div>
-
-                   <div class="card-detalhes">
-                       <h5>📊 Detalhes das Questões:</h5>
-                       <ul class="lista-gabarito">
-                           <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito">
-
-                               <div class="info-questao">
-                                   <span class="numero-questao">Q.{{ i + 1 }}</span>
-                                   <span class="texto-marcado">Marcou: <strong>{{ item.alternativaEscolhida }}</strong></span>
-                               </div>
-
-
-                               <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
-
-
-                               <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
-
-                           </li>
-                       </ul>
-                   </div>
-        </div>
-
-    </div>
-</div>
-
-        <div class="historico-grid" *ngIf="historicoSimulados.length > 0">
-            <div class="card-historico" *ngFor="let item of historicoSimulados">
-                <div class="card-historico-header">
-                    <span class="simulado-id">Simulado #{{ item.simuladoId }}</span>
-                    <span class="badge-tri" *ngIf="item.notaTRI !== null && item.notaTRI !== undefined">
-                    TRI: {{ item.notaTRI | number:'1.0-1' }}
-                </span>
-                </div>
-
-                <div class="card-historico-body">
-                    <div class="stat-item">
-                        <span class="stat-label">Acertos</span>
-                        <span class="stat-value">{{ item.totalAcertos }} / {{ item.totalQuestoes }}</span>
+                <div class="filtros">
+                    <div class="campo-filtro">
+                        <label>Dia da Prova:</label>
+                        <select [(ngModel)]="diaSelecionado">
+                            <option [ngValue]="null">Prova Completa (Ambos os Dias)</option>
+                            <option value="DIA_1">1º Dia (Linguagens e Humanas)</option>
+                            <option value="DIA_2">2º Dia (Matemática e Natureza)</option>
+                        </select>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Aproveitamento</span>
-                        <span class="stat-value">
-                        {{ (item.totalAcertos / item.totalQuestoes) * 100 | number:'1.0-0' }}%
-                    </span>
+
+                    <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
+                        <label>Idioma Estrangeiro:</label>
+                        <select [(ngModel)]="idiomaSelecionado">
+                            <option [ngValue]="null">Selecione o idioma...</option>
+                            <option value="ingles">Inglês</option>
+                            <option value="espanhol">Espanhol</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
+        </div>
+
+
+        <div class="historico-secao">
+            <h3>📜 Histórico de Simulados Concluídos</h3>
+
+            <div class="historico-vazio" *ngIf="historicoSimulados.length === 0">
+                <p>Nenhum simulado finalizado encontrado.</p>
+            </div>
+
+            <div class="lista-historico" *ngIf="historicoSimulados.length > 0">
+                <div class="card-simulado" *ngFor="let simulado of historicoSimulados">
+
+                    <div class="card-cabecalho">
+                        <h4>Simulado #{{ simulado.id }}</h4>
+                        <p>TRI: {{ simulado.notaTRI }} | Acertos: {{ simulado.acertos }} / {{ simulado.total }}</p>
+                    </div>
+
+                    <div class="card-detalhes">
+                        <h5>📊 Detalhes das Questões:</h5>
+                        <ul class="lista-gabarito">
+                            <li *ngFor="let item of simulado.gabarito; let i = index" class="item-gabarito">
+                                <div class="info-questao">
+                                    <span class="numero-questao">Q.{{ i + 1 }}</span>
+                                    <span class="texto-marcado">Marcou: <strong>{{ item.alternativaEscolhida }}</strong></span>
+                                </div>
+                                <span class="badge-acerto" *ngIf="item.acertou">✅ Acertou</span>
+                                <span class="badge-erro" *ngIf="!item.acertou">❌ Errou</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+    </ng-container>
+
 
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
@@ -144,26 +121,22 @@
 
         <div class="simulado-corpo">
 
-            <!-- CONTEÚDO DA QUESTÃO (ESCONDIDO QUANDO PAUSADO) -->
             <div class="card-questao" *ngIf="!isPausado">
                 <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
 
                 <div class="alternativas-list">
-                    <div
-                            *ngFor="let alt of questaoAtual.alternativas; let i = index"
-                            class="linha-alternativa"
-                            [class.eliminada]="isEliminada(i)">
+                    <div *ngFor="let alt of questaoAtual.alternativas; let i = index"
+                         class="linha-alternativa"
+                         [class.eliminada]="isEliminada(i)">
 
-                        <button
-                                class="btn-alternativa"
+                        <button class="btn-alternativa"
                                 [class.selecionada]="isRespostaSelecionada(alt)"
                                 (click)="selecionarResposta(alt)">
                             <span class="opt-letra">{{ letraAlternativa(i) }}</span>
                             <span class="opt-texto" [innerHTML]="alt"></span>
                         </button>
 
-                        <button
-                                class="btn-eliminar"
+                        <button class="btn-eliminar"
                                 [class.ativo]="isEliminada(i)"
                                 (click)="toggleEliminada(i, $event)"
                                 title="Marcar como errada">
@@ -173,11 +146,11 @@
                 </div>
             </div>
 
-
             <div class="card-questao texto-centralizado" *ngIf="isPausado">
                 <h2>⏸️ Simulado Pausado</h2>
                 <p>O tempo está congelado. Clique em "Retomar" para continuar.</p>
             </div>
+
 
             <aside class="painel-gabarito" [class.aberto]="painelGabaritoAberto">
                 <div class="gabarito-cabecalho">
@@ -186,8 +159,7 @@
                 </div>
 
                 <div class="gabarito-grid">
-                    <button
-                            *ngFor="let q of questoes; let i = index"
+                    <button *ngFor="let q of questoes; let i = index"
                             type="button"
                             class="bolha-questao"
                             [class.atual]="statusGabarito(i) === 'atual'"
@@ -210,15 +182,13 @@
         </div>
 
         <div class="simulado-footer">
-            <button
-                    class="btn-secundario"
+            <button class="btn-secundario"
                     (click)="questaoAnterior()"
                     [disabled]="indiceAtual === 0 || isPausado">
                 ← Voltar
             </button>
 
-            <button
-                    class="btn-sucesso"
+            <button class="btn-sucesso"
                     (click)="avancarOuEnviar()"
                     [disabled]="isPausado">
                 {{ indiceAtual === questoes.length - 1 ? 'Enviar simulado' : 'Passar/enviar →' }}
@@ -260,3 +230,4 @@
         <button (click)="iniciarSimulado()" class="btn-primario">Tentar Novamente</button>
     </div>
 
+</div>

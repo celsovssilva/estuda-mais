@@ -24,11 +24,14 @@ public class RespostaAluno {
     private Boolean correta;
 
     public RespostaAluno(Question questao, String s, boolean acertou) {
-
+        this.questao = questao;
+        this.alternativaEscolhida = alternativaEscolhida;
+        this.correta = correta;
     }
 
 
     public void setQuestao(String s) {
+        this.questao = questao;
     }
 
     public void setSimulation(StudentSimulation s) {

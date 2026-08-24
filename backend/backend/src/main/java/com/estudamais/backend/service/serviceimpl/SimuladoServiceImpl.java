@@ -153,9 +153,7 @@ public class SimuladoServiceImpl implements SimuladoService {
     @Override
     @Transactional(readOnly = true)
     public List<ResultadoSimuladoResponse> historico(Long userId) {
-        System.out.println("buscando ids:" + userId);
         List<StudentSimulation> simulations = simuladoRepository.findAllByUserIdAndStatus(userId, StatusSimulado.FINALIZADO);
-        System.out.println(" ids: " + simulations.size());
         List<ResultadoSimuladoResponse> historico = new ArrayList<>();
         for (StudentSimulation p : simulations) {
             List<RespostaAluno> respostas = p.getRespostas();

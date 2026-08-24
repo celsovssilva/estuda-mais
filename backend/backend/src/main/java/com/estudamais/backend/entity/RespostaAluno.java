@@ -23,7 +23,7 @@ public class RespostaAluno {
     private String alternativaEscolhida;
     private Boolean correta;
 
-    public RespostaAluno(Question questao, String s, boolean acertou) {
+    public RespostaAluno(Question questao, String s, boolean correta) {
         this.questao = questao;
         this.alternativaEscolhida = alternativaEscolhida;
         this.correta = correta;

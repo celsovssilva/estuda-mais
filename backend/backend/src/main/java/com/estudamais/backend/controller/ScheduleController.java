@@ -1,5 +1,6 @@
 package com.estudamais.backend.controller;
 
+import com.estudamais.backend.entity.Schedule;
 import com.estudamais.backend.entity.ScheduleType;
 import com.estudamais.backend.entity.User;
 import com.estudamais.backend.request.ScheduleRequest;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,9 +23,9 @@ public class ScheduleController {
     private ScheduleService scheduleService;
 
     @PostMapping("/create")
-    public ResponseEntity<ScheduleResponse> createSchedule(@Valid @RequestBody ScheduleRequest request, Authentication authentication){
+    public ResponseEntity<List<Schedule>> createSchedule(@Valid @RequestBody ScheduleRequest request, Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        ScheduleResponse response = scheduleService.createSchedule(user.getId(), request);
+        List<Schedule> response = scheduleService.createSchedule(user.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @GetMapping("/getByUser")

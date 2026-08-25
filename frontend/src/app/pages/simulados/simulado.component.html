@@ -39,7 +39,18 @@
                     </select>
                 </div>
 
-                <!-- 4. Idioma Estrangeiro -->
+                <div class="campo-filtro">
+                    <label>Disciplina:</label>
+                    <select [(ngModel)]="disciplinaSelecionada">
+                        <option [ngValue]="null">Todas as Disciplinas</option>
+                        <option value="linguagens">Linguagens</option>
+                        <option value="ciencias-humanas">Ciências Humanas</option>
+                        <option value="matematica">Matemática</option>
+                        <option value="ciencias-natureza">Ciências da Natureza</option>
+                    </select>
+                </div>
+
+
                 <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
                     <label>Idioma Estrangeiro:</label>
                     <select [(ngModel)]="idiomaSelecionado">
@@ -49,6 +60,8 @@
                     </select>
                 </div>
             </div>
+
+
 
             <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
         </div>

@@ -86,6 +86,15 @@ public class SimuladoServiceImpl implements SimuladoService {
 
     @Override
     public List<Question> obterSimulados(Integer ano, DiaProva dia, String disciplina, String idioma) {
+
+        if(disciplina != null && disciplina.isBlank()){
+            if (disciplina.equalsIgnoreCase("liguagens") || disciplina.equalsIgnoreCase("ciencias-humanas")){
+              dia =  DiaProva.DIA_1;
+            }
+
+        } else if (disciplina.equalsIgnoreCase("matematica") || disciplina.equalsIgnoreCase("ciencias-natureza")) {
+                dia = DiaProva.DIA_2;
+        }
         if (dia != null && dia.equals(DiaProva.DIA_2)) {
             idioma = null;
         } else if (dia != null && dia.equals(DiaProva.DIA_1)) {

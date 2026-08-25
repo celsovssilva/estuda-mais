@@ -38,7 +38,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         LocalDate dataInicial = request.targetDate();
         LocalDate dataFinal = dataInicial;
 
-        if(request.type() == ScheduleType.WEEK){
+        if (request.type() == ScheduleType.WEEK) {
             dataFinal = dataInicial.plusDays(6);
         } else if (request.type() == ScheduleType.MONTH) {
             dataFinal = dataInicial.plusMonths(1);
@@ -46,7 +46,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         List<Schedule> compromissos = new ArrayList<>();
 
-        while(!dataInicial.isAfter(dataFinal)){
+        while (!dataInicial.isAfter(dataFinal)) {
             Schedule s = Schedule.builder()
                     .userId(userId)
                     .title(request.title())
@@ -82,28 +82,44 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponse updateSchedule(Long userId, Long scheduleId, ScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
+
+             schedule.setType(request.type());
+             schedule.setStartTime(request.startTime());
+             schedule.setEndTime(request.endTime());
+             schedule.setCategory(request.category());
+             schedule.setTitle(request.title());
+             schedule.setDescription(request.description());
         LocalDate dataInicial = request.targetDate();
         LocalDate dataFinal = dataInicial;
 
-        if(request.type() == ScheduleType.WEEK){
+        if (request.type() == ScheduleType.WEEK) {
             dataFinal = dataInicial.plusDays(6);
         } else if (request.type() == ScheduleType.MONTH) {
             dataFinal = dataInicial.plusMonths(1);
         }
+        dataInicial = dataInicial.plusDays(1);
 
-        schedule.setTitle(request.title());
-        schedule.setDescription(request.description());
-        schedule.setTargetDate(dataInicial);
-        schedule.setType(request.type());
-        schedule.getStartTime();
-        schedule.getEndTime();
-        schedule.setCategory(request.category());
+        List<Schedule> compromissos = new ArrayList<>();
+        while (!dataInicial.isAfter(dataFinal)){
+            Schedule s = Schedule.builder()
+                    .userId(userId)
+                    .title(request.title())
+                    .description(request.description())
+                    .targetDate(dataInicial)
+                    .type(request.type())
+                    .startTime(request.startTime())
+                    .endTime(request.endTime())
+                    .category(request.category())
+                    .build();
+            dataInicial = dataInicial.plusDays(1);
+            compromissos.add(s);
+        }
 
-
-
+        scheduleRepository.saveAll(compromissos);
 
         return new ScheduleResponse(scheduleRepository.save(schedule));
     }
+
 
     @Override
     public void deleteSchedule(Long userId, Long scheduleId) {

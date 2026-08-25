@@ -1,59 +1,256 @@
-<div class="configuracao-simulado">
-    <h2>Configurar Simulado</h2>
+<app-navbar></app-navbar>
 
-    <div class="filtros-grid">
-        <!-- 1. Ano -->
-        <div class="campo-filtro">
-            <label>Ano da Prova:</label>
-            <select [(ngModel)]="anoSelecionado">
-                <option [ngValue]="2022">2022</option>
-                <option [ngValue]="2021">2021</option>
-                <option [ngValue]="2020">2020</option>
-                <option [ngValue]="2019">2019</option>
-                <option [ngValue]="2018">2018</option>
-                <option [ngValue]="2017">2017</option>
-                <option [ngValue]="2016">2016</option>
-                <option [ngValue]="2015">2015</option>
-                <option [ngValue]="2014">2014</option>
-                <option [ngValue]="2013">2013</option>
-                <option [ngValue]="2012">2012</option>
-                <option [ngValue]="2011">2011</option>
-                <option [ngValue]="2010">2010</option>
-                <option [ngValue]="2009">2009</option>
-            </select>
+<div class="simulado-page">
+
+
+    <ng-container *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
+
+        <div class="configuracao-simulado">
+            <h2>Configurar Simulado</h2>
+
+            <div class="filtros-grid">
+
+                <div class="campo-filtro">
+                    <label>Ano da Prova:</label>
+                    <select [(ngModel)]="anoSelecionado">
+                        <option [ngValue]="2022">2022</option>
+                        <option [ngValue]="2021">2021</option>
+                        <option [ngValue]="2020">2020</option>
+                        <option [ngValue]="2019">2019</option>
+                        <option [ngValue]="2018">2018</option>
+                        <option [ngValue]="2017">2017</option>
+                        <option [ngValue]="2016">2016</option>
+                        <option [ngValue]="2015">2015</option>
+                        <option [ngValue]="2014">2014</option>
+                        <option [ngValue]="2013">2013</option>
+                        <option [ngValue]="2012">2012</option>
+                        <option [ngValue]="2011">2011</option>
+                        <option [ngValue]="2010">2010</option>
+                        <option [ngValue]="2009">2009</option>
+                    </select>
+                </div>
+
+                <div class="campo-filtro">
+                    <label>Dia da Prova:</label>
+                    <select [(ngModel)]="diaSelecionado">
+                        <option [ngValue]="null">Prova Completa (Ambos os Dias)</option>
+                        <option value="DIA_1">1º Dia (Linguagens e Humanas)</option>
+                        <option value="DIA_2">2º Dia (Matemática e Natureza)</option>
+                    </select>
+                </div>
+
+
+                <div class="campo-filtro">
+                    <label>Disciplina:</label>
+                    <select [(ngModel)]="disciplinaSelecionada">
+                        <option [ngValue]="null">Todas as Disciplinas</option>
+                        <option value="Linguagens">Linguagens</option>
+                        <option value="Ciências Humanas">Ciências Humanas</option>
+                        <option value="Matemática">Matemática</option>
+                        <option value="Ciências da Natureza">Ciências da Natureza</option>
+                    </select>
+                </div>
+
+                <!-- 4. Idioma Estrangeiro -->
+                <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
+                    <label>Idioma Estrangeiro:</label>
+                    <select [(ngModel)]="idiomaSelecionado">
+                        <option [ngValue]="null">Selecione o idioma...</option>
+                        <option value="ingles">Inglês</option>
+                        <option value="espanhol">Espanhol</option>
+                    </select>
+                </div>
+            </div>
+
+            <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
         </div>
 
-        <!-- 2. Dia da Prova -->
-        <div class="campo-filtro">
-            <label>Dia da Prova:</label>
-            <select [(ngModel)]="diaSelecionado">
-                <option [ngValue]="null">Prova Completa (Ambos os Dias)</option>
-                <option value="DIA_1">1º Dia (Linguagens e Humanas)</option>
-                <option value="DIA_2">2º Dia (Matemática e Natureza)</option>
-            </select>
+
+        <div class="historico-secao">
+            <h3>📜 Histórico de Simulados Concluídos</h3>
+
+            <div class="historico-vazio" *ngIf="historicoSimulados.length === 0">
+                <p>Nenhum simulado finalizado encontrado.</p>
+            </div>
+
+            <div class="lista-historico" *ngIf="historicoSimulados.length > 0">
+                <div class="card-simulado" *ngFor="let simulado of historicoSimulados">
+
+                    <div class="card-cabecalho">
+                        <h4>Simulado #{{ simulado.simuladoId }}</h4>
+                        <p>TRI: {{ simulado.notaTRI | number:'1.0-1' }} | Acertos: {{ simulado.totalAcertos }} / {{ simulado.totalQuestoes }}</p>
+                    </div>
+
+                    <div class="card-detalhes">
+                        <div class="detalhes-header">
+                            <h5>📊 Detalhes das Questões</h5>
+                            <span class="dica-scroll">Role a lista para ver mais ↓</span>
+                        </div>
+
+                        <div class="gabarito-scroll-container">
+                            <div class="gabarito-grid-historico">
+                                <div *ngFor="let item of simulado.gabarito; let i = index"
+                                     class="badge-resposta"
+                                     [class.sucesso]="item.acertou"
+                                     [class.erro]="!item.acertou">
+
+                                    <div class="badge-numero">Q.{{ i + 1 }}</div>
+
+                                    <div class="badge-info">
+                                        <span class="marcou">
+                                            Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
+                                        </span>
+                                        <i class="icone-status">{{ item.acertou ? '✅' : '❌' }}</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
-        <div class="campo-filtro">
-            <label>Disciplina:</label>
-            <select [(ngModel)]="disciplinaSelecionada">
-                <option [ngValue]="null">Todas as Disciplinas</option>
-                <option value="Linguagens">Linguagens</option>
-                <option value="Ciências Humanas">Ciências Humanas</option>
-                <option value="Matemática">Matemática</option>
-                <option value="Ciências da Natureza">Ciências da Natureza</option>
-            </select>
+    </ng-container>
+
+
+
+    <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
+
+        <div class="simulado-header">
+            <div class="contador-questao">
+                <span>Questão <strong>{{ indiceAtual + 1 }}</strong> de <strong>{{ questoes.length }}</strong></span>
+
+                <div class="header-status">
+                    <span class="badge-cronometro">⏱️ {{ tempoFormatado }}</span>
+                    <span class="badge-disciplina" *ngIf="questaoAtual.disciplina">{{ questaoAtual.disciplina }}</span>
+
+                    <button class="btn-alerta" (click)="pausarSimulado()" *ngIf="!isPausado">
+                        ⏸️ Pausar
+                    </button>
+                    <button class="btn-primario" (click)="retomarSimulado()" *ngIf="isPausado">
+                        ▶️ Retomar
+                    </button>
+                    <button class="btn-secundario" (click)="reiniciarTentativa()" title="Reiniciar cronômetro e respostas">
+                        🔄 Reiniciar
+                    </button>
+
+                    <button class="btn-toggle-gabarito" (click)="toggleGabarito()">
+                        🗂️ Gabarito
+                    </button>
+                </div>
+            </div>
+
+            <div class="barra-progresso">
+                <div class="progresso-preenchido" [style.width.%]="((indiceAtual + 1) / questoes.length) * 100"></div>
+            </div>
         </div>
 
-        <!-- 4. Idioma Estrangeiro (Condicional) -->
-        <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
-            <label>Idioma Estrangeiro:</label>
-            <select [(ngModel)]="idiomaSelecionado">
-                <option [ngValue]="null">Selecione o idioma...</option>
-                <option value="ingles">Inglês</option>
-                <option value="espanhol">Espanhol</option>
-            </select>
+        <div class="simulado-corpo">
+
+            <div class="card-questao" *ngIf="!isPausado">
+                <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoAtual.enunciado)"></div>
+
+                <div class="alternativas-list">
+                    <div *ngFor="let alt of questaoAtual.alternativas; let i = index"
+                         class="linha-alternativa"
+                         [class.eliminada]="isEliminada(i)">
+
+                        <button class="btn-alternativa"
+                                [class.selecionada]="isRespostaSelecionada(alt)"
+                                (click)="selecionarResposta(alt)">
+                            <span class="opt-letra">{{ letraAlternativa(i) }}</span>
+                            <span class="opt-texto" [innerHTML]="alt"></span>
+                        </button>
+
+                        <button class="btn-eliminar"
+                                [class.ativo]="isEliminada(i)"
+                                (click)="toggleEliminada(i, $event)"
+                                title="Marcar como errada">
+                            ✂️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-questao texto-centralizado" *ngIf="isPausado">
+                <h2>⏸️ Simulado Pausado</h2>
+                <p>O tempo está congelado. Clique em "Retomar" para continuar.</p>
+            </div>
+
+
+            <aside class="painel-gabarito" [class.aberto]="painelGabaritoAberto">
+                <div class="gabarito-cabecalho">
+                    <h3>Gabarito</h3>
+                    <span class="gabarito-contador">{{ totalRespondidas }} / {{ questoes.length }}</span>
+                </div>
+
+                <div class="gabarito-grid">
+                    <button *ngFor="let q of questoes; let i = index"
+                            type="button"
+                            class="bolha-questao"
+                            [class.atual]="statusGabarito(i) === 'atual'"
+                            [class.respondida]="statusGabarito(i) === 'respondida'"
+                            [class.pendente]="statusGabarito(i) === 'pendente'"
+                            [disabled]="isPausado"
+                            (click)="irParaQuestao(i)"
+                            [title]="'Questão ' + (i + 1) + (respondeuQuestao(i) ? ' — marcada ' + letraMarcadaNaQuestao(i) : ' — não respondida')">
+                        <span class="bolha-numero">{{ i + 1 }}</span>
+                        <span class="bolha-letra" *ngIf="respondeuQuestao(i)">{{ letraMarcadaNaQuestao(i) }}</span>
+                    </button>
+                </div>
+
+                <div class="gabarito-legenda">
+                    <span><i class="ponto ponto-atual"></i> Atual</span>
+                    <span><i class="ponto ponto-respondida"></i> Respondida</span>
+                    <span><i class="ponto ponto-pendente"></i> Pendente</span>
+                </div>
+            </aside>
+        </div>
+
+        <div class="simulado-footer">
+            <button class="btn-secundario"
+                    (click)="questaoAnterior()"
+                    [disabled]="indiceAtual === 0 || isPausado">
+                ← Voltar
+            </button>
+
+            <button class="btn-sucesso"
+                    (click)="avancarOuEnviar()"
+                    [disabled]="isPausado">
+                {{ indiceAtual === questoes.length - 1 ? 'Enviar simulado' : 'Passar/enviar →' }}
+            </button>
         </div>
     </div>
 
-    <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
+
+
+    <div class="resultado-container" *ngIf="resultadoFinal">
+        <div class="card-resultado">
+            <h2>Simulado Concluído! 🎉</h2>
+            <p class="subtitulo">Confira o seu desempenho:</p>
+
+            <div class="estatisticas-grid">
+                <div class="stat-card">
+                    <span class="stat-valor">{{ totalAcertos }} / {{ resultadoFinal.totalQuestoes }}</span>
+                    <span class="stat-label">Questões Certas</span>
+                </div>
+            </div>
+
+            <div class="acoes-resultado">
+                <button class="btn-primario" (click)="reiniciarSimulado()">Fazer Outro Simulado</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="status-mensagem" *ngIf="carregando">
+        <p>Carregando simulado...</p>
+    </div>
+
+    <div class="status-mensagem erro" *ngIf="erroCarregamento">
+        <p>Ocorreu um erro ao carregar as questões. Tente novamente.</p>
+        <button (click)="iniciarSimulado()" class="btn-primario">Tentar Novamente</button>
+    </div>
+
 </div>

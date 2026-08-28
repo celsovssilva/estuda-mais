@@ -435,42 +435,59 @@
     color: #64748b;
 }
 
+/* --- Painel de gabarito: versão compacta --- */
 .painel-gabarito {
     flex-shrink: 0;
-    width: 220px;
+    width: 260px;
     background: #ffffff;
     border-radius: 12px;
-    padding: 18px;
+    padding: 14px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
     position: sticky;
     top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.painel-gabarito::-webkit-scrollbar {
+    width: 6px;
+}
+.painel-gabarito::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.painel-gabarito::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.painel-gabarito::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .gabarito-cabecalho {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .gabarito-cabecalho h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #0f172a;
 }
 
 .gabarito-contador {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #64748b;
     font-weight: 600;
 }
 
 .gabarito-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
 }
 
 .bolha-questao {
@@ -480,15 +497,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 8px;
     border: 1.5px solid #cbd5e1;
     background: #ffffff;
     color: #475569;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
     padding: 0;
+    min-width: 0;
 }
 
 .bolha-questao:hover:not(:disabled) {
@@ -525,30 +543,32 @@
 }
 
 .bolha-letra {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 600;
     opacity: 0.9;
     line-height: 1;
-    margin-top: 1px;
+    margin-top: 0px;
 }
 
 .gabarito-legenda {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 0.75rem;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    font-size: 0.7rem;
     color: #64748b;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
 }
 
 .gabarito-legenda span {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .ponto {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     display: inline-block;
 }
@@ -703,7 +723,8 @@
         top: 0;
         right: 0;
         height: 100vh;
-        width: min(80vw, 300px);
+        max-height: 100vh;
+        width: min(85vw, 320px);
         border-radius: 0;
         transform: translateX(100%);
         transition: transform 0.25s ease;
@@ -711,8 +732,19 @@
         overflow-y: auto;
     }
 
+    .gabarito-grid {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
     .painel-gabarito.aberto {
         transform: translateX(0);
         box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Em telas bem estreitas, ajusta as colunas para reduzir ainda mais o scroll */
+@media (max-width: 380px) {
+    .gabarito-grid {
+        grid-template-columns: repeat(6, 1fr);
     }
 }

@@ -1,10 +1,7 @@
 package com.estudamais.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
@@ -22,18 +19,14 @@ public class RespostaAluno {
     private Question questao;
     private String alternativaEscolhida;
     private Boolean correta;
+    @ManyToOne
+    private StudentSimulation simulation;
 
-    public RespostaAluno(Question questao, String s, boolean correta) {
+    public RespostaAluno(Question questao, String alternativaEscolhida, boolean correta) {
         this.questao = questao;
         this.alternativaEscolhida = alternativaEscolhida;
         this.correta = correta;
     }
 
 
-    public void setQuestao(String s) {
-        this.questao = questao;
-    }
-
-    public void setSimulation(StudentSimulation s) {
-    }
 }

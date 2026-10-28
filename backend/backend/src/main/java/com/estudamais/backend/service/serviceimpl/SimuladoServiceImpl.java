@@ -120,6 +120,7 @@ public class SimuladoServiceImpl implements SimuladoService {
         return questionList;
     }
 
+    // não esta sendo utilizado
     @Override
     public SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto) {
         StudentSimulation simulado = simuladoRepository.findByUserIdAndStatus(dto.userId(), StatusSimulado.PAUSADO)
@@ -145,7 +146,7 @@ public class SimuladoServiceImpl implements SimuladoService {
                     .orElseThrow(() -> new RuntimeException("Questão não encontrada: " + r.questaoId()));
 
             RespostaAluno respostaAluno = new RespostaAluno();
-            respostaAluno.setQuestao(questao.getId());
+            respostaAluno.setQuestao(questao);
             respostaAluno.setAlternativaEscolhida(r.alternativaEscolhida());
             respostaAluno.setSimulation(simulado);
 

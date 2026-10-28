@@ -98,9 +98,15 @@
                                     <div class="badge-numero">Q.{{ i + 1 }}</div>
 
                                     <div class="badge-info">
-                                        <span class="marcou">
-                                            Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
-                                        </span>
+                                        <div class="respostas-texto">
+        <span class="marcou">
+            Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
+        </span>
+                                            <!-- Mostra a alternativa correta apenas se o utilizador errou -->
+                                            <span class="correta" *ngIf="!item.acertou" style="margin-left: 8px; color: #d32f2f;">
+            Correta: <strong>{{ item.alternativaCorreta || '-' }}</strong>
+        </span>
+                                        </div>
                                         <i class="icone-status">{{ item.acertou ? '✅' : '❌' }}</i>
                                     </div>
                                 </div>

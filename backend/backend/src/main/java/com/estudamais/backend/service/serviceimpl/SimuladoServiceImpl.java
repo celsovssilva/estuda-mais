@@ -61,8 +61,9 @@ public class SimuladoServiceImpl implements SimuladoService {
 
             detalhesGabarito.add(new GabaritoItemResponse(
                     questao.getId(),
-                    questao.getRespostaCorreta(),
+                    questao.getEnunciado(),
                     r.alternativaEscolhida(),
+                    questao.getRespostaCorreta(),
                     acertou,
                     questao.getDisciplina()
             ));
@@ -178,6 +179,7 @@ public class SimuladoServiceImpl implements SimuladoService {
                             r.getQuestao().getId(),
                             r.getQuestao().getEnunciado(),
                             r.getAlternativaEscolhida(),
+                            r.getQuestao().getRespostaCorreta(),
                             r.getCorreta(),
                             r.getQuestao().getDisciplina()
                     ));

@@ -1,132 +1,117 @@
-📚 Estuda+ 
+# 📚 StudyClean
 
-Plataforma backend para gerenciamento de conteúdos educacionais, usuários e organização de estudos, desenvolvida com foco em escalabilidade, organização e boas práticas.
+Plataforma web para organização de estudos, voltada para quem está se preparando para o ENEM e vestibulares. Une agenda de estudos, anotações com anexos, banco de questões reais do ENEM (2009–2023) para simulados, e um painel de acompanhamento de desempenho.
 
-🔗 Repositório
+🔗 **Acesse:** [estuda-mais-front.onrender.com](https://estuda-mais-front.onrender.com)
 
-Estuda+ no GitHub
+---
 
-📌 Visão Geral
+## ✨ Funcionalidades
 
-O Estuda+ é um sistema backend que tem como objetivo fornecer uma base robusta para aplicações educacionais, permitindo:
+### 📅 Agenda inteligente
+- Cadastro de compromissos por categoria (Estudos, Academia, Cuidado Pessoal, Simulado, Aulas, Leitura, Redação, entre outras)
+- Calendário com indicador visual de status por dia: **verde** (tudo concluído), **laranja** (parcial) e **vermelho** (nada concluído)
+- Compromissos concluídos somem da lista ativa automaticamente
 
-📖 Gestão de conteúdos de estudo
-🧠 Organização de aprendizado
-🔐 Autenticação segura
-📊 Estrutura pronta para dashboards
+### 📝 Anotações com anexos
+- Editor de notas vinculado a uma data de referência
+- Upload de anexos (PDF, imagens) armazenados diretamente no banco de dados
+- Visualização inline dos arquivos anexados
 
-Sistemas educacionais modernos ajudam estudantes a organizar e reforçar o aprendizado de forma eficiente, sendo amplamente utilizados em contextos escolares e preparação acadêmica
+### 📊 Dashboard de desempenho
+- Métricas de compromissos concluídos, pendentes e totais
+- Horário de estudo por categoria, com visão semanal detalhada por dia
+- Percentual de cumprimento mensal por categoria
 
-🧱 Arquitetura
+### 🎯 Simulados ENEM
+- Banco de questões reais do ENEM, de 2009 a 2023, importado da [API pública enem.dev](https://docs.enem.dev)
+- Simulados filtráveis por ano, dia de prova (1º ou 2º dia) e idioma eletivo (inglês/espanhol)
+- Sistema de eliminação de alternativas durante a resolução
+- Estimativa de nota na escala ENEM (300–1000), com aproximação baseada em Teoria de Resposta ao Item (TRI)
+- Correção automática com gabarito detalhado ao final
 
-O projeto segue uma arquitetura limpa baseada em camadas:
+### 🔔 Lembretes por e-mail
+- Notificações automáticas às 7h com o resumo do dia
+- Lembretes reforçados às 12h e 18h para quem ainda não concluiu nenhuma atividade
+- Envio via SMTP (Brevo)
 
-src/main/java/com/example/
-│
-├── controller   # Camada de entrada (REST API)
-├── service      # Regras de negócio
-├── repository   # Acesso ao banco (JPA)
-├── entity       # Entidades do sistema
-├── request      # DTOs de entrada
-├── response     # DTOs de saída
-├── config       # Segurança e configurações
-⚙️ Tecnologias Utilizadas
-Backend
-Java 21
-Spring Boot
-Spring Web
-Spring Data JPA
-Spring Validation
-Segurança
-Spring Security
-JWT (JSON Web Token)
-Banco de Dados
-PostgreSQL
-Outros
-Lombok
-Maven
-🔐 Autenticação e Segurança
+### 🛡️ Painel administrativo
+- Gestão de usuários (ativar/desativar contas, editar dados)
+- Visualização dos compromissos de qualquer aluno
+- Controle de acesso por papel (`ADMIN` / `USER`) via Spring Security
 
-A API implementa autenticação baseada em JWT, garantindo:
+### 🔐 Autenticação e segurança
+- Login e cadastro com JWT
+- Senhas com hash via BCrypt
+- Rotas protegidas por papel de usuário
 
-Login seguro
-Proteção de rotas
-Controle de acesso
+---
 
-Fluxo:
+## 🛠️ Stack Técnica
 
-Login → Geração de Token → Acesso às rotas protegidas
-📦 Funcionalidades
-👤 Usuários
-Cadastro de usuários
-Login autenticado
-Controle de permissões
-📚 Conteúdos
-Organização de materiais de estudo
-Estrutura para disciplinas e temas
-📊 Organização de Estudos
-Base para dashboards
-Evolução de aprendizado
-🔗 Rotas da API
-🔐 Autenticação
-POST /auth/login
-POST /auth/register
-PUT /auth/update
+**Backend**
+- Java 21 + Spring Boot 3
+- Spring Security + JWT
+- Spring Data JPA + Hibernate
+- Spring Mail
+- PostgreSQL
 
-Descrição:
+**Frontend**
+- Angular (standalone components)
+- TypeScript
+- RxJS
 
-login: autentica o usuário e retorna token JWT
-register: cria um novo usuário
-update profile: atualiza o usuário
+**Infraestrutura**
+- Deploy em [Render](https://render.com)
+- Integração com API pública [enem.dev](https://docs.enem.dev) para importação de questões
 
+---
 
-Gerenciamento de conteúdos de estudo
-📊 Dashboard
-GET /dashboard
+## 📂 Estrutura do repositório
 
-Retorna dados agregados do sistema
-🧪 Testes
-mvn test
-🚀 Como Executar o Projeto
-🔧 Pré-requisitos
-Java 21
-Maven
-PostgreSQL
-▶️ Passos
-# Clonar repositório
-git clone https://github.com/celsovssilva/estuda-mais.git
+```
+estuda-mais-monorepo/
+├── backend/     # API REST em Spring Boot
+└── frontend/    # SPA em Angular
+```
 
-# Entrar na pasta
-cd estuda-mais
+---
+
+## 🚀 Rodando localmente
+
+### Pré-requisitos
+- Java 21+
+- Node.js 18+
+- PostgreSQL
+
+### Backend
+```bash
 cd backend/backend
+# Configure src/main/resources/application-local.properties
+# com suas credenciais de banco e SMTP
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+### Frontend
+```bash
 cd frontend
+npm install
+ng serve
+```
 
-# Rodar aplicação
-mvn spring-boot:run - backend
-npm run dev - frontend
+Acesse `http://localhost:4200`.
 
-📦 Build
-mvn clean package
-📈 Boas Práticas Aplicadas
-✔️ Arquitetura em camadas
-✔️ Separação entre DTO e entidade
-✔️ Código limpo
-✔️ Segurança com JWT
-✔️ Escalabilidade
+---
 
-👨‍💻 Autor
+## 🗺️ Roadmap
 
-Celso Vinícius Souza Silva
+- [ ] Integração de pagamento para planos premium
+- [ ] Migração de infraestrutura para ambiente sempre ativo
+- [ ] Backup automatizado do banco de dados
+- [ ] Expansão do banco de questões para outras bancas (além do ENEM)
 
-Desenvolvedor Fullstack
+---
 
-💡 Diferenciais do Projeto
-🔥 Estrutura profissional pronta para produção
-🔐 Segurança implementada
-📚 Domínio educacional real
-⚡ Código escalável e organizado
+## 📄 Licença
 
-
-Sistema SaaS educacional
-Plataforma de cursos
-Ambiente de preparação para provas
+Projeto pessoal em desenvolvimento contínuo.

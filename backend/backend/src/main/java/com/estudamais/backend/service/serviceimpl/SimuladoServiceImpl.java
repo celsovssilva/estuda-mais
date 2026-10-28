@@ -59,11 +59,15 @@ public class SimuladoServiceImpl implements SimuladoService {
             respostaAluno.setSimulation(simulado);
             simulado.getRespostas().add(respostaAluno);
 
+
+            String letraM = obterLetraDaAlternativa(questao.getAlternativas(), r.alternativaEscolhida());
+            String letraC = obterLetraDaAlternativa(questao.getAlternativas(), questao.getRespostaCorreta());
+
             detalhesGabarito.add(new GabaritoItemResponse(
                     questao.getId(),
                     questao.getEnunciado(),
-                    r.alternativaEscolhida(),
-                    questao.getRespostaCorreta(),
+                    letraM,
+                    letraC,
                     acertou,
                     questao.getDisciplina()
             ));
@@ -165,36 +169,50 @@ public class SimuladoServiceImpl implements SimuladoService {
     public List<ResultadoSimuladoResponse> historico(Long userId) {
         List<StudentSimulation> simulations = simuladoRepository.findAllByUserIdAndStatus(userId, StatusSimulado.FINALIZADO);
         List<ResultadoSimuladoResponse> historico = new ArrayList<>();
+
         for (StudentSimulation p : simulations) {
             List<RespostaAluno> respostas = p.getRespostas();
-            System.out.println("buscando as respostas" + respostas);
             List<GabaritoItemResponse> gabaritoDaProva = new ArrayList<>();
             int acertos = 0;
+
             for (RespostaAluno r : respostas) {
                 if (Boolean.TRUE.equals(r.getCorreta())) {
                     acertos++;
                 }
-                if (r.getQuestao() != null ) {
-                    gabaritoDaProva.add(new GabaritoItemResponse(
-                            r.getQuestao().getId(),
-                            r.getQuestao().getEnunciado(),
-                            r.getAlternativaEscolhida(),
-                            r.getQuestao().getRespostaCorreta(),
-                            r.getCorreta(),
-                            r.getQuestao().getDisciplina()
-                    ));
+                if (r.getQuestao() != null) {
+                    Question questao = r.getQuestao();
 
+
+                    String letraM = obterLetraDaAlternativa(questao.getAlternativas(), r.getAlternativaEscolhida());
+                    String letraC = obterLetraDaAlternativa(questao.getAlternativas(), questao.getRespostaCorreta());
+
+                    gabaritoDaProva.add(new GabaritoItemResponse(
+                            questao.getId(),
+                            questao.getEnunciado(),
+                            letraM,
+                            letraC,
+                            r.getCorreta(),
+                            questao.getDisciplina()
+                    ));
                 }
             }
+
             ResultadoSimuladoResponse resultado = new ResultadoSimuladoResponse(p.getId(), p.getNotaCalculadaTRI(), acertos, respostas.size(), gabaritoDaProva);
-            System.out.println("adicionando resultados ao historico" + resultado);
             historico.add(resultado);
         }
-
-            return historico;
-
+        return historico;
     }
 
+
+    private String obterLetraDaAlternativa(List<String> alternativas, String textoAlternativa) {
+        if (alternativas == null || textoAlternativa == null) return "-";
+        for (int i = 0; i < alternativas.size(); i++) {
+            if (alternativas.get(i).equalsIgnoreCase(textoAlternativa)) {
+                return String.valueOf((char) ('A' + i));
+            }
+        }
+        return "-";
+    }
 
     private double calcularNotaAproximadaTRI(int acertos, int total, double somaDificuldade) {
 

@@ -21,8 +21,9 @@ export interface GabaritoItem {
     questaoId: string;
     enunciado: string;
     alternativaEscolhida: string;
-    respostaCorreta: string;
+    alternativaCorreta: string;
     acertou: boolean;
+    disciplina: string;
 }
 
 export interface ResultadoSimulado {

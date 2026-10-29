@@ -17,6 +17,6 @@ public interface SimuladoService {
     SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto);
      SimuladoPendenteResponse buscarSimuladoPausado(Long userId);
      List<ResultadoSimuladoResponse> historico(Long userId);
-     List<QuestionResponse> acessarQuestao(Long questaoId);
+     List<QuestionResponse> acessarQuestao(String questaoId);
 
 }

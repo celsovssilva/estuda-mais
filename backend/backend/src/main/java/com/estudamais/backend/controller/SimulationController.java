@@ -67,7 +67,7 @@ public class SimulationController {
     }
 
     @GetMapping("/questoes/{id}")
-    public ResponseEntity<List<QuestionResponse>> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<List<QuestionResponse>> buscarPorId(@PathVariable String id) {
         return ResponseEntity.ok(simuladoService.acessarQuestao(id));
     }
 

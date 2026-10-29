@@ -207,8 +207,8 @@ public class SimuladoServiceImpl implements SimuladoService {
     }
 
     @Override
-    public List<QuestionResponse> acessarQuestao(Long questaoId) {
-        Question question = questaoRepository.findById(questaoId.toString())
+    public List<QuestionResponse> acessarQuestao(String questaoId) {
+        Question question = questaoRepository.findById(questaoId)
                 .orElseThrow(()-> new RuntimeException("questão não encontrada"));
         return Collections.singletonList(new QuestionResponse(question));
     }

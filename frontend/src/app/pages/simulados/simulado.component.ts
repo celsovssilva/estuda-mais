@@ -357,8 +357,8 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         this.alternativasEliminadas.clear();
         this.carregarHistorico();
     }
-    abrirModalRevisao(id: string | number): void {
-        this.simuladoService.buscarQuestaoPorid(Number(id)).subscribe({
+    abrirModalRevisao(id: string): void {
+        this.simuladoService.buscarQuestaoPorid(id).subscribe({
             next: (questao) => {
                 this.questaoSelecionada = questao;
                 this.modalAberto = true;

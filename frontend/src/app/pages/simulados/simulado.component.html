@@ -2,7 +2,6 @@
 
 <div class="simulado-page">
 
-
     <ng-container *ngIf="questoes.length === 0 && !carregando && !resultadoFinal">
 
         <div class="configuracao-simulado">
@@ -50,7 +49,6 @@
                     </select>
                 </div>
 
-
                 <div class="campo-filtro" *ngIf="diaSelecionado === 'DIA_1' || diaSelecionado === null">
                     <label>Idioma Estrangeiro:</label>
                     <select [(ngModel)]="idiomaSelecionado">
@@ -61,11 +59,8 @@
                 </div>
             </div>
 
-
-
             <button (click)="iniciarSimulado()" class="btn-primario btn-lg">Começar Simulado</button>
         </div>
-
 
         <div class="historico-secao">
             <h3>📜 Histórico de Simulados Concluídos</h3>
@@ -85,27 +80,29 @@
                     <div class="card-detalhes">
                         <div class="detalhes-header">
                             <h5>📊 Detalhes das Questões</h5>
-                            <span class="dica-scroll">Role a lista para ver mais ↓</span>
+                            <span class="dica-scroll">Clique em uma questão para revisar ↓</span>
                         </div>
 
                         <div class="gabarito-scroll-container">
                             <div class="gabarito-grid-historico">
+                                <!-- EVENTO DE CLIQUE ADICIONADO AQUI -->
                                 <div *ngFor="let item of simulado.gabarito; let i = index"
                                      class="badge-resposta"
                                      [class.sucesso]="item.acertou"
-                                     [class.erro]="!item.acertou">
+                                     [class.erro]="!item.acertou"
+                                     (click)="abrirModalRevisao(item.questaoId)"
+                                     title="Clique para ver o enunciado e as alternativas">
 
                                     <div class="badge-numero">Q.{{ i + 1 }}</div>
 
                                     <div class="badge-info">
                                         <div class="respostas-texto">
-        <span class="marcou">
-            Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
-        </span>
-                                            <!-- Mostra a alternativa correta apenas se o utilizador errou -->
-                                            <span class="correta" *ngIf="!item.acertou" style="margin-left: 8px; color: #d32f2f;">
-            Correta: <strong>{{ item.alternativaCorreta || '-' }}</strong>
-        </span>
+                                            <span class="marcou">
+                                                Marcou: <strong>{{ item.alternativaEscolhida || '-' }}</strong>
+                                            </span>
+                                            <span class="correta" *ngIf="!item.acertou">
+                                                Correta: <strong>{{ item.alternativaCorreta || '-' }}</strong>
+                                            </span>
                                         </div>
                                         <i class="icone-status">{{ item.acertou ? '✅' : '❌' }}</i>
                                     </div>
@@ -119,8 +116,6 @@
         </div>
 
     </ng-container>
-
-
 
     <div class="simulado-container" *ngIf="questoes.length > 0 && questaoAtual && !resultadoFinal">
 
@@ -185,7 +180,6 @@
                 <p>O tempo está congelado. Clique em "Retomar" para continuar.</p>
             </div>
 
-
             <aside class="painel-gabarito" [class.aberto]="painelGabaritoAberto">
                 <div class="gabarito-cabecalho">
                     <h3>Gabarito</h3>
@@ -230,8 +224,6 @@
         </div>
     </div>
 
-
-
     <div class="resultado-container" *ngIf="resultadoFinal">
         <div class="card-resultado">
             <h2>Simulado Concluído! 🎉</h2>
@@ -250,14 +242,48 @@
         </div>
     </div>
 
-
     <div class="status-mensagem" *ngIf="carregando">
-        <p>Carregando simulado...</p>
+        <p>Carregando dados...</p>
     </div>
 
     <div class="status-mensagem erro" *ngIf="erroCarregamento">
-        <p>Ocorreu um erro ao carregar as questões. Tente novamente.</p>
+        <p>Ocorreu um erro ao carregar as informações. Tente novamente.</p>
         <button (click)="iniciarSimulado()" class="btn-primario">Tentar Novamente</button>
+    </div>
+
+    <!-- Estrutura do Modal de Revisão -->
+    <div class="modal-overlay" *ngIf="modalAberto && questaoSelecionada" (click)="fecharModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-titulo-secao">
+                    <h3>🔍 Revisão da Questão</h3>
+                    <span class="badge-disciplina" *ngIf="questaoSelecionada.disciplina">{{ questaoSelecionada.disciplina }}</span>
+                </div>
+                <button class="btn-fechar-modal" (click)="fecharModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="enunciado-texto" [innerHTML]="formatarEnunciado(questaoSelecionada.enunciado)"></div>
+
+                <div class="alternativas-list">
+                    <div *ngFor="let alt of questaoSelecionada.alternativas; let i = index"
+                         class="linha-alternativa-revisao"
+                         [class.correta]="alt === questaoSelecionada.respostaCorreta || letraAlternativa(i) === questaoSelecionada.respostaCorreta">
+
+                        <span class="opt-letra">{{ letraAlternativa(i) }}</span>
+                        <span class="opt-texto" [innerHTML]="alt"></span>
+
+                        <span class="badge-status-correta" *ngIf="alt === questaoSelecionada.respostaCorreta || letraAlternativa(i) === questaoSelecionada.respostaCorreta">
+                            Gabarito ✅
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secundario" (click)="fecharModal()">Fechar</button>
+            </div>
+        </div>
     </div>
 
 </div>

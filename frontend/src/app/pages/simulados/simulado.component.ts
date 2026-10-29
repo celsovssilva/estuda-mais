@@ -5,7 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { SimuladoService } from '../../core/services/simulado/simulado.service';
-import { Questao, RespostaItem, ResultadoSimulado, EnviarSimuladoRequest } from '../../core/models/simulado.models';
+import {
+    Questao,
+    RespostaItem,
+    ResultadoSimulado,
+    EnviarSimuladoRequest,
+    QuestaoResponse
+} from '../../core/models/simulado.models';
 import { NavbarComponent } from "../../app/shared/navbar/navbar.component";
 
 @Component({
@@ -44,6 +50,8 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
 
     painelGabaritoAberto: boolean = false;
     historicoSimulados: ResultadoSimulado[] = [];
+    questaoSelecionada: QuestaoResponse | null = null;
+    modalAberto: boolean= false;
 
     ngOnInit(): void {
         const paramAno = this.route.snapshot.queryParamMap.get('ano');
@@ -348,5 +356,19 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         this.respostasAluno.clear();
         this.alternativasEliminadas.clear();
         this.carregarHistorico();
+    }
+    abrirModalRevisao(id: string | number): void {
+        this.simuladoService.buscarQuestaoPorid(Number(id)).subscribe({
+            next: (questao) => {
+                this.questaoSelecionada = questao;
+                this.modalAberto = true;
+            },
+            error: (err) => console.error('Erro ao carregar a questão para revisão:', err)
+        });
+    }
+
+    fecharModal(): void {
+        this.modalAberto = false;
+        this.questaoSelecionada = null;
     }
 }

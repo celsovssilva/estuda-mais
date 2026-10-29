@@ -47,3 +47,13 @@ export interface SimuladoPendenteResponse {
     tempoDecorrido: number;
     respostas: RespostaItem[];
 }
+
+export interface QuestaoResponse{
+    id:string;
+    ano:number;
+    disciplina:string;
+    enunciado:string;
+    alternativas:string[];
+    respostaCorreta: string;
+
+}

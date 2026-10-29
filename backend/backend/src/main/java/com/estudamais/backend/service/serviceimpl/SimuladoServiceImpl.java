@@ -7,6 +7,7 @@ import com.estudamais.backend.request.EnviarSimuladoRequest;
 import com.estudamais.backend.request.PausarSimuladoRequest;
 import com.estudamais.backend.request.RespostaItemRequest;
 import com.estudamais.backend.response.GabaritoItemResponse;
+import com.estudamais.backend.response.QuestionResponse;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
 import com.estudamais.backend.response.SimuladoPendenteResponse;
 import com.estudamais.backend.service.EnemImportService;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -202,6 +204,13 @@ public class SimuladoServiceImpl implements SimuladoService {
             historico.add(resultado);
         }
         return historico;
+    }
+
+    @Override
+    public List<QuestionResponse> acessarQuestao(Long questaoId) {
+        Question question = questaoRepository.findById(questaoId.toString())
+                .orElseThrow(()-> new RuntimeException("questão não encontrada"));
+        return Collections.singletonList(new QuestionResponse(question));
     }
 
 

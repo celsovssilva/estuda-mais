@@ -6,7 +6,7 @@ import {
     ResultadoSimulado,
     EnviarSimuladoRequest,
     PausarSimuladoRequest,
-    SimuladoPendenteResponse
+    SimuladoPendenteResponse, QuestaoResponse
 } from '../../models/simulado.models';
 import { environment } from '../../../../environments/environment.prod';
 
@@ -47,5 +47,8 @@ export class SimuladoService {
     
     buscarHistorico():Observable<ResultadoSimulado[]>{
         return this.http.get<ResultadoSimulado[]>(`${this.apiUrl}/historico`);
+    }
+    buscarQuestaoPorid(id:number):Observable<QuestaoResponse>{
+        return this.http.get<QuestaoResponse>(`${this.apiUrl}/questoes/${id}`);
     }
 }

@@ -4,6 +4,8 @@ import com.estudamais.backend.entity.DiaProva;
 import com.estudamais.backend.entity.Question;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
 import com.estudamais.backend.request.PausarSimuladoRequest;
+import com.estudamais.backend.response.GabaritoItemResponse;
+import com.estudamais.backend.response.QuestionResponse;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
 import com.estudamais.backend.response.SimuladoPendenteResponse;
 
@@ -15,4 +17,6 @@ public interface SimuladoService {
     SimuladoPendenteResponse pausarSimulado(PausarSimuladoRequest dto);
      SimuladoPendenteResponse buscarSimuladoPausado(Long userId);
      List<ResultadoSimuladoResponse> historico(Long userId);
+     List<QuestionResponse> acessarQuestao(Long questaoId);
+
 }

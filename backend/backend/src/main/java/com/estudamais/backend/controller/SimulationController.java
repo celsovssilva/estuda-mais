@@ -6,6 +6,7 @@ import com.estudamais.backend.entity.User;
 import com.estudamais.backend.repository.QuestionRepository;
 import com.estudamais.backend.request.EnviarSimuladoRequest;
 import com.estudamais.backend.request.PausarSimuladoRequest;
+import com.estudamais.backend.response.QuestionResponse;
 import com.estudamais.backend.response.ResultadoSimuladoResponse;
 import com.estudamais.backend.response.SimuladoPendenteResponse;
 import com.estudamais.backend.service.EnemImportService;
@@ -63,6 +64,11 @@ public class SimulationController {
         List<ResultadoSimuladoResponse> historico = simuladoService.historico(user.getId());
         return ResponseEntity.ok(historico);
 
+    }
+
+    @GetMapping("/questoes/{id}")
+    public ResponseEntity<List<QuestionResponse>> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(simuladoService.acessarQuestao(id));
     }
 
 

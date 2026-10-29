@@ -358,12 +358,17 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         this.carregarHistorico();
     }
     abrirModalRevisao(id: string): void {
+        console.log('ID enviado para a requisição:', id);
+
         this.simuladoService.buscarQuestaoPorid(id).subscribe({
             next: (questao) => {
+                console.log('Objeto recebido do backend:', questao);
                 this.questaoSelecionada = questao;
                 this.modalAberto = true;
             },
-            error: (err) => console.error('Erro ao carregar a questão para revisão:', err)
+            error: (err) => {
+                console.error('Erro na requisição da questão:', err);
+            }
         });
     }
 

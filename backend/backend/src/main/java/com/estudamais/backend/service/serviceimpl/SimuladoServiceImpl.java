@@ -207,6 +207,7 @@ public class SimuladoServiceImpl implements SimuladoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<QuestionResponse> acessarQuestao(String questaoId) {
         Question question = questaoRepository.findById(questaoId)
                 .orElseThrow(()-> new RuntimeException("questão não encontrada"));

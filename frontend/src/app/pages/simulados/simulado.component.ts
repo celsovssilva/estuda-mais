@@ -359,9 +359,9 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
     }
     abrirModalRevisao(id: string): void {
         this.simuladoService.buscarQuestaoPorid(id).subscribe({
-            next: (resposta) => {
-                // Se o backend devolver uma lista, pegamos na posição [0]. Senão, usamos a resposta direta.
+            next: (resposta: any) => {
                 this.questaoSelecionada = Array.isArray(resposta) ? resposta[0] : resposta;
+                console.log('Variável final que vai para o HTML:', this.questaoSelecionada);
                 this.modalAberto = true;
             },
             error: (err) => {

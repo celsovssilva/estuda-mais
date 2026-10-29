@@ -361,7 +361,6 @@ export class SimuladoExecucaoComponent implements OnInit, OnDestroy {
         this.simuladoService.buscarQuestaoPorid(id).subscribe({
             next: (resposta: any) => {
                 this.questaoSelecionada = Array.isArray(resposta) ? resposta[0] : resposta;
-                console.log('Variável final que vai para o HTML:', this.questaoSelecionada);
                 this.modalAberto = true;
             },
             error: (err) => {

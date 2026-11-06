@@ -13,8 +13,11 @@ import java.util.Optional;
 public class ResumoServiceImpl implements VideoConsumoService {
     @Autowired
     private VideoConsumoRepository videoConsumoRepository;
-    @Autowired
-    private  ChatClient chatClient;
+    private final ChatClient chatClient;
+
+    public ResumoServiceImpl(ChatClient.Builder builder) {
+        this.chatClient = builder.build();
+    }
     @Override
     public String gerarResumo(String videoUrl) {
         String videoId = extrairVideoId(videoUrl);

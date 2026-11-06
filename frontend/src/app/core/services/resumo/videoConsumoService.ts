@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from "../../../../environments/environment.prod";
 
 // DTOs que espelham exatamente os 'records' que criámos no Java
 export interface VideoRequest {
@@ -16,7 +17,7 @@ export interface ResumoResponse {
 })
 export class VideoConsumoService {
 
-    private readonly apiUrl = 'http://localhost:8080/api/resumo';
+    private readonly apiUrl = `${environment}/api/resumo`;
 
     constructor(private http: HttpClient) {}
 

@@ -29,8 +29,11 @@ export class VideoConsumoComponent {
         this.textoResumo = null;
 
         this.videoConsumoService.resumir(this.urlInput).subscribe({
-            next: (response: ResumoResponse) => {
-                this.textoResumo = response.resumo;
+            next: (response) => {
+                this.textoResumo = response?.resumo ?? null;
+                if (!this.textoResumo) {
+                    this.erro = 'O servidor não retornou um resumo.';
+                }
                 this.carregando = false;
             },
             error: (err) => {

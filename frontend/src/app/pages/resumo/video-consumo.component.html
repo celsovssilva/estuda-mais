@@ -1,0 +1,28 @@
+<div class="container">
+    <h2>Resumidor de Videoaulas com IA</h2>
+
+    <div class="input-group">
+        <input
+                type="text"
+                [(ngModel)]="urlInput"
+                placeholder="Cole aqui o link do YouTube (ex: https://www.youtube.com/watch?v=...)"
+                [disabled]="carregando"
+        />
+        <button (click)="gerarResumo()" [disabled]="carregando || !urlInput">
+            <span *ngIf="!carregando">Resumir Aula</span>
+            <span *ngIf="carregando">A processar IA...</span>
+        </button>
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <div class="erro-box" *ngIf="erro">
+        {{ erro }}
+    </div>
+
+    <!-- Resultado do Resumo -->
+    <div class="resultado-box" *ngIf="textoResumo">
+        <h3>Resumo Gerado:</h3>
+        <!-- A tag <pre> respeita os parágrafos e quebras de linha devolvidos pelo Gemini -->
+        <pre>{{ textoResumo }}</pre>
+    </div>
+</div>

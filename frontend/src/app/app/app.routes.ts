@@ -9,6 +9,7 @@ import {adminGuard} from "../core/guards/admin.guard";
 import {AdminComponent} from "../pages/admin/admin.component";
 import {LandingComponent} from "../pages/landing/landing.component";
 import {SimuladoExecucaoComponent} from "../pages/simulados/simulado.component";
+import {VideoConsumoComponent} from "../pages/resumo/resumo.component";
 
 
 export const routes: Routes = [
@@ -22,6 +23,7 @@ export const routes: Routes = [
     {path: 'notes', component: NotesComponent},
     {path:'simulado',component:SimuladoExecucaoComponent},
     { path: 'adm', component: AdminComponent, canActivate: [adminGuard] },
+    { path: 'resumo-ia', component: VideoConsumoComponent },
     { path: '**', redirectTo: '/dashboard' }
 
 ];

@@ -54,22 +54,46 @@
             </div>
         </div>
     </section>
-    <section class="simulado-section">
-        <div class="simulado-card">
-            <div class="simulado-glow"></div>
-            <div class="simulado-content">
-                <div class="simulado-header">
-                    <span class="simulado-badge">🎯 Algoritmo TRI Ativo</span>
-                    <h2>Simulado ENEM</h2>
+
+    <!-- Seção de Ações Rápidas (Simulado + Resumo IA) -->
+    <section class="action-cards-section">
+        <div class="action-cards-grid">
+            <!-- Card 1: Simulado ENEM -->
+            <div class="simulado-card">
+                <div class="simulado-glow"></div>
+                <div class="simulado-content">
+                    <div class="simulado-header">
+                        <span class="simulado-badge">🎯 Algoritmo TRI Ativo</span>
+                        <h2>Simulado ENEM</h2>
+                    </div>
+                    <p class="simulado-description">
+                        Pratique com questões por disciplina ou faça a prova completa com estimativa de nota na escala do ENEM.
+                    </p>
                 </div>
-                <p class="simulado-description">
-                    Pratique com questões por disciplina ou faça a prova completa com estimativa de nota na escala do ENEM.
-                </p>
+                <div class="simulado-action">
+                    <button class="btn-iniciar-simulado" routerLink="/simulado">
+                        Iniciar Simulado <span class="btn-icon">🚀</span>
+                    </button>
+                </div>
             </div>
-            <div class="simulado-action">
-                <button class="btn-iniciar-simulado" routerLink="/simulado">
-                    Iniciar Simulado <span class="btn-icon">🚀</span>
-                </button>
+
+            <!-- Card 2: Resumo de Aulas (IA) -->
+            <div class="simulado-card ia-card">
+                <div class="simulado-glow ia-glow"></div>
+                <div class="simulado-content">
+                    <div class="simulado-header">
+                        <span class="simulado-badge ia-badge">✨ Gemini AI Ativo</span>
+                        <h2>Resumo de Aulas</h2>
+                    </div>
+                    <p class="simulado-description">
+                        Cole o link de qualquer videoaula do YouTube e deixe a Inteligência Artificial criar um resumo estruturado para si.
+                    </p>
+                </div>
+                <div class="simulado-action">
+                    <button class="btn-iniciar-simulado btn-ia" routerLink="/resumo-ia">
+                        Gerar Resumo <span class="btn-icon">🧠</span>
+                    </button>
+                </div>
             </div>
         </div>
     </section>

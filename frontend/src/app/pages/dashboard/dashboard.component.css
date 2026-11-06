@@ -156,6 +156,143 @@ h2 {
 .card-trend.warning { background: #fef3c7; color: #b45309; }
 .card-trend.info { background: #e0e7ff; color: #4338ca; }
 
+/* ===== SEÇÃO: ACTION CARDS (Simulado + IA) ===== */
+.action-cards-section {
+    margin-top: -8px;
+}
+
+.action-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 20px;
+}
+
+.simulado-card {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 20px;
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.simulado-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.16);
+    border-color: rgba(79, 70, 229, 0.4);
+}
+
+.simulado-glow {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 180px;
+    height: 180px;
+    background: #4f46e5;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.12;
+    pointer-events: none;
+}
+
+.simulado-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 650px;
+    z-index: 1;
+}
+
+.simulado-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.simulado-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+}
+
+.simulado-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.simulado-action {
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.btn-iniciar-simulado {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-iniciar-simulado:hover {
+    background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+}
+
+.btn-iniciar-simulado .btn-icon {
+    transition: transform 0.2s ease;
+}
+
+.btn-iniciar-simulado:hover .btn-icon {
+    transform: translateX(3px);
+}
+
+/* Variações específicas para o Card da IA */
+.ia-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.08);
+}
+.ia-card:hover {
+    box-shadow: 0 12px 28px -4px rgba(14, 165, 233, 0.16);
+    border-color: rgba(14, 165, 233, 0.4);
+}
+.ia-glow {
+    background: #0ea5e9;
+}
+.ia-badge {
+    color: #0284c7;
+    background: rgba(14, 165, 233, 0.1);
+}
+.btn-ia {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+}
+.btn-ia:hover {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+}
+
 /* ===== SEÇÃO 2: HORÁRIO POR CATEGORIA ===== */
 .week-table-wrapper {
     background: #ffffff;
@@ -276,7 +413,6 @@ h2 {
     box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.12);
 }
 
-/* Container do Anel SVG */
 .ring-container {
     position: relative;
     width: 110px;
@@ -287,7 +423,7 @@ h2 {
 .progress-ring {
     width: 100%;
     height: 100%;
-    transform: rotate(-90deg); /* Inicia o progresso no topo */
+    transform: rotate(-90deg);
 }
 
 .ring-bg {
@@ -301,7 +437,7 @@ h2 {
     stroke: #4f46e5;
     stroke-width: 8;
     stroke-linecap: round;
-    stroke-dasharray: 251.32; /* 2 * PI * 40 */
+    stroke-dasharray: 251.32;
     transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     filter: drop-shadow(0px 0px 6px rgba(79, 70, 229, 0.4));
 }
@@ -335,7 +471,6 @@ h2 {
     font-weight: 700;
 }
 
-/* Informações da Categoria */
 .category-info {
     display: flex;
     flex-direction: column;
@@ -374,123 +509,14 @@ h2 {
 .status-med { background: #e0e7ff; color: #3730a3; }
 .status-low { background: #fee2e2; color: #991b1b; }
 
-/* Responsividade */
-@media (max-width: 640px) {
+/* Responsividade geral */
+@media (max-width: 900px) {
     .dashboard-wrapper {
         padding: 0 16px 20px 16px;
     }
     .metrics-grid, .category-grid {
         grid-template-columns: 1fr;
     }
-}
-
-/* ===== SEÇÃO: CARD DO SIMULADO ENEM ===== */
-.simulado-section {
-    margin-top: -8px; /* Ajusta o espaçamento em relação às métricas */
-}
-
-.simulado-card {
-    position: relative;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid rgba(79, 70, 229, 0.2);
-    border-radius: 20px;
-    padding: 24px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.simulado-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.16);
-    border-color: rgba(79, 70, 229, 0.4);
-}
-
-.simulado-glow {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 180px;
-    height: 180px;
-    background: #4f46e5;
-    border-radius: 50%;
-    filter: blur(50px);
-    opacity: 0.12;
-    pointer-events: none;
-}
-
-.simulado-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-width: 650px;
-    z-index: 1;
-}
-
-.simulado-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.simulado-badge {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #4f46e5;
-    background: rgba(79, 70, 229, 0.1);
-    padding: 3px 10px;
-    border-radius: 12px;
-    letter-spacing: 0.02em;
-}
-
-.simulado-description {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #64748b;
-    line-height: 1.5;
-}
-
-.simulado-action {
-    z-index: 1;
-    flex-shrink: 0;
-}
-
-.btn-iniciar-simulado {
-    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-    color: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
-    transition: all 0.2s ease;
-}
-
-.btn-iniciar-simulado:hover {
-    background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
-    transform: scale(1.03);
-    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
-}
-
-.btn-iniciar-simulado .btn-icon {
-    transition: transform 0.2s ease;
-}
-
-.btn-iniciar-simulado:hover .btn-icon {
-    transform: translateX(3px);
-}
-
-/* Responsividade do Card do Simulado */
-@media (max-width: 768px) {
     .simulado-card {
         flex-direction: column;
         align-items: flex-start;

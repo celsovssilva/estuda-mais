@@ -19,7 +19,6 @@ export class VideoConsumoComponent {
     constructor(private videoConsumoService: VideoConsumoService) {}
 
     gerarResumo(): void {
-
         if (!this.urlInput || this.urlInput.trim() === '') {
             return;
         }
@@ -29,8 +28,10 @@ export class VideoConsumoComponent {
         this.textoResumo = null;
 
         this.videoConsumoService.resumir(this.urlInput).subscribe({
-            next: (response) => {
-                this.textoResumo = response?.resumo ?? null;
+            next: (response: ResumoResponse) => {
+
+                this.textoResumo = response?.resumoGerado ?? response?.resumo ?? null;
+
                 if (!this.textoResumo) {
                     this.erro = 'O servidor não retornou um resumo.';
                 }

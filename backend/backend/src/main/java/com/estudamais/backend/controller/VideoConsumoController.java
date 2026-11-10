@@ -17,8 +17,14 @@ public class VideoConsumoController {
     private VideoConsumoService videoConsumoService;
 
     @PostMapping("/resumir")
-    public ResponseEntity<VideoConsumoRespose> resumir(@RequestBody VideoConsumoRequest request){
-        String resumoGerado = videoConsumoService.gerarResumo(request.url());
-        return ResponseEntity.ok(new VideoConsumoRespose(resumoGerado));
+    public ResponseEntity<?> resumir(@RequestBody VideoConsumoRequest request) {
+        try {
+            String resumoGerado = videoConsumoService.gerarResumo(request.url());
+            return ResponseEntity.ok(new VideoConsumoRespose(resumoGerado));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao processar o resumo: " + e.getMessage());
+        }
     }
 }

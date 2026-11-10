@@ -29,32 +29,26 @@ public class ResumoServiceImpl implements VideoConsumoService {
     public String gerarResumo(String videoUrl) {
         String videoId = extrairVideoId(videoUrl);
 
-
         Optional<VideoConsumo> existente = videoConsumoRepository.findByVideoId(videoId);
         if (existente.isPresent() && existente.get().getConteudoResumo() != null) {
             return existente.get().getConteudoResumo();
         }
+        String transcricao = "Nesta videoaula, vamos abordar os conceitos fundamentais do Java, a criação de APIs REST com Spring Boot, e como o padrão Model-View-Controller ajuda a organizar a arquitetura de software para sistemas escaláveis.";
 
+        String prompt = "Você é um assistente de engenharia de software focado em estudos. " +
+                "Baseado na transcrição desta videoaula, faça um resumo bem estruturado em português: \n" +
+                "- Inclua um título.\n" +
+                "- Um parágrafo de introdução.\n" +
+                "- Os conceitos principais em bullet points.\n" +
+                "Use formatação Markdown.\n\n" +
+                "Transcrição da aula:\n" + transcricao;
 
-        String transcricao = obterTranscricao(videoId);
-
-        String prompt = """
-            Você é um assistente de engenharia de software focado em estudos.
-            Baseado na transcrição desta videoaula, faça um resumo bem estruturado em português:
-            - Inclua um título.
-            - Um parágrafo de introdução.
-            - Os conceitos principais em bullet points.
-            Use formatação Markdown.
-            
-            Transcrição da aula:
-            """ + transcricao;
 
         String resumo = chatClient.prompt(prompt).call().content();
 
         if (resumo == null || resumo.isBlank()) {
             throw new IllegalStateException("O Gemini não retornou um resumo.");
         }
-
 
         VideoConsumo novo = existente.orElseGet(VideoConsumo::new);
         novo.setVideoId(videoId);
@@ -70,10 +64,5 @@ public class ResumoServiceImpl implements VideoConsumoService {
             if (m.find()) return m.group(1);
         }
         throw new IllegalArgumentException("URL de vídeo inválida: " + url);
-    }
-
-    private String obterTranscricao(String videoId) {
-
-        return "Nesta videoaula, vamos abordar os conceitos fundamentais do Java, a criação de APIs REST com Spring Boot, e como o padrão Model-View-Controller ajuda a organizar a arquitetura de software para sistemas escaláveis.";
     }
 }
